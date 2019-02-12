@@ -1,0 +1,12 @@
+namespace: example-app-test
+pool: other
+template:
+  name: example-app
+  version: v1.0
+parameters:
+  - name: REPLICA_COUNT
+    value: 2
+  - name: IMAGE_NAME
+    value: bitnami/nginx
+  - name: IMAGE_VERSION
+    value: 1.14-ol-7

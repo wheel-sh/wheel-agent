@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: example-app
+  annotations:
+    description: "example-app"
+  labels:
+    templateVersion: v1.0
+parameters:
+  - name: IMAGE_NAME
+    displayName: Image Name
+    required: true
+  - name: IMAGE_VERSION
+    displayName: Image Version
+    required: true
+  - name: REPLICA_COUNT
+    displayName: Replicas
+    required: true
+objects:
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      labels:
+        app: example-app
+      name: example-app
+    spec:
+      ports:
+        - name: 8080-tcp
+          port: 8080
+          protocol: TCP
+          targetPort: 8080
+      selector:
+        deploymentconfig: example-app
+  - apiVersion: apps.openshift.io/v1
+    kind: DeploymentConfig
+    metadata:
+      labels:
+        app: example-app
+      name: example-app
+    spec:
+      replicas: ${{REPLICA_COUNT}}
+      selector:
+        app: example-app
+        deploymentconfig: example-app
+      strategy:
+        type: Rolling
+      template:
+        metadata:
+          labels:
+            app: example-app
+            deploymentconfig: example-app
+        spec:
+          containers:
+            - image: ${IMAGE_NAME}:${IMAGE_VERSION}
+              imagePullPolicy: Always
+              name: nginx
+              ports:
+                - containerPort: 8080
+                  protocol: TCP
+  - apiVersion: route.openshift.io/v1
+    kind: Route
+    metadata:
+      labels:
+        app: example-app
+      name: example-app
+      namespace: demo
+    spec:
+      port:
+        targetPort: 8080-tcp
+      tls:
+        termination: edge
+      to:
+        kind: Service
+        name: example-app
