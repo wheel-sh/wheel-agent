@@ -10,6 +10,14 @@ public class App {
     private List<Template> templates;
     private List<BuildConfig> buildConfigs;
 
+    public App(String name, Group group, List<Namespace> spaces, List<Template> templates, List<BuildConfig> buildConfigs) {
+        this.name = name;
+        this.group = group;
+        this.spaces = spaces;
+        this.templates = templates;
+        this.buildConfigs = buildConfigs;
+    }
+
     public String getName() {
         return name;
     }

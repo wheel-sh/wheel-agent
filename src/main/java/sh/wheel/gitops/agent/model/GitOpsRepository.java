@@ -2,11 +2,16 @@ package sh.wheel.gitops.agent.model;
 
 import java.util.List;
 
-public class Repository {
+public class GitOpsRepository {
     List<Group> groups;
     List<App> apps;
 
-public List<Group> getGroups() {
+    public GitOpsRepository(List<Group> groups, List<App> apps) {
+        this.groups = groups;
+        this.apps = apps;
+    }
+
+    public List<Group> getGroups() {
         return groups;
     }
 
