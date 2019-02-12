@@ -10,7 +10,7 @@ public class AppConfigDeserializer {
 
     public AppConfig deserialize(InputStream inputStream) {
         Yaml yaml = new Yaml(new Constructor(AppConfig.class));
-        return yaml.load(inputStream);
+        return (AppConfig) yaml.load(inputStream);
     }
 
 }
