@@ -3,3 +3,4 @@
 *.iml
 *.project
 target/
+.attach_pid*
