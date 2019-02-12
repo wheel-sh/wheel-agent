@@ -1,13 +1,13 @@
 name: example-group
-resources:
-  - pool: production
+pools:
+  - name: production
     requests:
       cpu: 2
       memory: 8Gi
     limits:
       cpu: 3
       memory: 10Gi
-  - pool: other
+  - name: other
     requests:
       cpu: 1
       memory: 4Gi
