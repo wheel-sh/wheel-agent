@@ -48,9 +48,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
-            <version>1.23</version>
+            <groupId>io.thorntail</groupId>
+            <artifactId>jaxrs-jsonb</artifactId>
         </dependency>
         <dependency>
             <groupId>com.openshift</groupId>
@@ -62,21 +61,16 @@
             <artifactId>org.eclipse.jgit</artifactId>
             <version>5.2.1.201812262042-r</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.eclipse.jgit/org.eclipse.jgit.junit -->
-        <dependency>
-            <groupId>org.eclipse.jgit</groupId>
-            <artifactId>org.eclipse.jgit.junit</artifactId>
-            <version>5.2.1.201812262042-r</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.thorntail</groupId>
-            <artifactId>jaxrs-jsonb</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jgit</groupId>
+            <artifactId>org.eclipse.jgit.junit</artifactId>
+            <version>5.2.1.201812262042-r</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
