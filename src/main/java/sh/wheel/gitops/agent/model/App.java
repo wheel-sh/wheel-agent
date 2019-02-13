@@ -1,6 +1,7 @@
 package sh.wheel.gitops.agent.model;
 
 import sh.wheel.gitops.agent.config.AppConfig;
+import sh.wheel.gitops.agent.config.BuildConfig;
 import sh.wheel.gitops.agent.config.NamespaceConfig;
 
 import java.nio.file.Path;

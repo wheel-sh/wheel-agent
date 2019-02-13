@@ -1,9 +1,9 @@
 package sh.wheel.gitops.agent.repository;
 
 import sh.wheel.gitops.agent.config.AppConfig;
+import sh.wheel.gitops.agent.config.BuildConfig;
 import sh.wheel.gitops.agent.config.NamespaceConfig;
 import sh.wheel.gitops.agent.model.App;
-import sh.wheel.gitops.agent.model.BuildConfig;
 
 import java.io.IOException;
 import java.nio.file.Files;
