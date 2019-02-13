@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class AppsConfigReaderTest {
 
-
     @Test
     void readAllApps() throws IOException, URISyntaxException {
         Path appsDir = Paths.get(getClass().getResource("/valid-test-data/apps/").toURI());
@@ -40,7 +39,7 @@ class AppsConfigReaderTest {
     }
 
     @Test
-    void readAllApps_IOException() throws URISyntaxException, IOException {
+    void readAllApps_IOException_Logged() throws URISyntaxException, IOException {
         Path appsDir = Paths.get(getClass().getResource("/broken-test-data/apps/").toURI());
         AppsConfigReader appsConfigReader = new AppsConfigReader();
 
