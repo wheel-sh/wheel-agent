@@ -1,44 +1,50 @@
 package sh.wheel.gitops.agent.repository;
 
 import sh.wheel.gitops.agent.config.AppConfig;
+import sh.wheel.gitops.agent.config.NamespaceConfig;
+import sh.wheel.gitops.agent.config.TemplateConfig;
 import sh.wheel.gitops.agent.model.App;
+import sh.wheel.gitops.agent.model.BuildConfig;
 import sh.wheel.gitops.agent.model.GitOpsRepository;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.Arrays;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RepositoryReader {
 
     private AppConfigDeserializer appConfigDeserializer = new AppConfigDeserializer();
+    private BuildConfigDeserializer buildConfigDeserializer = new BuildConfigDeserializer();
+    private NamespaceConfigDeserializer namespaceConfigDeserializer = new NamespaceConfigDeserializer();
+    private TemplateConfigDeserializer templateConfigDeserializer = new TemplateConfigDeserializer();
 
-    public GitOpsRepository read(String repositoryPath) {
-        File[] appDirs = new File(repositoryPath + "/apps").listFiles(File::isDirectory);
-        if(appDirs == null) {
-            throw new IllegalStateException("Directory /apps found");
-        }
-        List<App> apps = Arrays.stream(appDirs).map(this::readAppConfigs).collect(Collectors.toList());
-        return new GitOpsRepository(null, apps);
+    public GitOpsRepository read(String repositoryPath) throws IOException {
+        Path appsPath = Paths.get(repositoryPath + "/apps");
+        List<App> apps = getAppsConfigs(appsPath);
+        return new GitOpsRepository(apps, null);
     }
 
-    public App readAppConfigs(File appDirectory) {
-        File[] appConfigFile = appDirectory.listFiles((dir, name) -> "config.yaml".equals(name));
-        if(appConfigFile == null || appConfigFile.length != 1) {
-            throw new IllegalStateException("config.yaml not found in " + appDirectory.getPath());
+    private List<App> getAppsConfigs(Path appsPath) throws IOException {
+        try (Stream<Path> appPaths = Files.walk(appsPath)) {
+            return appPaths.map(ap -> readAppConfigs(ap)).collect(Collectors.toList());
         }
-        FileInputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream(appConfigFile[0]);
-            AppConfig appConfig = appConfigDeserializer.deserialize(inputStream);
+    }
 
-            return new App(appConfig.getName(), null, null, null, null);
-        } catch (FileNotFoundException e) {
+    public App readAppConfigs(Path appPath) {
+        try {
+            AppConfig appConfig = appConfigDeserializer.deserialize(Files.newInputStream(appPath.resolve("config.yaml")));
+            List<BuildConfig> buildConfigPaths = buildConfigDeserializer.readDirectory(appPath.resolve("build"));
+            List<NamespaceConfig> namespaceConfigPaths = namespaceConfigDeserializer.readDirectory(appPath.resolve("namespace"));
+            List<TemplateConfig> templateConfigsPath = templateConfigDeserializer.readDirectory(appPath.resolve("template"));
+            return new App(appConfig, buildConfigPaths, namespaceConfigPaths, templateConfigsPath);
+        } catch (IOException e) {
             e.printStackTrace();
-            return null;
         }
+        return null;
     }
 
 }

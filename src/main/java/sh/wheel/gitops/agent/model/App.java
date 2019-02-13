@@ -1,40 +1,38 @@
 package sh.wheel.gitops.agent.model;
 
+import sh.wheel.gitops.agent.config.AppConfig;
+import sh.wheel.gitops.agent.config.NamespaceConfig;
+import sh.wheel.gitops.agent.config.TemplateConfig;
+
 import java.util.List;
 
 public class App {
 
-    private String name;
-    private Group group;
-    private List<Namespace> spaces;
-    private List<Template> templates;
-    private List<BuildConfig> buildConfigs;
+    private final AppConfig appConfig;
+    private final List<BuildConfig> buildConfigPaths;
+    private final List<NamespaceConfig> namespaceConfigPaths;
+    private final List<TemplateConfig> templateConfigsPath;
 
-    public App(String name, Group group, List<Namespace> spaces, List<Template> templates, List<BuildConfig> buildConfigs) {
-        this.name = name;
-        this.group = group;
-        this.spaces = spaces;
-        this.templates = templates;
-        this.buildConfigs = buildConfigs;
+    public App(AppConfig appConfig, List<BuildConfig> buildConfigPaths, List<NamespaceConfig> namespaceConfigPaths, List<TemplateConfig> templateConfigsPath) {
+        this.appConfig = appConfig;
+        this.buildConfigPaths = buildConfigPaths;
+        this.namespaceConfigPaths = namespaceConfigPaths;
+        this.templateConfigsPath = templateConfigsPath;
     }
 
-    public String getName() {
-        return name;
+    public AppConfig getAppConfig() {
+        return appConfig;
     }
 
-    public Group getGroup() {
-        return group;
+    public List<BuildConfig> getBuildConfigPaths() {
+        return buildConfigPaths;
     }
 
-    public List<Namespace> getSpaces() {
-        return spaces;
+    public List<NamespaceConfig> getNamespaceConfigPaths() {
+        return namespaceConfigPaths;
     }
 
-    public List<Template> getTemplates() {
-        return templates;
-    }
-
-    public List<BuildConfig> getBuildConfigs() {
-        return buildConfigs;
+    public List<TemplateConfig> getTemplateConfigsPath() {
+        return templateConfigsPath;
     }
 }

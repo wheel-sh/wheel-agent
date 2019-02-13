@@ -6,7 +6,7 @@ public class GitOpsRepository {
     List<Group> groups;
     List<App> apps;
 
-    public GitOpsRepository(List<Group> groups, List<App> apps) {
+    public GitOpsRepository(List<App> apps, List<Group> groups) {
         this.groups = groups;
         this.apps = apps;
     }
