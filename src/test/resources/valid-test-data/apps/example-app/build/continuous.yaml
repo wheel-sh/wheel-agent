@@ -1,0 +1,8 @@
+name: example-app-build
+gitUrl: 'https://github.com/wheel-sh/wheel-default-builds.git'
+jenkinsfilePath: example/Jenkinsfile
+env:
+  - name: APP_NAME
+    value: example-app
+  - name: APP_GIT_REPOSITORY
+    value: https://github.com/wheel-sh/example-app.git

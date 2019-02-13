@@ -8,7 +8,8 @@ public class NamespaceConfig {
     private String pool;
     private ResourceConfig requests;
     private ResourceConfig limits;
-    private TemplateConfig template;
+    private String templateFile;
+    private String template;
     private List<ParameterConfig> parameters;
 
     public String getName() {
@@ -43,11 +44,19 @@ public class NamespaceConfig {
         this.limits = limits;
     }
 
-    public TemplateConfig getTemplate() {
+    public String getTemplateFile() {
+        return templateFile;
+    }
+
+    public void setTemplateFile(String templateFile) {
+        this.templateFile = templateFile;
+    }
+
+    public String getTemplate() {
         return template;
     }
 
-    public void setTemplate(TemplateConfig template) {
+    public void setTemplate(String template) {
         this.template = template;
     }
 

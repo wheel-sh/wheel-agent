@@ -6,9 +6,7 @@ requests:
 limits:
   cpu: 2
   memory: 6Gi
-template:
-  name: example-app
-  version: v1.0
+templateFile: app.v1.yaml
 parameters:
   - name: REPLICA_COUNT
     value: 2
