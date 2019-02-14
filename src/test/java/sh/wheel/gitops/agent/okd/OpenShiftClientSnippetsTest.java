@@ -6,6 +6,9 @@ import com.openshift.restclient.IClient;
 import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
 import com.openshift.restclient.model.IResource;
+import com.openshift.restclient.model.kubeclient.IKubeClientConfig;
+import com.openshift.restclient.model.kubeclient.IUser;
+import com.openshift.restclient.model.kubeclient.KubeClientConfigSerializer;
 import com.openshift.restclient.model.template.ITemplate;
 import org.jboss.dmr.ModelNode;
 import org.json.JSONObject;
@@ -15,7 +18,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.IOException;
+import java.io.StringReader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,15 +35,29 @@ public class OpenShiftClientSnippetsTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenShiftClientSnippetsTest.class);
 
+    private IUser getUserFromKubeConfig() throws IOException {
+        String userHome = System.getProperty("user.home");
+        Path kubeConfigPath = Paths.get(userHome + "/.kube/config");
+        byte[] bytes = Files.readAllBytes(kubeConfigPath);
+        String kubeConfigStr = new String(bytes);
+
+        StringReader kubeConfigReader = new StringReader(kubeConfigStr);
+
+        KubeClientConfigSerializer serializer = new KubeClientConfigSerializer();
+        IKubeClientConfig config = serializer.loadKubeClientConfig(kubeConfigReader);
+
+        return config.getUsers().stream().filter(u -> u.getToken() != null).findFirst().get();
+    }
+
     @Test
     void process() throws Exception {
+        IUser user = getUserFromKubeConfig();
         IClient client = new ClientBuilder("")
-                .withUserName("")
+                .withUserName(user.getName())
                 .build();
-        client.getAuthorizationContext().setToken("");
+        client.getAuthorizationContext().setToken(user.getToken());
 
-
-        String yaml = new String(Files.readAllBytes(Paths.get(getClass().getResource("/valid-test-data/apps/example-app/template/app.v1.yaml").toURI())));
+        String yaml = new String(Files.readAllBytes(Paths.get(getClass().getResource("/samples/testrepo1/apps/example-app/template/app.v1.yaml").toURI())));
         Object load = new Yaml().load(yaml);
         String templateJson = new JSONObject((Map<String, Object>) load).toString();
         ModelNode node = ModelNode.fromJSONString(templateJson);

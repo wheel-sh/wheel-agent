@@ -16,7 +16,7 @@ class AppsConfigReaderTest {
 
     @Test
     void readAllApps() throws IOException, URISyntaxException {
-        Path appsDir = Paths.get(getClass().getResource("/valid-test-data/apps/").toURI());
+        Path appsDir = Paths.get(getClass().getResource("/samples/testrepo1/apps/").toURI());
         AppsConfigReader appsConfigReader = new AppsConfigReader();
 
         List<App> apps = appsConfigReader.readAllApps(appsDir);
@@ -40,7 +40,7 @@ class AppsConfigReaderTest {
 
     @Test
     void readAllApps_IOException_Logged() throws URISyntaxException, IOException {
-        Path appsDir = Paths.get(getClass().getResource("/broken-test-data/apps/").toURI());
+        Path appsDir = Paths.get(getClass().getResource("/samples/broken-test-data/apps/").toURI());
         AppsConfigReader appsConfigReader = new AppsConfigReader();
 
         List<App> apps = appsConfigReader.readAllApps(appsDir);
