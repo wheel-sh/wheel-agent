@@ -18,10 +18,12 @@ import java.io.InputStream;
 public enum Samples {
 
 
-    V1_BUILDCONFIG_PIPELINE("openshift3/v1_buildconfig_pipeline.json");
+    TEMPLATE1("testrepo1/apps/example-app/template/app.v1.yaml"),
+    NAMESPACE1("testrepo1/apps/example-app/namespace/test.yaml");
 
     private static final String SAMPLES_FOLDER = "/samples/";
     public static final String TESTREPO1_PATH = SAMPLES_FOLDER + "testrepo1/";
+    public static final String TESTREPO2_PATH = SAMPLES_FOLDER + "testrepo2/";
 
     private String filePath;
 

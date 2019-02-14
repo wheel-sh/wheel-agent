@@ -2,6 +2,7 @@ package sh.wheel.gitops.agent.repository;
 
 import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.model.App;
+import sh.wheel.gitops.agent.testutil.Samples;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -16,7 +17,7 @@ class AppsConfigReaderTest {
 
     @Test
     void readAllApps() throws IOException, URISyntaxException {
-        Path appsDir = Paths.get(getClass().getResource("/samples/testrepo1/apps/").toURI());
+        Path appsDir = Paths.get(getClass().getResource(Samples.TESTREPO1_PATH + "apps/").toURI());
         AppsConfigReader appsConfigReader = new AppsConfigReader();
 
         List<App> apps = appsConfigReader.readAllApps(appsDir);
@@ -40,7 +41,7 @@ class AppsConfigReaderTest {
 
     @Test
     void readAllApps_IOException_Logged() throws URISyntaxException, IOException {
-        Path appsDir = Paths.get(getClass().getResource("/samples/broken-test-data/apps/").toURI());
+        Path appsDir = Paths.get(getClass().getResource(Samples.TESTREPO2_PATH + "apps/").toURI());
         AppsConfigReader appsConfigReader = new AppsConfigReader();
 
         List<App> apps = appsConfigReader.readAllApps(appsDir);
