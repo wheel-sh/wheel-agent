@@ -10,18 +10,18 @@ import com.openshift.restclient.model.kubeclient.KubeClientConfigSerializer;
 import javax.el.PropertyNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.UncheckedIOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
-import java.net.ProxySelector;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class ClientHelper {
 
-    public static final int DEFAULT_PROXY_PORT = 3128;
+    private static final int DEFAULT_PROXY_PORT = 3128;
 
-    public IClient createClient() {
+    public static IClient createClient() {
         String openshiftUrl = System.getProperty("openshift.url");
         String proxyHost = System.getProperty("http.proxyHost");
         String proxyPort = System.getProperty("http.proxyPort");
@@ -30,7 +30,7 @@ public class ClientHelper {
         }
         ClientBuilder clientBuilder = new ClientBuilder(openshiftUrl);
 
-        if(proxyHost != null || !proxyHost.isEmpty()) {
+        if (proxyHost != null && !proxyHost.isEmpty()) {
             int port = DEFAULT_PROXY_PORT;
             if(proxyPort != null && !proxyPort.isEmpty()) {
                 port = Integer.valueOf(proxyPort);
@@ -45,7 +45,7 @@ public class ClientHelper {
         return client;
     }
 
-    private IUser loadUserWithTokenFromKubeconfig(String clusterName) {
+    private static IUser loadUserWithTokenFromKubeconfig(String clusterName) {
         try {
             String userHome = System.getProperty("user.home");
             Path kubeConfigPath = Paths.get(userHome + "/.kube/config");
@@ -54,12 +54,11 @@ public class ClientHelper {
             StringReader configReader = new StringReader(config);
             KubeClientConfigSerializer serializer = new KubeClientConfigSerializer();
             IKubeClientConfig iKubeClientConfig = serializer.loadKubeClientConfig(configReader);
-            ICluster iCluster = iKubeClientConfig.getClusters().stream().filter(c -> c.getServer().contains(clusterName)).findFirst().get();
+            ICluster iCluster = iKubeClientConfig.getClusters().stream().filter(c -> c.getServer().contains(clusterName)).findFirst().orElseThrow(() -> new IllegalArgumentException("Cluster " + clusterName + " in ~/.kube/config not found."));
             String name = iCluster.getName();
-            return iKubeClientConfig.getUsers().stream().filter(u -> u.getName().endsWith(name)).findFirst().get();
+            return iKubeClientConfig.getUsers().stream().filter(u -> u.getName().endsWith(name)).findFirst().orElseThrow(() -> new IllegalArgumentException("No user found for cluster " + clusterName));
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new UncheckedIOException(e);
         }
-        return null;
     }
 }

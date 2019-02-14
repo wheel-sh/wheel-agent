@@ -4,6 +4,14 @@ public class ParameterConfig {
     private String name;
     private String value;
 
+    public ParameterConfig() {
+    }
+
+    public ParameterConfig(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
+
     public String getName() {
         return name;
     }
