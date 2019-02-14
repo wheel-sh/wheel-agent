@@ -4,3 +4,4 @@
 *.project
 target/
 .attach_pid*
+.swp
