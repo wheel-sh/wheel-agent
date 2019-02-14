@@ -1,14 +1,3 @@
-/******************************************************************************* 
- * Copyright (c) 2014-2015 Red Hat, Inc. 
- * Distributed under license by Red Hat, Inc. All rights reserved. 
- * This program is made available under the terms of the 
- * Eclipse Public License v1.0 which accompanies this distribution, 
- * and is available at http://www.eclipse.org/legal/epl-v10.html 
- *
- * Contributors: 
- * Red Hat, Inc. - initial API and implementation 
- ******************************************************************************/
-
 package sh.wheel.gitops.agent.testutil;
 
 import org.apache.commons.io.IOUtils;
@@ -25,7 +14,7 @@ public enum Samples {
     public static final String TESTREPO1_PATH = SAMPLES_FOLDER + "testrepo1/";
     public static final String TESTREPO2_PATH = SAMPLES_FOLDER + "testrepo2/";
 
-    private String filePath;
+    private final String filePath;
 
     Samples(String fileName) {
         this.filePath = SAMPLES_FOLDER + fileName;

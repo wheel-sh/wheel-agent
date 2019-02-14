@@ -18,7 +18,7 @@ public class AppsConfigReader {
     public static final String BUILD_CONFIG_DIR = "build/";
     public static final String NAMESPACE_CONFIG_DIR = "namespace/";
     public static final String TEMPLATE_DIR = "template/";
-    private GenericYamlDeserializer deserializer = new GenericYamlDeserializer();
+    private final GenericYamlDeserializer deserializer = new GenericYamlDeserializer();
 
     public List<App> readAllApps(Path appsDir) throws IOException {
         List<Path> appDirs = Files.list(appsDir).collect(Collectors.toList());

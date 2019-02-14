@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @Disabled
+@SuppressWarnings("all")
 public class OpenShiftClientSnippetsTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenShiftClientSnippetsTest.class);
