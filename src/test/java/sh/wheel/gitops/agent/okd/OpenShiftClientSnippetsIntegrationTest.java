@@ -28,4 +28,43 @@ public class OpenShiftClientSnippetsIntegrationTest {
         osClient.templates().load(ReplaceValueStream.replaceValues(this.getClass().getResourceAsStream("/samples/testrepo1/apps/example-app/template/app.v1.yaml"), params)).processLocally(params).getItems().forEach(p -> osClient.resource(p).inNamespace("test2").createOrReplace());
         System.out.println();
     }
+
+    /*
+
+                ResourceKind.BUILD,
+            ResourceKind.BUILD_CONFIG,
+            ResourceKind.DEPLOYMENT_CONFIG,
+            ResourceKind.IMAGE_STREAM,
+            ResourceKind.IMAGE_STREAM_TAG,
+//            ResourceKind.IMAGE_STREAM_IMPORT,
+//            ResourceKind.OAUTH_ACCESS_TOKEN,
+//            ResourceKind.OAUTH_AUTHORIZE_TOKEN,
+//            ResourceKind.OAUTH_CLIENT,
+//            ResourceKind.OAUTH_CLIENT_AUTHORIZATION,
+//            ResourceKind.POLICY,
+//            ResourceKind.POLICY_BINDING,
+//            ResourceKind.PROJECT,
+//            ResourceKind.PROJECT_REQUEST,
+            ResourceKind.ROLE,
+            ResourceKind.ROLE_BINDING,
+            ResourceKind.ROUTE,
+            ResourceKind.TEMPLATE,
+//            ResourceKind.USER,
+//            ResourceKind.GROUP,
+//            ResourceKind.IDENTITY,
+            // Kubernetes Kinds
+            ResourceKind.EVENT,
+            ResourceKind.LIMIT_RANGE,
+            ResourceKind.POD,
+            ResourceKind.PVC,
+//            ResourceKind.PERSISTENT_VOLUME,
+            ResourceKind.REPLICATION_CONTROLLER,
+            ResourceKind.RESOURCE_QUOTA,
+            ResourceKind.SERVICE,
+            ResourceKind.SECRET,
+            ResourceKind.SERVICE_ACCOUNT,
+            ResourceKind.CONFIG_MAP
+
+
+     */
 }
