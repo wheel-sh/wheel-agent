@@ -75,9 +75,9 @@
             <artifactId>jaxrs-jsonb</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.openshift</groupId>
-            <artifactId>openshift-restclient-java</artifactId>
-            <version>7.0.0.Final</version>
+            <groupId>io.fabric8</groupId>
+            <artifactId>openshift-client</artifactId>
+            <version>4.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>

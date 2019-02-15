@@ -1,8 +1,9 @@
 package sh.wheel.gitops.agent.testutil;
 
-import org.apache.commons.io.IOUtils;
-
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.stream.Collectors;
 
 public enum Samples {
 
@@ -25,14 +26,14 @@ public enum Samples {
     }
 
     public String getContentAsString() {
-        String content = null;
         try {
-            final InputStream contentStream = Samples.class.getResourceAsStream(filePath);
-            content = IOUtils.toString(contentStream, "UTF-8");
+            InputStream resourceAsStream = Samples.class.getResourceAsStream(filePath);
+            try (BufferedReader buffer = new BufferedReader(new InputStreamReader(resourceAsStream))) {
+                return buffer.lines().collect(Collectors.joining("\n"));
+            }
         } catch (Throwable e) {
             e.printStackTrace();
             throw new RuntimeException("Could not read file " + filePath + ": " + e.getMessage());
         }
-        return content;
     }
 }
