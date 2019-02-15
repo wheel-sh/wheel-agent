@@ -1,16 +1,8 @@
 package sh.wheel.gitops.agent.okd;
 
-import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
-import io.fabric8.kubernetes.client.dsl.Resource;
 import io.fabric8.kubernetes.client.utils.ReplaceValueStream;
-import io.fabric8.openshift.api.model.DoneableProject;
-import io.fabric8.openshift.api.model.Project;
-import io.fabric8.openshift.api.model.ProjectList;
 import io.fabric8.openshift.client.DefaultOpenShiftClient;
 import io.fabric8.openshift.client.OpenShiftClient;
-import io.fabric8.openshift.client.OpenShiftConfig;
-import io.fabric8.openshift.client.OpenShiftConfigBuilder;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -21,9 +13,9 @@ import java.util.Map;
 
 @Disabled
 @SuppressWarnings("all")
-public class OpenShiftClientSnippetsTest {
+public class OpenShiftClientSnippetsIntegrationTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(OpenShiftClientSnippetsTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OpenShiftClientSnippetsIntegrationTest.class);
 
     @Test
     void name() {
