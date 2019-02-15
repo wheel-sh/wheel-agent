@@ -2,7 +2,6 @@ package sh.wheel.gitops.agent.okd;
 
 import com.openshift.internal.restclient.model.template.Template;
 import com.openshift.restclient.IClient;
-import com.openshift.restclient.capability.CapabilityVisitor;
 import com.openshift.restclient.capability.server.ITemplateProcessing;
 import com.openshift.restclient.model.template.ITemplate;
 import org.jboss.dmr.ModelNode;
@@ -17,7 +16,6 @@ public class TemplateProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(TemplateProcessor.class);
 
-
     public ITemplate process(String templateStr, List<ParameterConfig> templateParameters, String namespace, IClient client) {
         ModelNode node = YamlUtil.toModelNode(templateStr);
         Template template = createTemplateAndApplyParameters(node, templateParameters, client);
@@ -25,18 +23,11 @@ public class TemplateProcessor {
     }
 
     private ITemplate processTemplate(Template template, IClient client, String namespace) {
-        final ITemplate[] processedTemplate = {null};
-        client.accept(new CapabilityVisitor<ITemplateProcessing, Object>() {
-
-            @Override
-            public Object visit(ITemplateProcessing capability) {
-                LOG.debug("Processing template: {}", template.toJson());
-                final int items = template.getObjects().size();
-                processedTemplate[0] = capability.process(template, namespace);
-                return null;
-            }
-        }, new Object());
-        return processedTemplate[0];
+        if (client.supports(ITemplateProcessing.class)) {
+            ITemplateProcessing templateProcessing = client.getCapability(ITemplateProcessing.class);
+            return templateProcessing.process(template, namespace);
+        }
+        throw new UnsupportedOperationException();
     }
 
 
@@ -45,7 +36,6 @@ public class TemplateProcessor {
         for (ParameterConfig parameter : parameters) {
             template.updateParameter(parameter.getName(), parameter.getValue());
         }
-        template.setNamespace(null);
         return template;
     }
 

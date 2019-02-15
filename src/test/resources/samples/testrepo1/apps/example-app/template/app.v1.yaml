@@ -59,7 +59,6 @@ objects:
       labels:
         app: example-app
       name: example-app
-      namespace: demo
     spec:
       port:
         targetPort: 8080-tcp
