@@ -35,9 +35,9 @@ class ProjectResourceLoaderIntegrationTest {
         DefaultOpenShiftClient client = new DefaultOpenShiftClient();
         ProjectResourceLoader projectResourceLoader = new ProjectResourceLoader();
 
-        Map<Class, List<HasMetadata>> test2 = projectResourceLoader.loadAll("test2", client);
+        Map<String, List<HasMetadata>> map = projectResourceLoader.loadAll("test2", client);
 
-        assertNotNull(test2);
+        assertNotNull(map);
     }
 
     @Test
@@ -52,15 +52,7 @@ class ProjectResourceLoaderIntegrationTest {
 
         ProjectResourceLoader projectResourceLoader = new ProjectResourceLoader();
 
-        Map<Class, List<HasMetadata>> test2 = projectResourceLoader.loadAll("test2", client);
-        ObjectMapper mapper = new ObjectMapper();
-        for (HasMetadata item : items) {
-            if(test2.containsKey(item.getClass())) {
-                JsonNode jsonNode = mapper.valueToTree(item);
-                HasMetadata hasMetadata = test2.get(item.getClass()).get(0);
-                JsonNode jsonNode1 = mapper.valueToTree(hasMetadata);
-                System.out.println();
-            }
-        }
+        projectResourceLoader.loadAll("test2", client);
+
     }
 }

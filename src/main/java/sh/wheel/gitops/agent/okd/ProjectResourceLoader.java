@@ -14,18 +14,17 @@ import java.util.stream.Collectors;
 public class ProjectResourceLoader {
 
 
-    public Map<Class, List<HasMetadata>> loadAll(String namespace, OpenShiftClient client) {
+    public Map<String, List<HasMetadata>> loadAll(String namespace, OpenShiftClient client) {
         List<KubernetesResourceList> resources = new ArrayList<>();
         resources.add(client.routes().inNamespace(namespace).list());
         resources.add(client.services().inNamespace(namespace).list());
         resources.add(client.deploymentConfigs().inNamespace(namespace).list());
 
-        Map<Class, List<HasMetadata>> collect = resources.stream().filter(rl -> rl.getItems().size() > 0).collect(
+        return resources.stream().filter(rl -> rl.getItems().size() > 0).collect(
                 Collectors.toMap(
-                        o -> o.getItems().get(0).getClass(),
+                        o -> o.getItems().get(0).getClass().getSimpleName(),
                         o -> o.getItems())
         );
-        return collect;
     }
 
     public ProjectResources getAll(String namespace, OpenShiftClient client) {
