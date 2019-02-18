@@ -9,7 +9,6 @@ public class NamespaceConfig {
     private ResourceConfig requests;
     private ResourceConfig limits;
     private String templateFile;
-    private String template;
     private List<ParameterConfig> parameters;
 
     public String getName() {
@@ -50,14 +49,6 @@ public class NamespaceConfig {
 
     public void setTemplateFile(String templateFile) {
         this.templateFile = templateFile;
-    }
-
-    public String getTemplate() {
-        return template;
-    }
-
-    public void setTemplate(String template) {
-        this.template = template;
     }
 
     public List<ParameterConfig> getParameters() {

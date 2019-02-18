@@ -34,9 +34,9 @@ class ResourceDifferenceEvaluatorIntegrationTest {
         HasMetadata projectRoute = projectResources.get("Route").get(0);
 
 
-        boolean serviceChanged = new ResourceDifferenceEvaluator().evaluateDiff(templateService, projectService);
-        boolean dcChanged = new ResourceDifferenceEvaluator().evaluateDiff(templateDeploymentConfig, projectDeploymentConfig);
-        boolean routeChanged = new ResourceDifferenceEvaluator().evaluateDiff(templateRoute, projectRoute);
+        boolean serviceChanged = new ResourceDifferenceEvaluator().evaluateDiff(templateService, projectService).size() > 0;
+        boolean dcChanged = new ResourceDifferenceEvaluator().evaluateDiff(templateDeploymentConfig, projectDeploymentConfig).size() > 0;
+        boolean routeChanged = new ResourceDifferenceEvaluator().evaluateDiff(templateRoute, projectRoute).size() > 0;
 
         Assert.assertFalse(serviceChanged);
         Assert.assertFalse(dcChanged);

@@ -38,16 +38,6 @@ public class AppsConfigReader {
         AppConfig appConfig = deserializer.deserialize(appDir.resolve(APP_CONFIG), AppConfig.class);
         List<BuildConfig> buildConfigs = deserializer.readDirectory(appDir.resolve(BUILD_CONFIG_DIR), BuildConfig.class);
         List<NamespaceConfig> namespaceConfigs = deserializer.readDirectory(appDir.resolve(NAMESPACE_CONFIG_DIR), NamespaceConfig.class);
-        return createApp(appConfig, buildConfigs, namespaceConfigs, appDir);
-    }
-
-    private App createApp(AppConfig appConfig, List<BuildConfig> buildConfigs, List<NamespaceConfig> namespaceConfigs, Path appDir) throws IOException {
-        for (NamespaceConfig namespaceConfig : namespaceConfigs) {
-            String templateFile = namespaceConfig.getTemplateFile();
-            Path templateFilePath = appDir.resolve(TEMPLATE_DIR).resolve(templateFile);
-            String template = new String(Files.readAllBytes(templateFilePath));
-            namespaceConfig.setTemplate(template);
-        }
         return new App(appConfig, buildConfigs, namespaceConfigs, appDir);
     }
 

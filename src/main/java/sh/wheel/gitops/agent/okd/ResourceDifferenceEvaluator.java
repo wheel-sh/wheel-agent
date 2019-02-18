@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ResourceDifferenceEvaluator {
 
-    public boolean evaluateDiff(HasMetadata templateResource, HasMetadata actualResource) {
+    public List<JsonNode> evaluateDiff(HasMetadata templateResource, HasMetadata actualResource) {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode templateNodeTree = mapper.valueToTree(templateResource);
         JsonNode actualResourceNodeTree = mapper.valueToTree(actualResource);
@@ -23,7 +23,7 @@ public class ResourceDifferenceEvaluator {
                 relevantDiffs.add(diff);
             }
         }
-        return relevantDiffs.size() > 0;
+        return relevantDiffs;
     }
 
     private boolean isAddedByDefault(JsonNode diff) {

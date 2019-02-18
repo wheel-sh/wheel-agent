@@ -41,6 +41,8 @@ objects:
         deploymentconfig: example-app
       strategy:
         type: Rolling
+      triggers:
+        - type: ConfigChange
       template:
         metadata:
           labels:

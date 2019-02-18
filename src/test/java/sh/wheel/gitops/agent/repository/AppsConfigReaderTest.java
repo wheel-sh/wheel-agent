@@ -32,7 +32,6 @@ class AppsConfigReaderTest {
         assertNotNull(app.getBuildConfigs().get(0).getName());
         assertNotNull(app.getNamespaceConfigs().get(0).getName());
         assertNotNull(app.getNamespaceConfigs().get(0).getTemplateFile());
-        assertNotNull(app.getNamespaceConfigs().get(0).getTemplate());
         assertNotNull(app.getNamespaceConfigs().get(0).getRequests());
         assertNotNull(app.getNamespaceConfigs().get(0).getLimits());
         assertNotNull(app.getNamespaceConfigs().get(0).getParameters());
