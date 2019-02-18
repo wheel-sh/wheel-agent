@@ -11,6 +11,7 @@ parameters:
     required: true
   - name: REPLICA_COUNT
     displayName: Replicas
+    value: 1
     required: true
 objects:
   - apiVersion: v1
@@ -34,7 +35,7 @@ objects:
         app: example-app
       name: example-app
     spec:
-      replicas: ${REPLICA_COUNT}
+      replicas: ${{REPLICA_COUNT}}
       selector:
         app: example-app
         deploymentconfig: example-app

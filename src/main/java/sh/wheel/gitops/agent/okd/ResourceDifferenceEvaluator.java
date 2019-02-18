@@ -9,9 +9,9 @@ import io.fabric8.kubernetes.api.model.HasMetadata;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TemplateResourceComparator {
+public class ResourceDifferenceEvaluator {
 
-    public boolean isChanged(HasMetadata templateResource, HasMetadata actualResource) {
+    public boolean evaluateDiff(HasMetadata templateResource, HasMetadata actualResource) {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode templateNodeTree = mapper.valueToTree(templateResource);
         JsonNode actualResourceNodeTree = mapper.valueToTree(actualResource);
