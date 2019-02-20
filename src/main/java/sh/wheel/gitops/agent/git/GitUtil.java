@@ -1,0 +1,30 @@
+package sh.wheel.gitops.agent.git;
+
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.PullResult;
+import org.eclipse.jgit.api.errors.GitAPIException;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+public class GitUtil {
+
+    public static void checkoutLatest(String gitUrl, String branch, Path target) throws GitAPIException, IOException {
+        if (!Files.exists(target)) {
+            Git.cloneRepository()
+                    .setURI(gitUrl)
+                    .setBranch(branch)
+                    .setDirectory(target.toFile())
+                    .call();
+        } else {
+            Git git = Git.open(target.toFile());
+            PullResult pull = git
+                    .pull()
+                    .setRemoteBranchName(branch)
+                    .setRebase(true)
+                    .call();
+        }
+    }
+
+}
