@@ -24,6 +24,10 @@ public class ProjectResources {
     private ProjectResources() {
     }
 
+    public static ProjectResourcesBuilder newBuilder() {
+        return new ProjectResourcesBuilder();
+    }
+
     public BuildConfigList getBuildConfigList() {
         return buildConfigList;
     }
@@ -86,10 +90,6 @@ public class ProjectResources {
 
     public ConfigMapList getConfigMapList() {
         return configMapList;
-    }
-
-    public static ProjectResourcesBuilder newBuilder() {
-        return new ProjectResourcesBuilder();
     }
 
     public static final class ProjectResourcesBuilder {

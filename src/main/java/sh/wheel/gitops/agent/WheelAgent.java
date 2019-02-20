@@ -2,13 +2,10 @@ package sh.wheel.gitops.agent;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.fabric8.kubernetes.api.model.HasMetadata;
-import io.fabric8.openshift.api.model.DeploymentConfig;
-import io.fabric8.openshift.api.model.DoneableDeploymentConfig;
 import io.fabric8.openshift.api.model.Project;
 import io.fabric8.openshift.api.model.ProjectBuilder;
 import io.fabric8.openshift.client.DefaultOpenShiftClient;
 import io.fabric8.openshift.client.OpenShiftClient;
-import io.fabric8.openshift.client.dsl.DeployableScalableResource;
 import sh.wheel.gitops.agent.config.NamespaceConfig;
 import sh.wheel.gitops.agent.config.ParameterConfig;
 import sh.wheel.gitops.agent.model.App;

@@ -7,8 +7,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class WheelAgentIntegrationTest {
 
     @Test

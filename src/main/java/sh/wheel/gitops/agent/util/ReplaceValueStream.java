@@ -16,15 +16,15 @@ import java.util.Map;
 public class ReplaceValueStream {
     private final Map<String, String> valuesMap;
 
+    public ReplaceValueStream(Map<String, String> valuesMap) {
+        this.valuesMap = valuesMap;
+    }
+
     /**
      * Returns a stream with the template parameter expressions replaced
      */
     public static InputStream replaceValues(InputStream is, Map<String, String> valuesMap) {
         return new ReplaceValueStream(valuesMap).createInputStream(is);
-    }
-
-    public ReplaceValueStream(Map<String, String> valuesMap) {
-        this.valuesMap = valuesMap;
     }
 
     public InputStream createInputStream(InputStream is) {

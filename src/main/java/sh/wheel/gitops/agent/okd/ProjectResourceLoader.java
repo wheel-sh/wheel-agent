@@ -13,7 +13,8 @@ public class ProjectResourceLoader {
 
 
     public Map<String, List<HasMetadata>> loadAll(String namespace, OpenShiftClient client) {
-        Map<String, List<HasMetadata>> resources = new HashMap<>();;
+        Map<String, List<HasMetadata>> resources = new HashMap<>();
+        ;
         resources.put("Route", Collections.unmodifiableList(client.routes().inNamespace(namespace).list().getItems()));
         resources.put("Service", Collections.unmodifiableList(client.services().inNamespace(namespace).list().getItems()));
         resources.put("DeploymentConfig", Collections.unmodifiableList(client.deploymentConfigs().inNamespace(namespace).list().getItems()));
