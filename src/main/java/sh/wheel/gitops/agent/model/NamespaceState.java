@@ -6,19 +6,19 @@ import java.util.List;
 import java.util.Map;
 
 public class NamespaceState {
-    Map<String, List<HasMetadata>> resourcesByType;
+    Map<String, List<HasMetadata>> resourcesByKind;
     private String name;
 
-    public NamespaceState(String name, Map<String, List<HasMetadata>> resourcesByType) {
+    public NamespaceState(String name, Map<String, List<HasMetadata>> resourcesByKind) {
         this.name = name;
-        this.resourcesByType = resourcesByType;
+        this.resourcesByKind = resourcesByKind;
     }
 
     public String getName() {
         return name;
     }
 
-    public Map<String, List<HasMetadata>> getResourcesByType() {
-        return resourcesByType;
+    public Map<String, List<HasMetadata>> getResourcesByKind() {
+        return resourcesByKind;
     }
 }

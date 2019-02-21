@@ -26,36 +26,36 @@ public class WheelAgent {
 
 
     public void start(Path repositoryPath) throws IOException {
-        OpenShiftClient client = new DefaultOpenShiftClient();
-        Path appsPath = repositoryPath.resolve("apps");
-        List<App> apps = new AppsConfigReader().readAllApps(appsPath);
-        for (App app : apps) {
-            for (NamespaceConfig namespaceConfig : app.getNamespaceConfigs()) {
-                String templateFile = namespaceConfig.getTemplateFile();
-                Path tplPath = app.getAppDir().resolve(TEMPLATE_DIR).resolve(templateFile);
-                Map<String, String> params = namespaceConfig.getParameters().stream().collect(Collectors.toMap(ParameterConfig::getName, ParameterConfig::getValue));
-                if (client.projects().withName(namespaceConfig.getName()).get() == null) {
-                    Project project = client.projects().create(new ProjectBuilder()
-                            .withNewMetadata()
-                            .withName(namespaceConfig.getName()).endMetadata()
-                            .build());
-                }
-                List<HasMetadata> processedTemplateItems = new LocalTemplateProcessor().getProcessedTemplateItems(tplPath, params, client);
-                Map<String, List<HasMetadata>> projectResources = new ProjectResourceLoader().loadAll(namespaceConfig.getName(), client);
-                for (HasMetadata processedTemplateItem : processedTemplateItems) {
-                    List<HasMetadata> projectResourceList = projectResources.get(processedTemplateItem.getKind());
-                    boolean create = true;
-                    if (projectResourceList != null && projectResourceList.size() > 0) {
-                        HasMetadata projectResource = projectResourceList.stream().filter(pr -> pr.getMetadata().getName().equals(processedTemplateItem.getMetadata().getName())).findFirst().get();
-                        List<JsonNode> jsonNodes = new ResourceDifferenceEvaluator().evaluateDiff(processedTemplateItem, projectResource);
-                        create = jsonNodes.size() > 0;
-                    }
-                    if (create) {
-                        HasMetadata orReplace = client.resource(processedTemplateItem).inNamespace(namespaceConfig.getName()).createOrReplace();
-                    }
-                }
-            }
-        }
+//        OpenShiftClient client = new DefaultOpenShiftClient();
+//        Path appsPath = repositoryPath.resolve("apps");
+//        List<App> apps = new AppsConfigReader().readAllApps(appsPath);
+//        for (App app : apps) {
+//            for (NamespaceConfig namespaceConfig : app.getNamespaceConfigs()) {
+//                String templateFile = namespaceConfig.getTemplateFile();
+//                Path tplPath = app.getAppDir().resolve(TEMPLATE_DIR).resolve(templateFile);
+//                Map<String, String> params = namespaceConfig.getParameters().stream().collect(Collectors.toMap(ParameterConfig::getName, ParameterConfig::getValue));
+//                if (client.projects().withName(namespaceConfig.getName()).get() == null) {
+//                    Project project = client.projects().create(new ProjectBuilder()
+//                            .withNewMetadata()
+//                            .withName(namespaceConfig.getName()).endMetadata()
+//                            .build());
+//                }
+//                List<HasMetadata> processedTemplateItems = new LocalTemplateProcessor().getProcessedTemplateItems(tplPath, params, client);
+//                Map<String, List<HasMetadata>> projectResources = new ProjectResourceLoader().getNamespaceState(namespaceConfig.getName(), client);
+//                for (HasMetadata processedTemplateItem : processedTemplateItems) {
+//                    List<HasMetadata> projectResourceList = projectResources.get(processedTemplateItem.getKind());
+//                    boolean create = true;
+//                    if (projectResourceList != null && projectResourceList.size() > 0) {
+//                        HasMetadata projectResource = projectResourceList.stream().filter(pr -> pr.getMetadata().getName().equals(processedTemplateItem.getMetadata().getName())).findFirst().get();
+//                        List<JsonNode> jsonNodes = new ResourceDifferenceEvaluator().evaluateDiff(processedTemplateItem, projectResource);
+//                        create = jsonNodes.size() > 0;
+//                    }
+//                    if (create) {
+//                        HasMetadata orReplace = client.resource(processedTemplateItem).inNamespace(namespaceConfig.getName()).createOrReplace();
+//                    }
+//                }
+//            }
+//        }
     }
 
 }

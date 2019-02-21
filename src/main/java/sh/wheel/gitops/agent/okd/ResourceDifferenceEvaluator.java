@@ -5,25 +5,60 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.zjsonpatch.DiffFlags;
 import com.flipkart.zjsonpatch.JsonDiff;
 import io.fabric8.kubernetes.api.model.HasMetadata;
+import sh.wheel.gitops.agent.model.NamespaceDifferences;
+import sh.wheel.gitops.agent.model.NamespaceState;
+import sh.wheel.gitops.agent.model.Operation;
+import sh.wheel.gitops.agent.model.ResourceDifference;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ResourceDifferenceEvaluator {
 
-    public List<JsonNode> evaluateDiff(HasMetadata templateResource, HasMetadata actualResource) {
+    public NamespaceDifferences evaluateDifference(NamespaceState actual, NamespaceState expected) {
+        Map<String, List<HasMetadata>> expectedByKind = expected.getResourcesByKind();
+        Map<String, List<HasMetadata>> actualByKind = actual.getResourcesByKind();
+        Set<String> availableStates = new HashSet<>();
+        availableStates.addAll(expectedByKind.keySet());
+        availableStates.addAll(actualByKind.keySet());
+        for (String availableState : availableStates) {
+            Map<String, HasMetadata> expectedResourceByName = expectedByKind.get(availableState).stream().collect(Collectors.toMap(r -> r.getMetadata().getName(), Function.identity()));
+            Map<String, HasMetadata> actualResourceByName = actualByKind.get(availableState).stream().collect(Collectors.toMap(r -> r.getMetadata().getName(), Function.identity()));
+            Set<String> availableResourceNames = new HashSet<>();
+            availableResourceNames.addAll(expectedResourceByName.keySet());
+            availableResourceNames.addAll(actualResourceByName.keySet());
+            for (String availableResourceName : availableResourceNames) {
+                HasMetadata expectedResource = expectedResourceByName.get(availableResourceName);
+                HasMetadata actualResource = actualResourceByName.get(availableResourceName);
+                evaluateDiff(expectedResource, actualResource);
+            }
+
+        }
+        return null;
+    }
+
+
+    public List<ResourceDifference> evaluateDiff(HasMetadata expectedResource, HasMetadata actualResource) {
+        if(expectedResource == null && actualResource == null) {
+            throw new IllegalStateException("Cannot evaluate difference between two null resources");
+        }
+        HasMetadata referenceResource = expectedResource != null ? expectedResource : actualResource;
+        String resourceName = referenceResource.getMetadata().getName();
+        String resourceKind = referenceResource.getKind();
+
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode templateNodeTree = mapper.valueToTree(templateResource);
-        JsonNode actualResourceNodeTree = mapper.valueToTree(actualResource);
-        JsonNode diffs = JsonDiff.asJson(templateNodeTree, actualResourceNodeTree, DiffFlags.dontNormalizeOpIntoMoveAndCopy());
-        List<JsonNode> relevantDiffs = new ArrayList<>();
+        JsonNode expectedNodeTree = mapper.valueToTree(expectedResource != null ? expectedResource : new Object());
+        JsonNode actualResourceNodeTree = mapper.valueToTree(actualResource != null ? actualResource : new Object());
+        JsonNode diffs = JsonDiff.asJson(expectedNodeTree, actualResourceNodeTree, DiffFlags.dontNormalizeOpIntoMoveAndCopy());
+        List<ResourceDifference> resourceDifferences = new ArrayList<>();
         for (JsonNode diff : diffs) {
             String path = diff.get("path").textValue();
-            if (!isAddedByDefault(diff) && !isRemoveEmptyNode(diff)) {
-                relevantDiffs.add(diff);
-            }
+            Operation op = Operation.valueOf(diff.get("op").textValue());
+            String value = diff.get("value").textValue();
+            resourceDifferences.add(new ResourceDifference(resourceName, resourceKind, path, value, op));
         }
-        return relevantDiffs;
+        return resourceDifferences;
     }
 
     private boolean isAddedByDefault(JsonNode diff) {
