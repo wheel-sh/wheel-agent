@@ -1,4 +1,4 @@
-package sh.wheel.gitops.agent.repository;
+package sh.wheel.gitops.agent.service;
 
 import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.model.App;
@@ -10,17 +10,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
-class AppsConfigReaderTest {
+class RepositoryConfigServiceTest {
 
     @Test
     void readAllApps() throws IOException, URISyntaxException {
         Path appsDir = Paths.get(getClass().getResource(Samples.TESTREPO1_PATH + "apps/").toURI());
-        AppsConfigReader appsConfigReader = new AppsConfigReader();
+        RepositoryConfigService repositoryConfigService = new RepositoryConfigService();
 
-        List<App> apps = appsConfigReader.readAllApps(appsDir);
+        List<App> apps = repositoryConfigService.readAllApps(appsDir);
         App app = apps.get(0);
 
         assertEquals("example-app", app.getAppConfig().getName());
@@ -41,11 +40,11 @@ class AppsConfigReaderTest {
     @Test
     void readAllApps_IOException_Logged() throws URISyntaxException, IOException {
         Path appsDir = Paths.get(getClass().getResource(Samples.TESTREPO2_PATH + "apps/").toURI());
-        AppsConfigReader appsConfigReader = new AppsConfigReader();
+        RepositoryConfigService repositoryConfigService = new RepositoryConfigService();
 
-        List<App> apps = appsConfigReader.readAllApps(appsDir);
+        List<App> apps = repositoryConfigService.readAllApps(appsDir);
 
         assertEquals(0, apps.size());
-
     }
+
 }

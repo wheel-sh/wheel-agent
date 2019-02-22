@@ -3,6 +3,7 @@ package sh.wheel.gitops.agent.git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import sh.wheel.gitops.agent.util.GitUtil;
 
 import java.io.IOException;
 import java.nio.file.Files;

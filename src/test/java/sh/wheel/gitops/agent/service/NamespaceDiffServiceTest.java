@@ -1,18 +1,10 @@
-package sh.wheel.gitops.agent.okd;
+package sh.wheel.gitops.agent.service;
 
-import io.fabric8.kubernetes.api.model.HasMetadata;
-import io.fabric8.openshift.client.DefaultOpenShiftClient;
-import io.fabric8.openshift.client.OpenShiftClient;
-import org.junit.jupiter.api.Test;
-import sh.wheel.gitops.agent.util.ReplaceValueStream;
+import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+class NamespaceDiffServiceTest {
 
-class ResourceDifferenceEvaluatorIntegrationTest {
-
-//    @Test
+    //    @Test
 //    void compare() {
 //        OpenShiftClient client = new DefaultOpenShiftClient();
 //        Map<String, String> params = new HashMap<>();
@@ -42,4 +34,5 @@ class ResourceDifferenceEvaluatorIntegrationTest {
 //        Assert.assertFalse(routeChanged);
 //
 //    }
+
 }

@@ -1,19 +1,32 @@
-package sh.wheel.gitops.agent.okd;
+package sh.wheel.gitops.agent.service;
 
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.openshift.client.OpenShiftClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import sh.wheel.gitops.agent.model.NamespaceState;
-import sh.wheel.gitops.agent.model.ProjectResources;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ProjectResourceLoader {
+@Service
+public class ProjectResourceService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    public NamespaceState getNamespaceState(String namespace, OpenShiftClient client) {
+    private final OpenShiftClient client;
+
+    @Autowired
+    public ProjectResourceService(OpenShiftClient client) {
+        this.client = client;
+    }
+
+    public NamespaceState getNamespaceState(String namespace) {
         Map<String, List<HasMetadata>> resourcesByType = new HashMap<>();
         resourcesByType.put("Route", Collections.unmodifiableList(client.routes().inNamespace(namespace).list().getItems()));
         resourcesByType.put("Service", Collections.unmodifiableList(client.services().inNamespace(namespace).list().getItems()));
@@ -21,7 +34,7 @@ public class ProjectResourceLoader {
         return new NamespaceState(namespace, resourcesByType);
     }
 
-//    public ProjectResources getAll(String namespace, OpenShiftClient client) {
+    //    public ProjectResources getAll(String namespace, OpenShiftClient client) {
 //        return ProjectResources.newBuilder()
 //                .buildConfigList(client.buildConfigs().inNamespace(namespace).list())
 //                .imageStreamList(client.imageStreams().inNamespace(namespace).list())
@@ -41,5 +54,6 @@ public class ProjectResourceLoader {
 //                .configMapList(client.configMaps().inNamespace(namespace).list())
 //                .build();
 //    }
-}
 
+
+}

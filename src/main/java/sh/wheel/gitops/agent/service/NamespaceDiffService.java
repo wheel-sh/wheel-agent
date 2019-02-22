@@ -1,20 +1,27 @@
-package sh.wheel.gitops.agent.okd;
+package sh.wheel.gitops.agent.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flipkart.zjsonpatch.DiffFlags;
 import com.flipkart.zjsonpatch.JsonDiff;
 import io.fabric8.kubernetes.api.model.HasMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import sh.wheel.gitops.agent.model.NamespaceDifferences;
 import sh.wheel.gitops.agent.model.NamespaceState;
 import sh.wheel.gitops.agent.model.Operation;
 import sh.wheel.gitops.agent.model.ResourceDifference;
 
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class ResourceDifferenceEvaluator {
+@Service
+public class NamespaceDiffService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     public NamespaceDifferences evaluateDifference(NamespaceState actual, NamespaceState expected) {
         Map<String, List<HasMetadata>> expectedByKind = expected.getResourcesByKind();
@@ -40,7 +47,7 @@ public class ResourceDifferenceEvaluator {
 
 
     public List<ResourceDifference> evaluateDiff(HasMetadata expectedResource, HasMetadata actualResource) {
-        if(expectedResource == null && actualResource == null) {
+        if (expectedResource == null && actualResource == null) {
             throw new IllegalStateException("Cannot evaluate difference between two null resources");
         }
         HasMetadata referenceResource = expectedResource != null ? expectedResource : actualResource;

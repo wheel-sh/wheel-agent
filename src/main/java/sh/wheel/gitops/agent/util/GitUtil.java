@@ -1,4 +1,4 @@
-package sh.wheel.gitops.agent.git;
+package sh.wheel.gitops.agent.util;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullResult;

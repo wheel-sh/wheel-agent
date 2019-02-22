@@ -1,4 +1,4 @@
-package sh.wheel.gitops.agent.repository;
+package sh.wheel.gitops.agent.util;
 
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
