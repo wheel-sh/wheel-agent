@@ -4,7 +4,6 @@ import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.openshift.client.DefaultOpenShiftClient;
 import io.fabric8.openshift.client.OpenShiftClient;
 import org.junit.jupiter.api.Test;
-import org.wildfly.common.Assert;
 import sh.wheel.gitops.agent.util.ReplaceValueStream;
 
 import java.util.HashMap;

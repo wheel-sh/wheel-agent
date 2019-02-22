@@ -1,18 +1,15 @@
 package sh.wheel.gitops.agent.rest;
 
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
-@Path("/hello")
+@RestController
 public class HelloWorldEndpoint {
 
-    @GET
-    @Produces("text/plain")
-    public Response doGet() {
-        return Response.ok("Hello from Thorntail!").build();
+    @RequestMapping("/hello")
+    public String doGet() {
+        return "Hello from Spring Boot";
     }
 }
