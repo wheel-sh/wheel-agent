@@ -8,10 +8,7 @@ import io.fabric8.kubernetes.api.model.HasMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import sh.wheel.gitops.agent.model.NamespaceDifferences;
-import sh.wheel.gitops.agent.model.NamespaceState;
-import sh.wheel.gitops.agent.model.Operation;
-import sh.wheel.gitops.agent.model.ResourceDifference;
+import sh.wheel.gitops.agent.model.*;
 
 import java.lang.invoke.MethodHandles;
 import java.util.*;
@@ -26,23 +23,24 @@ public class NamespaceDiffService {
     public NamespaceDifferences evaluateDifference(NamespaceState actual, NamespaceState expected) {
         Map<String, List<HasMetadata>> expectedByKind = expected.getResourcesByKind();
         Map<String, List<HasMetadata>> actualByKind = actual.getResourcesByKind();
-        Set<String> availableStates = new HashSet<>();
-        availableStates.addAll(expectedByKind.keySet());
-        availableStates.addAll(actualByKind.keySet());
-        for (String availableState : availableStates) {
-            Map<String, HasMetadata> expectedResourceByName = expectedByKind.get(availableState).stream().collect(Collectors.toMap(r -> r.getMetadata().getName(), Function.identity()));
-            Map<String, HasMetadata> actualResourceByName = actualByKind.get(availableState).stream().collect(Collectors.toMap(r -> r.getMetadata().getName(), Function.identity()));
+        Set<String> availableKinds = new HashSet<>();
+        availableKinds.addAll(expectedByKind.keySet());
+        availableKinds.addAll(actualByKind.keySet());
+        Map<ResourceKey, List<ResourceDifference>> differences = new HashMap<>();
+        for (String kind : availableKinds) {
+            Map<String, HasMetadata> expectedResourceByName = expectedByKind.get(kind).stream().collect(Collectors.toMap(r -> r.getMetadata().getName(), Function.identity()));
+            Map<String, HasMetadata> actualResourceByName = actualByKind.get(kind).stream().collect(Collectors.toMap(r -> r.getMetadata().getName(), Function.identity()));
             Set<String> availableResourceNames = new HashSet<>();
             availableResourceNames.addAll(expectedResourceByName.keySet());
             availableResourceNames.addAll(actualResourceByName.keySet());
-            for (String availableResourceName : availableResourceNames) {
-                HasMetadata expectedResource = expectedResourceByName.get(availableResourceName);
-                HasMetadata actualResource = actualResourceByName.get(availableResourceName);
-                evaluateDiff(expectedResource, actualResource);
+            for (String name : availableResourceNames) {
+                HasMetadata expectedResource = expectedResourceByName.get(name);
+                HasMetadata actualResource = actualResourceByName.get(name);
+                List<ResourceDifference> resourceDifferences = evaluateDiff(expectedResource, actualResource);
+                differences.put(new ResourceKey(kind, name), resourceDifferences);
             }
-
         }
-        return null;
+        return new NamespaceDifferences(null, differences);
     }
 
 

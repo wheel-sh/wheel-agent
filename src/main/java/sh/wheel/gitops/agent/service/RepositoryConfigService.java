@@ -31,6 +31,11 @@ public class RepositoryConfigService {
 
     private final GenericYamlDeserializer deserializer = new GenericYamlDeserializer();
 
+
+
+
+
+
     public List<App> readAllApps(Path appsDir) throws IOException {
         List<Path> appDirs = Files.list(appsDir).collect(Collectors.toList());
         ArrayList<App> apps = new ArrayList<>();
