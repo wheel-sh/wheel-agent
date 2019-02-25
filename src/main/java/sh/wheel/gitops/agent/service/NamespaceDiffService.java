@@ -2,6 +2,7 @@ package sh.wheel.gitops.agent.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.flipkart.zjsonpatch.DiffFlags;
 import com.flipkart.zjsonpatch.JsonDiff;
 import io.fabric8.kubernetes.api.model.HasMetadata;
@@ -74,4 +75,23 @@ public class NamespaceDiffService {
         JsonNode value = diff.get("value");
         return "remove".equals(diff.get("op").textValue()) && value.isObject() && value.size() == 0;
     }
+
+
+    public static JsonNode merge(JsonNode mainNode, JsonNode updateNode) {
+        updateNode.fieldNames().forEachRemaining(fieldName -> {
+            JsonNode jsonNode = mainNode.get(fieldName);
+            // if field exists and is an embedded object
+            if (jsonNode != null && jsonNode.isObject()) {
+                merge(jsonNode, updateNode.get(fieldName));
+            } else {
+                if (mainNode instanceof ObjectNode) {
+                    // Overwrite field
+                    JsonNode value = updateNode.get(fieldName);
+                    ((ObjectNode) mainNode).replace(fieldName, value);
+                }
+            }
+        });
+        return mainNode;
+    }
+
 }

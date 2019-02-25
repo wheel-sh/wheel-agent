@@ -76,7 +76,7 @@ public class WheelRepositoryService {
     }
 
 
-    public List<App> readAllApps(Path appsDir) throws IOException {
+    List<App> readAllApps(Path appsDir) throws IOException {
         List<Path> appDirs = Files.list(appsDir).collect(Collectors.toList());
         ArrayList<App> apps = new ArrayList<>();
         for (Path appDir : appDirs) {
@@ -90,7 +90,7 @@ public class WheelRepositoryService {
         return apps;
     }
 
-    App readApp(Path appDir) throws IOException {
+    private App readApp(Path appDir) throws IOException {
         AppConfig appConfig = deserializer.deserialize(appDir.resolve(GROUP_CONFIG), AppConfig.class);
         List<BuildConfig> buildConfigs = deserializer.readDirectory(appDir.resolve(BUILD_CONFIG_DIR), BuildConfig.class);
         List<NamespaceConfig> namespaceConfigs = deserializer.readDirectory(appDir.resolve(NAMESPACE_CONFIG_DIR), NamespaceConfig.class);
@@ -112,7 +112,7 @@ public class WheelRepositoryService {
         return groups;
     }
 
-    Group readGroup(Path groupDir) throws IOException {
+    private Group readGroup(Path groupDir) throws IOException {
         GroupConfig groupConfig = deserializer.deserialize(groupDir.resolve(GROUP_CONFIG), GroupConfig.class);
         MembersConfig membersConfig = deserializer.deserialize(groupDir.resolve(GROUP_MEMBERS_CONFIG), MembersConfig.class);
         return new Group(groupConfig, membersConfig);
