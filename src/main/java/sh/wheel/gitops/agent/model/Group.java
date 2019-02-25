@@ -1,16 +1,23 @@
 package sh.wheel.gitops.agent.model;
 
+import sh.wheel.gitops.agent.config.GroupConfig;
+import sh.wheel.gitops.agent.config.MembersConfig;
+
 public class Group {
-    public String name;
 
-    public Group(String name) {
-        this.name = name;
+    private final GroupConfig groupConfig;
+    private final MembersConfig membersConfig;
+
+    public Group(GroupConfig groupConfig, MembersConfig membersConfig) {
+        this.groupConfig = groupConfig;
+        this.membersConfig = membersConfig;
     }
 
-    public Group() {
+    public GroupConfig getGroupConfig() {
+        return groupConfig;
     }
 
-    public String getName() {
-        return name;
+    public MembersConfig getMembersConfig() {
+        return membersConfig;
     }
 }

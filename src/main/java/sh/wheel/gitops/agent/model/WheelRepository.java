@@ -20,7 +20,7 @@ public class WheelRepository {
 
     public static WheelRepository newInstance(List<App> apps, List<Group> groups) {
         Map<String, App> appsMap = apps.stream().collect(Collectors.toMap(a -> a.getAppConfig().getName(), Function.identity()));
-        Map<String, Group> groupsMap = groups.stream().collect(Collectors.toMap(Group::getName, Function.identity()));
+        Map<String, Group> groupsMap = groups.stream().collect(Collectors.toMap(g -> g.getGroupConfig().getName(), Function.identity()));
         return new WheelRepository(appsMap, groupsMap);
     }
 

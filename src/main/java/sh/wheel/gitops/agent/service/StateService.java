@@ -18,12 +18,10 @@ public class StateService {
 
     private Map<String, NamespaceState> clusterState;
     private Map<String, NamespaceState> expectedState;
-    private GitRepositoryService gitRepositoryService;
     private RepositoryConfigService repositoryConfigService;
 
     @Autowired
-    public StateService(GitRepositoryService gitRepositoryService, RepositoryConfigService repositoryConfigService) {
-        this.gitRepositoryService = gitRepositoryService;
+    public StateService(RepositoryConfigService repositoryConfigService) {
         this.repositoryConfigService = repositoryConfigService;
     }
 
