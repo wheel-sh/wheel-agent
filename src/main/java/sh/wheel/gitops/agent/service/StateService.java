@@ -18,12 +18,6 @@ public class StateService {
 
     private Map<String, NamespaceState> clusterState;
     private Map<String, NamespaceState> expectedState;
-    private RepositoryConfigService repositoryConfigService;
-
-    @Autowired
-    public StateService(RepositoryConfigService repositoryConfigService) {
-        this.repositoryConfigService = repositoryConfigService;
-    }
 
     @PostConstruct
     public void init() throws IOException {
