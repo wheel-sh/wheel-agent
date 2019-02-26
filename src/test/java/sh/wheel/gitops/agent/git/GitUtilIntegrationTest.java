@@ -2,6 +2,7 @@ package sh.wheel.gitops.agent.git;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.util.GitUtil;
 
@@ -10,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@Disabled
 class GitUtilIntegrationTest {
 
     @Test
