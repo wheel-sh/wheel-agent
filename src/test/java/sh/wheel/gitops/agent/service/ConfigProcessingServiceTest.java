@@ -2,9 +2,12 @@ package sh.wheel.gitops.agent.service;
 
 import io.fabric8.openshift.client.DefaultOpenShiftClient;
 import io.fabric8.openshift.client.OpenShiftClient;
+import io.fabric8.openshift.client.server.mock.OpenShiftMockServer;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.config.AppConfig;
 import sh.wheel.gitops.agent.model.App;
@@ -28,15 +31,21 @@ class ConfigProcessingServiceTest {
 
     private static Path TESTREPO1_PATH;
     private WheelRepositoryService wheelRepositoryService;
+    private OpenShiftMockServer openShiftMockServer;
 
     @BeforeAll
     static void initRepo() throws GitAPIException, URISyntaxException, IOException {
         TESTREPO1_PATH = Paths.get(WheelRepositoryServiceTest.class.getResource(Samples.TESTREPO1_PATH).toURI());
     }
 
+    @BeforeEach
+    void setUp() {
+        openShiftMockServer = new OpenShiftMockServer();
+    }
+
     @Test
     void processExpectedNamespaceStatesByName() throws IOException, GitAPIException {
-        OpenShiftClient client = new DefaultOpenShiftClient();
+        OpenShiftClient client = openShiftMockServer.createOpenShiftClient();
         WheelRepository wheelRepository = new WheelRepositoryService().getRepositoryState(TESTREPO1_PATH);
         ConfigProcessingService configProcessingService = new ConfigProcessingService(client);
 

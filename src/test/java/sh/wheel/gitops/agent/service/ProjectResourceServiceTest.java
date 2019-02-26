@@ -1,24 +1,30 @@
 package sh.wheel.gitops.agent.service;
 
 import io.fabric8.kubernetes.api.model.HasMetadata;
-import io.fabric8.kubernetes.client.utils.ReplaceValueStream;
-import io.fabric8.openshift.client.DefaultOpenShiftClient;
 import io.fabric8.openshift.client.OpenShiftClient;
+import io.fabric8.openshift.client.server.mock.OpenShiftMockServer;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import sh.wheel.gitops.agent.util.ReplaceValueStream;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @Disabled
-class ProjectResourceServiceIntegrationTest {
+class ProjectResourceServiceTest {
+
+    private OpenShiftMockServer openShiftMockServer;
+
+    @BeforeEach
+    void setUp() {
+        openShiftMockServer = new OpenShiftMockServer();
+    }
 
     @Test
     void templateCompare() {
-        OpenShiftClient client = new DefaultOpenShiftClient();
+        OpenShiftClient client = openShiftMockServer.createOpenShiftClient();
         ProjectResourceService projectResourceService = new ProjectResourceService(client);
 
         Map<String, String> params = new HashMap<>();

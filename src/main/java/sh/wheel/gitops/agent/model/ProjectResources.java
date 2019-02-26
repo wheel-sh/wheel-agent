@@ -7,8 +7,6 @@ public class ProjectResources {
     BuildConfigList buildConfigList;
     ImageStreamList imageStreamList;
     ImageStreamTagList imageStreamTagList;
-    RoleList roleList;
-    RoleBindingList roleBindingList;
     RouteList routeList;
     TemplateList templateList;
     LimitRangeList limitRangeList;
@@ -38,14 +36,6 @@ public class ProjectResources {
 
     public ImageStreamTagList getImageStreamTagList() {
         return imageStreamTagList;
-    }
-
-    public RoleList getRoleList() {
-        return roleList;
-    }
-
-    public RoleBindingList getRoleBindingList() {
-        return roleBindingList;
     }
 
     public RouteList getRouteList() {
@@ -96,8 +86,6 @@ public class ProjectResources {
         BuildConfigList buildConfigList;
         ImageStreamList imageStreamList;
         ImageStreamTagList imageStreamTagList;
-        RoleList roleList;
-        RoleBindingList roleBindingList;
         RouteList routeList;
         TemplateList templateList;
         LimitRangeList limitRangeList;
@@ -129,16 +117,6 @@ public class ProjectResources {
 
         public ProjectResourcesBuilder imageStreamTagList(ImageStreamTagList imageStreamTagList) {
             this.imageStreamTagList = imageStreamTagList;
-            return this;
-        }
-
-        public ProjectResourcesBuilder roleList(RoleList roleList) {
-            this.roleList = roleList;
-            return this;
-        }
-
-        public ProjectResourcesBuilder roleBindingList(RoleBindingList roleBindingList) {
-            this.roleBindingList = roleBindingList;
             return this;
         }
 
@@ -200,7 +178,6 @@ public class ProjectResources {
         public ProjectResources build() {
             ProjectResources projectResources = new ProjectResources();
             projectResources.configMapList = this.configMapList;
-            projectResources.roleBindingList = this.roleBindingList;
             projectResources.buildConfigList = this.buildConfigList;
             projectResources.imageStreamList = this.imageStreamList;
             projectResources.secretList = this.secretList;
@@ -212,7 +189,6 @@ public class ProjectResources {
             projectResources.podList = this.podList;
             projectResources.routeList = this.routeList;
             projectResources.imageStreamTagList = this.imageStreamTagList;
-            projectResources.roleList = this.roleList;
             projectResources.templateList = this.templateList;
             projectResources.serviceAccountList = this.serviceAccountList;
             return projectResources;
