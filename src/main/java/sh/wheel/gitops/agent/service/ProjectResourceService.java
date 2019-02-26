@@ -9,10 +9,7 @@ import org.springframework.stereotype.Service;
 import sh.wheel.gitops.agent.model.NamespaceState;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ProjectResourceService {
@@ -27,11 +24,11 @@ public class ProjectResourceService {
     }
 
     public NamespaceState getNamespaceState(String namespace) {
-        Map<String, List<HasMetadata>> resourcesByType = new HashMap<>();
-        resourcesByType.put("Route", Collections.unmodifiableList(client.routes().inNamespace(namespace).list().getItems()));
-        resourcesByType.put("Service", Collections.unmodifiableList(client.services().inNamespace(namespace).list().getItems()));
-        resourcesByType.put("DeploymentConfig", Collections.unmodifiableList(client.deploymentConfigs().inNamespace(namespace).list().getItems()));
-        return new NamespaceState(namespace, resourcesByType);
+        List<HasMetadata> namespaceResources = new ArrayList<>();
+        namespaceResources.addAll(Collections.unmodifiableList(client.routes().inNamespace(namespace).list().getItems()));
+        namespaceResources.addAll(Collections.unmodifiableList(client.services().inNamespace(namespace).list().getItems()));
+        namespaceResources.addAll(Collections.unmodifiableList(client.deploymentConfigs().inNamespace(namespace).list().getItems()));
+        return new NamespaceState(namespace, namespaceResources);
     }
 
     //    public ProjectResources getAll(String namespace, OpenShiftClient client) {

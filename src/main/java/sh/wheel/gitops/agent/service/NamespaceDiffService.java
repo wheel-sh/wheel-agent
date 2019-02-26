@@ -22,8 +22,8 @@ public class NamespaceDiffService {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     public NamespaceDifferences evaluateDifference(NamespaceState actual, NamespaceState expected) {
-        Map<String, List<HasMetadata>> expectedByKind = expected.getResourcesByKind();
-        Map<String, List<HasMetadata>> actualByKind = actual.getResourcesByKind();
+        Map<String, List<HasMetadata>> expectedByKind = expected.getResources().stream().collect(Collectors.groupingBy(HasMetadata::getKind));
+        Map<String, List<HasMetadata>> actualByKind = actual.getResources().stream().collect(Collectors.groupingBy(HasMetadata::getKind));
         Set<String> availableKinds = new HashSet<>();
         availableKinds.addAll(expectedByKind.keySet());
         availableKinds.addAll(actualByKind.keySet());
