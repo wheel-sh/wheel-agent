@@ -9,6 +9,7 @@ import io.fabric8.openshift.client.server.mock.OpenShiftServer;
 import org.junit.Rule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.testutil.ProjectStateUtil;
 import sh.wheel.gitops.agent.testutil.Samples;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+@Disabled
 class NamespaceDiffServiceTest {
 
     private OpenShiftServer openShiftServer;
