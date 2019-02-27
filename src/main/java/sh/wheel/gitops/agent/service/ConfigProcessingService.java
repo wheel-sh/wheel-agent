@@ -40,7 +40,7 @@ public class ConfigProcessingService {
         this.client = client;
     }
 
-    public List<NamespaceState> processExpectedNamespaceStatesByName(WheelRepository repository) {
+    public List<NamespaceState> processExpectedNamespaceStates(WheelRepository repository) {
         List<NamespaceState> namespaceStates = new ArrayList<>();
         for (App app : repository.getApps().values()) {
             try {

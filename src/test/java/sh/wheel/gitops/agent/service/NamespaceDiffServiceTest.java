@@ -1,19 +1,48 @@
 package sh.wheel.gitops.agent.service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
+import io.fabric8.openshift.client.OpenShiftClient;
+import io.fabric8.openshift.client.server.mock.OpenShiftMockServer;
+import io.fabric8.openshift.client.server.mock.OpenShiftServer;
+import org.junit.Rule;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import sh.wheel.gitops.agent.testutil.Samples;
+import sh.wheel.gitops.agent.util.ReplaceValueStream;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class NamespaceDiffServiceTest {
 
-    //    @Test
-//    void compare() {
-//        OpenShiftClient client = new DefaultOpenShiftClient();
-//        Map<String, String> params = new HashMap<>();
-//        params.put("REPLICA_COUNT", "2");
-//        params.put("IMAGE_NAME", "bitnami/nginx");
-//        params.put("IMAGE_VERSION", "1.14-ol-7");
-//        List<HasMetadata> templateResources = client.templates().load(ReplaceValueStream.replaceValues(this.getClass().getResourceAsStream("/samples/testrepo1/apps/example-app/template/app.v1.yaml"), params)).processLocally(params).getItems();
-//        ProjectResourceLoader projectResourceLoader = new ProjectResourceLoader();
-//        Map<String, List<HasMetadata>> projectResources = projectResourceLoader.getNamespaceState("test2", client);
+    private OpenShiftServer openShiftServer;
+
+    @BeforeEach
+    void setUp() {
+        openShiftServer = new OpenShiftServer();
+        openShiftServer.before();
+    }
+
+    @AfterEach
+    void tearDown() {
+        openShiftServer.after();
+    }
+
+    @Test
+    void compare() {
+        OpenShiftClient client = openShiftServer.getOpenshiftClient();
+        Map<String, String> params = new HashMap<>();
+        params.put("REPLICA_COUNT", "2");
+        params.put("IMAGE_NAME", "bitnami/nginx");
+        params.put("IMAGE_VERSION", "1.14-ol-7");
+        List<HasMetadata> templateResources = client.templates().load(ReplaceValueStream.replaceValues(this.getClass().getResourceAsStream(Samples.TEMPLATE1.getFilePath()), params)).processLocally(params).getItems();
+        ProjectResourceService projectResourceService = new ProjectResourceService(client);
+        List<HasMetadata> projectResources = projectResourceService.getNamespaceState("test2").getResources();
 //
 //        HasMetadata templateService = templateResources.stream().filter(tr -> tr.getKind().equals("Service")).findFirst().get();
 //        HasMetadata projectService = projectResources.get("Service").get(0);
@@ -29,10 +58,10 @@ class NamespaceDiffServiceTest {
 //        boolean dcChanged = new ResourceDifferenceEvaluator().evaluateDiff(templateDeploymentConfig, projectDeploymentConfig).size() > 0;
 //        boolean routeChanged = new ResourceDifferenceEvaluator().evaluateDiff(templateRoute, projectRoute).size() > 0;
 //
-//        Assert.assertFalse(serviceChanged);
-//        Assert.assertFalse(dcChanged);
-//        Assert.assertFalse(routeChanged);
-//
-//    }
+//        assertFalse(serviceChanged);
+//        assertFalse(dcChanged);
+//        assertFalse(routeChanged);
+
+    }
 
 }
