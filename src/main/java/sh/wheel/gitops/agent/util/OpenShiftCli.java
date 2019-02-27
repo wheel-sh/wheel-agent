@@ -5,29 +5,111 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.PumpStreamHandler;
+import org.apache.commons.exec.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class OpenShiftCli {
-    private static final String BASIC_GET_ARGUMENTS = "-ojson --ignore-not-found --export";
-    private static final String GET_RESOURCES = "oc get ${kind} -n ${namespace} " + BASIC_GET_ARGUMENTS;
+    private static final String BASIC_GET_ARGS = " -ojson --ignore-not-found";
+    private static final String EXPORT_ARG = " --export";
+    private static final String GET_RESOURCES = "oc get ${kind} -n ${project}" + BASIC_GET_ARGS;
+    private static final String GET_RESOURCE = "oc get ${kind} ${name} -n ${project}" + BASIC_GET_ARGS;
+    private static final String GET_API_RESOURCE = "oc api-resources -o name";
+    private static final String NAMESPACED_ARG = " --namespaced=${namespaced}";
+    private static final String PROCESS_TEMPLATE = "oc process -f ${path} --local ${params}";
 
-    public static JsonNode get(String resourceName, String namespace) throws IOException {
-        String s = execToString("oc get " + resourceName + " -n " + namespace + " -ojson --ignore-not-found --export");
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readTree(s);
+
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    public static final String METHOD_NOT_ALLOWED_ERROR_STR = "Error from server (MethodNotAllowed): the server does not allow this method on the requested resource";
+
+
+    public JsonNode getResourceList(String kind, String project) {
+        Map<String, String> substitutionMap = new HashMap<>();
+        substitutionMap.put("kind", kind);
+        substitutionMap.put("project", project);
+        return execToJsonNode(addExportArgIfNotSecret(GET_RESOURCES, kind), substitutionMap);
     }
 
+    public JsonNode getResource(String kind, String name, String project) {
+        Map<String, String> substitutionMap = new HashMap<>();
+        substitutionMap.put("kind", kind);
+        substitutionMap.put("project", project);
+        substitutionMap.put("name", name);
+        return execToJsonNode(addExportArgIfNotSecret(GET_RESOURCE, kind), substitutionMap);
+    }
 
-    public static String execToString(String command) throws IOException {
+    public List<String> getAllApiResources() {
+        String s = execToString(GET_API_RESOURCE, null);
+        String[] apiResources = s.split(System.getProperty("line.separator"));
+        return Arrays.asList(apiResources);
+    }
+
+    public List<String> getApiResources(boolean namespaced) {
+        Map<String, String> substitutionMap = new HashMap<>();
+        substitutionMap.put("namespaced", String.valueOf(namespaced));
+        String s = execToString(GET_API_RESOURCE + NAMESPACED_ARG, substitutionMap);
+        String[] apiResources = s.split(System.getProperty("line.separator"));
+        return Arrays.asList(apiResources);
+    }
+
+    public JsonNode process(String templatePath, Map<String, String> params) {
+        StringBuilder command = new StringBuilder(templatePath);
+        for (Map.Entry<String, String> e : params.entrySet()) {
+            command.append(" -p").append(e.getKey()).append("=").append(e.getValue());
+        }
+        HashMap<String, String> map = new HashMap<>();
+        map.put("path", templatePath);
+        return execToJsonNode(command.toString(), map);
+    }
+
+    private String addExportArgIfNotSecret(String command, String kind) {
+        if (!"secret".equals(kind.trim()) && !"secrets".equals(kind.trim())) {
+            command += EXPORT_ARG;
+        }
+        return command;
+    }
+
+    private JsonNode execToJsonNode(String command, Map<String, ?> substitutionMap) {
+        String s = execToString(command, substitutionMap);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readTree(s);
+        } catch (IOException e) {
+            LOG.error("Error while executing command '" + StringUtils.stringSubstitution(command, substitutionMap, true));
+            LOG.error("JSON input: \n" + s);
+            throw new OpenShiftCliException(e);
+        }
+    }
+
+    private JsonNode execToJsonNode(String command) {
+        return execToJsonNode(command, null);
+    }
+
+    private String execToString(String command, Map<String, ?> substitutionMap) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        CommandLine commandline = CommandLine.parse(command);
-        DefaultExecutor exec = new DefaultExecutor();
-        PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
-        exec.setStreamHandler(streamHandler);
-        int execute = exec.execute(commandline);
-        return (outputStream.toString());
+        try {
+            CommandLine commandline = CommandLine.parse(command, substitutionMap);
+            DefaultExecutor exec = new DefaultExecutor();
+            PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
+            exec.setStreamHandler(streamHandler);
+            int execute = exec.execute(commandline);
+            return (outputStream.toString());
+        } catch (Exception e) {
+            if(METHOD_NOT_ALLOWED_ERROR_STR.equals(outputStream.toString().trim())) {
+                throw new MethodNotAllowedException("Command not allowed (MethodNotAllowed) '" + StringUtils.stringSubstitution(command, substitutionMap, true));
+            }
+            LOG.error("Error while executing command '" + StringUtils.stringSubstitution(command, substitutionMap, true));
+            LOG.error("Console output:\n" + outputStream.toString());
+            throw new OpenShiftCliException(e);
+        }
     }
 
 }

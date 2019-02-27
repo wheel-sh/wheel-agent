@@ -42,7 +42,7 @@ public class StateService {
         WheelRepository wheelRepository = wheelRepositoryService.loadRepository(repositoryUrl, repositoryBranch);
         List<NamespaceState> namespaceStates = configProcessingService.processExpectedNamespaceStates(wheelRepository);
 //        gitRepositoryService.pullLatest();
-//        WheelRepository repositoryState = repositoryConfigService.getRepositoryState(Paths.get(gitRepositoryService.getRepositoryPath()));
+//        WheelRepository repositoryState = repositoryConfigService.getRepositoryState(Paths.getResourceList(gitRepositoryService.getRepositoryPath()));
 
 
     }

@@ -1,5 +1,6 @@
 package sh.wheel.gitops.agent.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.client.server.mock.KubernetesServer;
 import io.fabric8.openshift.client.OpenShiftClient;
@@ -9,6 +10,7 @@ import org.junit.Rule;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sh.wheel.gitops.agent.testutil.ProjectStateUtil;
 import sh.wheel.gitops.agent.testutil.Samples;
 import sh.wheel.gitops.agent.util.ReplaceValueStream;
 
@@ -34,6 +36,12 @@ class NamespaceDiffServiceTest {
     }
 
     @Test
+    void test() {
+        List<JsonNode> testAppExampleResources = ProjectStateUtil.createTestAppExampleResources();
+        System.out.println();
+    }
+
+    @Test
     void compare() {
         OpenShiftClient client = openShiftServer.getOpenshiftClient();
         Map<String, String> params = new HashMap<>();
@@ -44,14 +52,14 @@ class NamespaceDiffServiceTest {
         ProjectResourceService projectResourceService = new ProjectResourceService(client);
         List<HasMetadata> projectResources = projectResourceService.getNamespaceState("test2").getResources();
 //
-//        HasMetadata templateService = templateResources.stream().filter(tr -> tr.getKind().equals("Service")).findFirst().get();
-//        HasMetadata projectService = projectResources.get("Service").get(0);
+//        HasMetadata templateService = templateResources.stream().filter(tr -> tr.getKind().equals("Service")).findFirst().getResourceList();
+//        HasMetadata projectService = projectResources.getResourceList("Service").getResourceList(0);
 //
-//        HasMetadata templateDeploymentConfig = templateResources.stream().filter(tr -> tr.getKind().equals("DeploymentConfig")).findFirst().get();
-//        HasMetadata projectDeploymentConfig = projectResources.get("DeploymentConfig").get(0);
+//        HasMetadata templateDeploymentConfig = templateResources.stream().filter(tr -> tr.getKind().equals("DeploymentConfig")).findFirst().getResourceList();
+//        HasMetadata projectDeploymentConfig = projectResources.getResourceList("DeploymentConfig").getResourceList(0);
 //
-//        HasMetadata templateRoute = templateResources.stream().filter(tr -> tr.getKind().equals("Route")).findFirst().get();
-//        HasMetadata projectRoute = projectResources.get("Route").get(0);
+//        HasMetadata templateRoute = templateResources.stream().filter(tr -> tr.getKind().equals("Route")).findFirst().getResourceList();
+//        HasMetadata projectRoute = projectResources.getResourceList("Route").getResourceList(0);
 //
 //
 //        boolean serviceChanged = new ResourceDifferenceEvaluator().evaluateDiff(templateService, projectService).size() > 0;
