@@ -3,6 +3,9 @@ package sh.wheel.gitops.agent.testutil;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 public enum Samples {
@@ -34,6 +37,14 @@ public enum Samples {
         } catch (Throwable e) {
             e.printStackTrace();
             throw new RuntimeException("Could not read file " + filePath + ": " + e.getMessage());
+        }
+    }
+
+    public Path toPath() {
+        try {
+            return Paths.get(Samples.class.getResource(filePath).toURI());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
     }
 

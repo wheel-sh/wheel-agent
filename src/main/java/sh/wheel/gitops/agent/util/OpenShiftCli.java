@@ -10,12 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 public class OpenShiftCli {
     private static final String BASIC_GET_ARGS = " -ojson --ignore-not-found";
@@ -24,7 +24,7 @@ public class OpenShiftCli {
     private static final String GET_RESOURCE = "oc get ${kind} ${name} -n ${project}" + BASIC_GET_ARGS;
     private static final String GET_API_RESOURCE = "oc api-resources -o name";
     private static final String NAMESPACED_ARG = " --namespaced=${namespaced}";
-    private static final String PROCESS_TEMPLATE = "oc process -f ${path} --local ${params}";
+    private static final String PROCESS_TEMPLATE = "oc process -f ${path} --local";
 
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -61,16 +61,38 @@ public class OpenShiftCli {
     }
 
     public JsonNode process(String templatePath, Map<String, String> params) {
-        StringBuilder command = new StringBuilder(templatePath);
+        StringBuilder command = new StringBuilder(PROCESS_TEMPLATE +" ");
         for (Map.Entry<String, String> e : params.entrySet()) {
-            command.append(" -p").append(e.getKey()).append("=").append(e.getValue());
+            command.append("-p ").append(e.getKey()).append("=").append("\'").append(e.getValue()).append("\'").append(" ");
         }
         HashMap<String, String> map = new HashMap<>();
         map.put("path", templatePath);
         return execToJsonNode(command.toString(), map);
     }
 
-    private String addExportArgIfNotSecret(String command, String kind) {
+    public List<JsonNode> getAllNamespacedResource(String project) {
+        final AtomicLong max = new AtomicLong();
+        long start = System.nanoTime();
+        List<String> apiResources = getApiResources(true).stream().filter(ar -> !ar.endsWith("security.openshift.io")).collect(Collectors.toList());
+        return apiResources.stream().parallel().map(ar -> {
+            try {
+                long reqStart = System.nanoTime();
+                JsonNode resourceList = getResourceList(ar, project);
+                long reqTime = System.nanoTime() - reqStart;
+                if (reqTime > max.longValue()) {
+                    max.set(reqTime);
+                    System.out.println("New Max time: " + reqTime + " - " + ar);
+                }
+                return resourceList;
+            } catch (MethodNotAllowedException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }).filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+        private String addExportArgIfNotSecret(String command, String kind) {
         if (!"secret".equals(kind.trim()) && !"secrets".equals(kind.trim())) {
             command += EXPORT_ARG;
         }
