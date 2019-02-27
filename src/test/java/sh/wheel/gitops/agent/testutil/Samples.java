@@ -36,4 +36,8 @@ public enum Samples {
             throw new RuntimeException("Could not read file " + filePath + ": " + e.getMessage());
         }
     }
+
+    public String getFilePath() {
+        return filePath;
+    }
 }

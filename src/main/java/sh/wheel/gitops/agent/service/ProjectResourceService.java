@@ -1,6 +1,14 @@
 package sh.wheel.gitops.agent.service;
 
+import io.fabric8.kubernetes.api.builder.BaseFluent;
 import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.KubernetesResource;
+import io.fabric8.kubernetes.api.model.KubernetesResourceList;
+import io.fabric8.kubernetes.client.dsl.MixedOperation;
+import io.fabric8.kubernetes.client.dsl.Resource;
+import io.fabric8.openshift.api.model.DoneableRoute;
+import io.fabric8.openshift.api.model.Route;
+import io.fabric8.openshift.api.model.RouteList;
 import io.fabric8.openshift.client.OpenShiftClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,8 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sh.wheel.gitops.agent.model.NamespaceState;
 
+import javax.annotation.PostConstruct;
 import java.lang.invoke.MethodHandles;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectResourceService {
@@ -17,18 +27,45 @@ public class ProjectResourceService {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final OpenShiftClient client;
+    private MixedOperation<? extends HasMetadata, KubernetesResourceList<HasMetadata>, ? extends BaseFluent, Resource<? extends HasMetadata, ? extends BaseFluent>>[] resourceOperations;
 
     @Autowired
     public ProjectResourceService(OpenShiftClient client) {
         this.client = client;
     }
 
+    @PostConstruct
+    @SuppressWarnings("unchecked")
+    public void setClientResources() {
+        resourceOperations = new MixedOperation[]{
+                client.routes(),
+                client.services(),
+                client.buildConfigs(),
+                client.imageStreams(),
+                client.imageStreamTags(),
+                client.roles(),
+                client.roleBindings(),
+                client.routes(),
+                client.templates(),
+                client.limitRanges(),
+                client.pods(),
+                client.persistentVolumeClaims(),
+                client.replicationControllers(),
+                client.resourceQuotas(),
+                client.serviceAccounts(),
+                client.secrets(),
+                client.configMaps(),
+                client.persistentVolumeClaims(),
+        };
+    }
+
     public NamespaceState getNamespaceState(String namespace) {
-        List<HasMetadata> namespaceResources = new ArrayList<>();
-        namespaceResources.addAll(Collections.unmodifiableList(client.routes().inNamespace(namespace).list().getItems()));
-        namespaceResources.addAll(Collections.unmodifiableList(client.services().inNamespace(namespace).list().getItems()));
-        namespaceResources.addAll(Collections.unmodifiableList(client.deploymentConfigs().inNamespace(namespace).list().getItems()));
+        List<HasMetadata> namespaceResources = Arrays.stream(resourceOperations).parallel()
+                .map(ro -> ro.inNamespace(namespace).list().getItems())
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
         return new NamespaceState(namespace, namespaceResources);
+
     }
 
     //    public ProjectResources getAll(String namespace, OpenShiftClient client) {
@@ -52,5 +89,22 @@ public class ProjectResourceService {
 //                .build();
 //    }
 
-
+//        namespaceResources.addAll(Collections.unmodifiableList(client.routes().inNamespace(namespace).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.services().inNamespace(namespace).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.buildConfigs().inNamespace(namespace).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.imageStreams().inNamespace(namespace).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.imageStreamTags().inNamespace(namespace).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.roles().inNamespace(namespace).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.roleBindings().inNamespace(namespace).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.routes().inNamespace(namespace).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.templates().inNamespace(namespace).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.limitRanges().inNamespace(namespace).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.pods().inNamespace(namespace).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.persistentVolumeClaims().inNamespace(namespace).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.replicationControllers().inNamespace(namespace).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.resourceQuotas().inNamespace(namespace).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.serviceAccounts().inNamespace(namespace).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.secrets().inNamespace(namespace).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.configMaps().inNamespace(namespace).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.persistentVolumeClaims().inNamespace(namespace).list().getItems()));
 }

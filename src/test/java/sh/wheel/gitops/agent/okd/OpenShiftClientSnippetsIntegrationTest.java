@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Disabled
 @SuppressWarnings("all")
@@ -21,16 +22,21 @@ public class OpenShiftClientSnippetsIntegrationTest {
 
     @Test
     void name() {
-        OpenShiftClient osClient = new DefaultOpenShiftClient();
+        OpenShiftClient client = new DefaultOpenShiftClient();
 
         Map<String, String> params = new HashMap<>();
         params.put("REPLICA_COUNT", "2");
         params.put("IMAGE_NAME", "bitnami/nginx");
         params.put("IMAGE_VERSION", "1.14-ol-7");
-        List<HasMetadata> items = osClient.templates().load(ReplaceValueStream.replaceValues(this.getClass().getResourceAsStream("/samples/testrepo1/apps/example-app/template/app.v1.yaml"), params)).processLocally(params).getItems();
-        items.forEach(p -> osClient.resource(p).inNamespace("test2").createOrReplace());
+        List<HasMetadata> items = client.templates().load(ReplaceValueStream.replaceValues(this.getClass().getResourceAsStream("/samples/testrepo1/apps/example-app/template/app.v1.yaml"), params)).processLocally(params).getItems();
+        items.forEach(p -> client.resource(p).inNamespace("test2").createOrReplace());
         System.out.println();
+
+
+        client.customResourceDefinitions().list().getItems().stream().map(x -> x.getSpec().getNames().getKind()).collect(Collectors.toList());
     }
+
+
 
     /*
 
