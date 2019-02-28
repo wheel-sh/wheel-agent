@@ -6,12 +6,12 @@ import java.util.Map;
 public class NamespaceDifferences {
 
     private String namespace;
-    private Map<ResourceKey, List<ResourceDifference>> resourceDifferences;
+    private Map<ResourceKey, List<JsonNodeDifference>> resourceDifferences;
 
     public NamespaceDifferences() {
     }
 
-    public NamespaceDifferences(String namespace, Map<ResourceKey, List<ResourceDifference>> resourceDifferences) {
+    public NamespaceDifferences(String namespace, Map<ResourceKey, List<JsonNodeDifference>> resourceDifferences) {
         this.namespace = namespace;
         this.resourceDifferences = resourceDifferences;
     }
@@ -20,7 +20,7 @@ public class NamespaceDifferences {
         return namespace;
     }
 
-    public Map<ResourceKey, List<ResourceDifference>> getResourceDifferences() {
+    public Map<ResourceKey, List<JsonNodeDifference>> getResourceDifferences() {
         return resourceDifferences;
     }
 }

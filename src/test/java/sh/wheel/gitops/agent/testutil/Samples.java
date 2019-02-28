@@ -12,8 +12,9 @@ public enum Samples {
 
     TEMPLATE1("testrepo1/apps/example-app/template/app.v1.yaml"),
     NAMESPACE1("testrepo1/apps/example-app/namespace/test.yaml"),
-    EXAMPLE_APP_PROCESSED("json/example-app-test/processed/"),
-    EXAMPLE_APP_SERVER_RESPONSE("json/example-app-test/server-response/");
+    EXAMPLE_APP_PROCESSED_DIR("json/example-app-test/processed/"),
+    EXAMPLE_APP_PROCESSED_FILE("json/example-app-test/processed/example-app-processed.json"),
+    EXAMPLE_APP_SERVER_RESPONSE_DIR("json/example-app-test/server-response/");
 
     private static final String SAMPLES_FOLDER = "/samples/";
     public static final String TESTREPO1_PATH = SAMPLES_FOLDER + "testrepo1/";

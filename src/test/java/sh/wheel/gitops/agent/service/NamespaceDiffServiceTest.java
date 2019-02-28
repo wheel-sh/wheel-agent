@@ -2,8 +2,10 @@ package sh.wheel.gitops.agent.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import sh.wheel.gitops.agent.model.NamespaceState;
 import sh.wheel.gitops.agent.testutil.ProjectStateUtil;
 
 import java.util.List;
@@ -13,18 +15,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @Disabled
 class NamespaceDiffServiceTest {
-
-
-    @Test
-    void test() {
-
-        List<JsonNode> serverResponse = ProjectStateUtil.createExampleTestAppResourcesServerResponse();
-        List<JsonNode> processed = ProjectStateUtil.createExampleTestAppResourcesProcessed();
-
-        assertEquals(10, serverResponse.size());
-        assertEquals(3, processed.size());
-
-    }
 
     @Test
     void compare() {

@@ -1,13 +1,18 @@
 package sh.wheel.gitops.agent.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import sh.wheel.gitops.agent.model.Resource;
+import sh.wheel.gitops.agent.testutil.Samples;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -16,9 +21,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class OpenShiftCliIntegrationTest {
 
+    private OpenShiftCli oc;
+
+    @BeforeEach
+    void setUp() {
+        oc = new OpenShiftCli();
+    }
+
     @Test
     void getResourceList() {
-        JsonNode resourceList = new OpenShiftCli().getResourceList("pods", "default");
+        JsonNode resourceList = oc.getResourceList("pods", "default");
 
         assertNotNull(resourceList);
         assertEquals("List", resourceList.get("kind").textValue());
@@ -29,7 +41,7 @@ class OpenShiftCliIntegrationTest {
 
     @Test
     void getResource() {
-        JsonNode resource = new OpenShiftCli().getResource("deploymentconfig", "example-app", "example-app-test");
+        JsonNode resource = oc.getResource("deploymentconfig", "example-app", "example-app-test");
 
         assertNotNull(resource);
         assertEquals("DeploymentConfig", resource.get("kind").textValue());
@@ -38,35 +50,41 @@ class OpenShiftCliIntegrationTest {
 
     @Test
     void getAllApiResources() {
-        List<String> allApiResources = new OpenShiftCli().getAllApiResources();
+        List<String> allApiResources = oc.getAllApiResources();
         assertTrue(allApiResources.size() > 100);
     }
 
     @Test
     void getApiResourcesNamespaced_True() {
-        List<String> apiResources = new OpenShiftCli().getApiResources(true);
+        List<String> apiResources = oc.getApiResources(true);
         assertTrue(apiResources.contains("configmaps"));
         assertFalse(apiResources.contains("namespaces"));
     }
 
     @Test
     void getApiResourcesNamespaced_False() {
-        List<String> apiResources = new OpenShiftCli().getApiResources(false);
+        List<String> apiResources = oc.getApiResources(false);
         assertTrue(apiResources.contains("namespaces"));
         assertFalse(apiResources.contains("configmaps"));
     }
 
     @Test
-    void process() {
+    void process() throws FileNotFoundException {
+        Map<String, String> params = new HashMap<>();
+        params.put("REPLICA_COUNT", "2");
+        params.put("IMAGE_NAME", "bitnami/nginx");
+        params.put("IMAGE_VERSION", "1.14-ol-7");
+        JsonNode process = oc.process(Samples.TEMPLATE1.toPath().toAbsolutePath().toString(), params);
 
+        try (PrintStream out = new PrintStream(new FileOutputStream("example-app-processed.json"))) {
+            out.print(process);
+        }
     }
 
     @Test
     @Disabled
     void getAllNamespacedResource() throws FileNotFoundException {
         String project = "example-app-test";
-        OpenShiftCli oc = new OpenShiftCli();
-
         final AtomicLong max = new AtomicLong();
         long start = System.nanoTime();
         List<String> apiResources = oc.getApiResources(true).stream().filter(ar -> !ar.endsWith("security.openshift.io")).collect(Collectors.toList());
@@ -87,14 +105,14 @@ class OpenShiftCliIntegrationTest {
         }).filter(Objects::nonNull)
                 .collect(Collectors.toList());
         System.out.println(System.nanoTime() - start);
-//        for (JsonNode projectResource : projectResources) {
-//            JsonNode items = projectResource.get("items");
-//            if(items != null && items.size() > 0) {
-//                String kind = items.get(0).get("kind").textValue();
-//                try (PrintStream out = new PrintStream(new FileOutputStream(kind+ ".json"))) {
-//                    out.print(items);
-//                }
-//            }
-//        }
+        for (JsonNode projectResource : projectResources) {
+            JsonNode items = projectResource.get("items");
+            if(items != null && items.size() > 0) {
+                String kind = items.get(0).get("kind").textValue();
+                try (PrintStream out = new PrintStream(new FileOutputStream(kind+ ".json"))) {
+                    out.print(projectResource);
+                }
+            }
+        }
     }
 }

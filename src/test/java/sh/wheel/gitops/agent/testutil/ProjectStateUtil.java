@@ -17,11 +17,16 @@ public class ProjectStateUtil {
     private static final ObjectReader READER = new ObjectMapper().reader();
 
     public static List<JsonNode> createExampleTestAppResourcesServerResponse() {
-        return getJsonFilesAsJsonNodeFromDir(Samples.EXAMPLE_APP_SERVER_RESPONSE.toPath());
+        return getJsonFilesAsJsonNodeFromDir(Samples.EXAMPLE_APP_SERVER_RESPONSE_DIR.toPath());
+
     }
 
-    public static List<JsonNode> createExampleTestAppResourcesProcessed() {
-        return getJsonFilesAsJsonNodeFromDir(Samples.EXAMPLE_APP_PROCESSED.toPath());
+    public static JsonNode createExampleTestAppResourcesProcessed() {
+        try {
+            return READER.readTree(new FileInputStream(Samples.EXAMPLE_APP_PROCESSED_FILE.toPath().toFile()));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
     }
 
     public static JsonNode getJsonAsJsonNode(Path jsonfile) {
@@ -34,7 +39,6 @@ public class ProjectStateUtil {
 
     public static List<JsonNode> getJsonFilesAsJsonNodeFromDir(Path dir) {
         try {
-            ObjectMapper mapper = new ObjectMapper();
             return Files.walk(dir)
                     .filter(f -> f.getFileName().toString().endsWith(".json"))
                     .map(ProjectStateUtil::getJsonAsJsonNode)

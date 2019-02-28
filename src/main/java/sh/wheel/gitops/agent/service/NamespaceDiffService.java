@@ -27,7 +27,7 @@ public class NamespaceDiffService {
         Set<String> availableKinds = new HashSet<>();
         availableKinds.addAll(expectedByKind.keySet());
         availableKinds.addAll(actualByKind.keySet());
-        Map<ResourceKey, List<ResourceDifference>> differences = new HashMap<>();
+        Map<ResourceKey, List<JsonNodeDifference>> differences = new HashMap<>();
         for (String kind : availableKinds) {
             Map<String, HasMetadata> expectedResourceByName = expectedByKind.get(kind).stream().collect(Collectors.toMap(r -> r.getMetadata().getName(), Function.identity()));
             Map<String, HasMetadata> actualResourceByName = actualByKind.get(kind).stream().collect(Collectors.toMap(r -> r.getMetadata().getName(), Function.identity()));
@@ -37,15 +37,15 @@ public class NamespaceDiffService {
             for (String name : availableResourceNames) {
                 HasMetadata expectedResource = expectedResourceByName.get(name);
                 HasMetadata actualResource = actualResourceByName.get(name);
-                List<ResourceDifference> resourceDifferences = evaluateDiff(expectedResource, actualResource);
-                differences.put(new ResourceKey(kind, name), resourceDifferences);
+                List<JsonNodeDifference> jsonNodeDifferences = evaluateDiff(expectedResource, actualResource);
+                differences.put(new ResourceKey(kind, name), jsonNodeDifferences);
             }
         }
         return new NamespaceDifferences(null, differences);
     }
 
 
-    public List<ResourceDifference> evaluateDiff(HasMetadata expectedResource, HasMetadata actualResource) {
+    public List<JsonNodeDifference> evaluateDiff(HasMetadata expectedResource, HasMetadata actualResource) {
         if (expectedResource == null && actualResource == null) {
             throw new IllegalStateException("Cannot evaluate difference between two null resources");
         }
@@ -57,14 +57,14 @@ public class NamespaceDiffService {
         JsonNode expectedNodeTree = mapper.valueToTree(expectedResource != null ? expectedResource : new Object());
         JsonNode actualResourceNodeTree = mapper.valueToTree(actualResource != null ? actualResource : new Object());
         JsonNode diffs = JsonDiff.asJson(expectedNodeTree, actualResourceNodeTree, DiffFlags.dontNormalizeOpIntoMoveAndCopy());
-        List<ResourceDifference> resourceDifferences = new ArrayList<>();
+        List<JsonNodeDifference> jsonNodeDifferences = new ArrayList<>();
         for (JsonNode diff : diffs) {
             String path = diff.get("path").textValue();
             Operation op = Operation.valueOf(diff.get("op").textValue());
             String value = diff.get("value").textValue();
-            resourceDifferences.add(new ResourceDifference(resourceName, resourceKind, path, value, op));
+            jsonNodeDifferences.add(new JsonNodeDifference(resourceName, resourceKind, path, value, op));
         }
-        return resourceDifferences;
+        return jsonNodeDifferences;
     }
 
     private boolean isAddedByDefault(JsonNode diff) {
