@@ -4,13 +4,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.testutil.Samples;
-import sh.wheel.gitops.agent.util.OpenShiftCli;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OpenShiftServiceIntegrationTest {
 
@@ -38,5 +40,14 @@ class OpenShiftServiceIntegrationTest {
         List<JsonNode> process = openShiftService.process(Samples.TEMPLATE1.toPath(), params);
 
         assertTrue(process.size() > 2);
+
+        for (JsonNode projectResource : process) {
+            String kind = projectResource.get("kind").textValue();
+            try (PrintStream out = new PrintStream(new FileOutputStream(kind + ".json"))) {
+                out.print(projectResource);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }
