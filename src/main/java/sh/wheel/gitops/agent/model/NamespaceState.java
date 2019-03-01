@@ -1,23 +1,22 @@
 package sh.wheel.gitops.agent.model;
 
-import io.fabric8.kubernetes.api.model.HasMetadata;
-
 import java.util.List;
+import java.util.Map;
 
 public class NamespaceState {
     private String name;
-    List<HasMetadata> resources;
+    private Map<String, List<Resource>> resourcesByKind;
 
-    public NamespaceState(String name, List<HasMetadata> resources) {
+    public NamespaceState(String name, Map<String, List<Resource>> resourcesByKind) {
         this.name = name;
-        this.resources = resources;
+        this.resourcesByKind = resourcesByKind;
     }
 
     public String getName() {
         return name;
     }
 
-    public List<HasMetadata> getResources() {
-        return resources;
+    public Map<String, List<Resource>> getResourcesByKind() {
+        return resourcesByKind;
     }
 }

@@ -42,28 +42,28 @@ public class ConfigProcessingService {
 
     public List<NamespaceState> processExpectedNamespaceStates(WheelRepository repository) {
         List<NamespaceState> namespaceStates = new ArrayList<>();
-        for (App app : repository.getApps().values()) {
-            try {
-                Group group = lookupGroup(app.getAppConfig(), repository.getGroups());
-                for (NamespaceConfig namespaceConfig : app.getNamespaceConfigs()) {
-                    Path templatePath = app.getAppDir().resolve("template").resolve(namespaceConfig.getTemplateFile());
-                    String nsName = namespaceConfig.getName();
-                    if(!Files.exists(templatePath)) {
-                        throw new IllegalStateException(String.format("Cannot find template %s for app %s in namespace %s", templatePath.toString(), app.getAppConfig().getName(), nsName));
-                    }
-                    Map<String, String> params = namespaceConfig.getParameters().stream().collect(Collectors.toMap(ParameterConfig::getName, ParameterConfig::getValue));
-                    List<HasMetadata> processTemplate = processTemplate(templatePath, params);
-
-                    namespaceStates.add(new NamespaceState(nsName, processTemplate));
-                }
-            } catch (Exception e) {
-                String appName = null;
-                if(app.getAppConfig() != null && app.getAppConfig().getName() != null) {
-                    appName = app.getAppConfig().getName();
-                }
-                LOG.error("Could not process app "+appName, e);
-            }
-        }
+//        for (App app : repository.getApps().values()) {
+//            try {
+//                Group group = lookupGroup(app.getAppConfig(), repository.getGroups());
+//                for (NamespaceConfig namespaceConfig : app.getNamespaceConfigs()) {
+//                    Path templatePath = app.getAppDir().resolve("template").resolve(namespaceConfig.getTemplateFile());
+//                    String nsName = namespaceConfig.getName();
+//                    if(!Files.exists(templatePath)) {
+//                        throw new IllegalStateException(String.format("Cannot find template %s for app %s in namespace %s", templatePath.toString(), app.getAppConfig().getName(), nsName));
+//                    }
+//                    Map<String, String> params = namespaceConfig.getParameters().stream().collect(Collectors.toMap(ParameterConfig::getName, ParameterConfig::getValue));
+//                    List<HasMetadata> processTemplate = processTemplate(templatePath, params);
+//
+//                    namespaceStates.add(new NamespaceState(nsName, processTemplate));
+//                }
+//            } catch (Exception e) {
+//                String appName = null;
+//                if(app.getAppConfig() != null && app.getAppConfig().getName() != null) {
+//                    appName = app.getAppConfig().getName();
+//                }
+//                LOG.error("Could not process app "+appName, e);
+//            }
+//        }
         return namespaceStates;
     }
 

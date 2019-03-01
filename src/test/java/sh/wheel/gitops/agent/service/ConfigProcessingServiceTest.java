@@ -2,13 +2,10 @@ package sh.wheel.gitops.agent.service;
 
 import io.fabric8.openshift.client.DefaultOpenShiftClient;
 import io.fabric8.openshift.client.OpenShiftClient;
-import io.fabric8.openshift.client.server.mock.OpenShiftMockServer;
 import io.fabric8.openshift.client.server.mock.OpenShiftServer;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.migrationsupport.rules.EnableRuleMigrationSupport;
 import sh.wheel.gitops.agent.config.AppConfig;
 import sh.wheel.gitops.agent.model.App;
 import sh.wheel.gitops.agent.model.NamespaceState;
@@ -62,7 +59,7 @@ class ConfigProcessingServiceTest {
         assertNotNull(nsState);
         assertEquals(1, nsState.size());
         NamespaceState namespaceState = nsState.get(0);
-        assertEquals(3, namespaceState.getResources().size());
+        assertEquals(3, namespaceState.getResourcesByKind().size());
     }
 
     @Test

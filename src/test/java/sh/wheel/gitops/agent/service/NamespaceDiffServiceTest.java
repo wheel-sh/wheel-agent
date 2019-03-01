@@ -1,43 +1,66 @@
 package sh.wheel.gitops.agent.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import sh.wheel.gitops.agent.model.DifferenceType;
 import sh.wheel.gitops.agent.model.NamespaceState;
-import sh.wheel.gitops.agent.testutil.ProjectStateUtil;
+import sh.wheel.gitops.agent.model.Resource;
+import sh.wheel.gitops.agent.model.ResourceDifference;
+import sh.wheel.gitops.agent.testutil.OpenShiftCliMockUtil;
+import sh.wheel.gitops.agent.testutil.Samples;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Disabled
 class NamespaceDiffServiceTest {
 
+    private OpenShiftService openShiftService;
+    private NamespaceDiffService namespaceDiffService;
+
+    @BeforeEach
+    void setUp() {
+        openShiftService = new OpenShiftService(OpenShiftCliMockUtil.createOpenShiftCliMock());
+        namespaceDiffService = new NamespaceDiffService();
+    }
+
     @Test
     void compare() {
+        Map<String, List<Resource>> allNamespacedResourcesTestData = getAllNamespacedResourcesTestData();
+        Map<String, List<Resource>> processTestData = processTestData();
+        Map<String, List<Resource>> processDeloymentConfig = allNamespacedResourcesTestData.entrySet().stream().filter(e -> e.getKey().equals("DeploymentConfig")).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<String, List<Resource>> projectDeloymentConfig = processTestData.entrySet().stream().filter(e -> e.getKey().equals("DeploymentConfig")).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Resource projectDeploymentConfig = processTestData.get("DeploymentConfig").get(0);
 
-//
-//        HasMetadata templateService = templateResources.stream().filter(tr -> tr.getKind().equals("Service")).findFirst().getResourceList();
-//        HasMetadata projectService = projectResources.getResourceList("Service").getResourceList(0);
-//
-//        HasMetadata templateDeploymentConfig = templateResources.stream().filter(tr -> tr.getKind().equals("DeploymentConfig")).findFirst().getResourceList();
-//        HasMetadata projectDeploymentConfig = projectResources.getResourceList("DeploymentConfig").getResourceList(0);
-//
-//        HasMetadata templateRoute = templateResources.stream().filter(tr -> tr.getKind().equals("Route")).findFirst().getResourceList();
-//        HasMetadata projectRoute = projectResources.getResourceList("Route").getResourceList(0);
-//
-//
-//        boolean serviceChanged = new ResourceDifferenceEvaluator().evaluateDiff(templateService, projectService).size() > 0;
-//        boolean dcChanged = new ResourceDifferenceEvaluator().evaluateDiff(templateDeploymentConfig, projectDeploymentConfig).size() > 0;
-//        boolean routeChanged = new ResourceDifferenceEvaluator().evaluateDiff(templateRoute, projectRoute).size() > 0;
-//
-//        assertFalse(serviceChanged);
-//        assertFalse(dcChanged);
-//        assertFalse(routeChanged);
+        NamespaceState processedNamespaceState = new NamespaceState("example-app-test", processDeloymentConfig);
+        NamespaceState projectNamespaceState = new NamespaceState("example-app-test", projectDeloymentConfig);
 
+        List<ResourceDifference> resourceDifferences = namespaceDiffService.evaluateDifference(processedNamespaceState, projectNamespaceState);
+
+        Assertions.assertEquals(1, resourceDifferences.size());
+        ResourceDifference difference = resourceDifferences.get(0);
+        Assertions.assertEquals(DifferenceType.DIFFER, difference.getType());
+
+    }
+
+    private Map<String, List<Resource>> getAllNamespacedResourcesTestData() {
+        return openShiftService.getAllNamespacedResources("example-app-test");
+    }
+
+
+    private Map<String, List<Resource>> processTestData() {
+        Map<String, String> params = new HashMap<>();
+        params.put("REPLICA_COUNT", "2");
+        params.put("IMAGE_NAME", "bitnami/nginx");
+        params.put("IMAGE_VERSION", "1.14-ol-7");
+
+        Map<String, List<Resource>> process = openShiftService.process(Samples.TEMPLATE1.toPath(), params);
+        return process;
     }
 
 }

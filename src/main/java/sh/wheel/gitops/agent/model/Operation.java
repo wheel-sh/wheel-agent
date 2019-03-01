@@ -1,5 +1,7 @@
 package sh.wheel.gitops.agent.model;
 
+import java.util.Arrays;
+
 public enum Operation {
 
     ADD("add"),
@@ -18,5 +20,9 @@ public enum Operation {
 
     public String getName() {
         return this.name;
+    }
+
+    public static Operation byName(String name) {
+        return Arrays.stream(values()).filter(v -> v.getName().toLowerCase().equals(name.toLowerCase())).findFirst().orElse(null);
     }
 }

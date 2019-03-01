@@ -59,14 +59,14 @@ public class ProjectResourceService {
         };
     }
 
-    public NamespaceState getNamespaceState(String namespace) {
-        List<HasMetadata> namespaceResources = Arrays.stream(resourceOperations).parallel()
-                .map(ro -> ro.inNamespace(namespace).list().getItems())
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-        return new NamespaceState(namespace, namespaceResources);
-
-    }
+//    public NamespaceState getNamespaceState(String namespace) {
+//        List<HasMetadata> namespaceResources = Arrays.stream(resourceOperations).parallel()
+//                .map(ro -> ro.inNamespace(namespace).list().getItems())
+//                .flatMap(Collection::stream)
+//                .collect(Collectors.toList());
+//        return new NamespaceState(namespace, namespaceResources);
+//
+//    }
 
     //    public ProjectResources getAll(String namespace, OpenShiftClient client) {
 //        return ProjectResources.newBuilder()
