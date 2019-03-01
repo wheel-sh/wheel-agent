@@ -2,7 +2,6 @@ package sh.wheel.gitops.agent.service;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.model.DifferenceType;
 import sh.wheel.gitops.agent.model.NamespaceState;
@@ -11,13 +10,11 @@ import sh.wheel.gitops.agent.model.ResourceDifference;
 import sh.wheel.gitops.agent.testutil.OpenShiftCliMockUtil;
 import sh.wheel.gitops.agent.testutil.Samples;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Disabled
 class NamespaceDiffServiceTest {
 
     private OpenShiftService openShiftService;
@@ -35,7 +32,6 @@ class NamespaceDiffServiceTest {
         Map<String, List<Resource>> processTestData = processTestData();
         Map<String, List<Resource>> processDeloymentConfig = allNamespacedResourcesTestData.entrySet().stream().filter(e -> e.getKey().equals("DeploymentConfig")).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         Map<String, List<Resource>> projectDeloymentConfig = processTestData.entrySet().stream().filter(e -> e.getKey().equals("DeploymentConfig")).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        Resource projectDeploymentConfig = processTestData.get("DeploymentConfig").get(0);
 
         NamespaceState processedNamespaceState = new NamespaceState("example-app-test", processDeloymentConfig);
         NamespaceState projectNamespaceState = new NamespaceState("example-app-test", projectDeloymentConfig);
