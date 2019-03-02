@@ -28,23 +28,28 @@ public class NamespaceDiffService {
         for (String kind : availableKinds) {
             List<Resource> processedResources = processedResourcesByKind.get(kind);
             List<Resource> projectResources = projectResourcesByKind.get(kind);
-            Map<String, Resource> processedResourceByName = processedResources.stream().collect(Collectors.toMap(Resource::getName, Function.identity()));
-            Map<String, Resource> projectResourceByName = projectResources.stream().collect(Collectors.toMap(Resource::getName, Function.identity()));
+            Map<String, Resource> processedResourceByName = groupByName(processedResources);
+            Map<String, Resource> projectResourceByName = groupByName(projectResources);
             Set<String> availableResourceNames = Stream.concat(processedResourceByName.keySet().stream(), projectResourceByName.keySet().stream()).collect(Collectors.toSet());
             for (String name : availableResourceNames) {
                 Resource processedResource = processedResourceByName.get(name);
                 Resource projectResource = projectResourceByName.get(name);
+                ResourceKey resourceKey = new ResourceKey(kind, name);
                 if (processedResource == null) {
-                    resourceDifferences.add(new ResourceDifference(DifferenceType.PROJECT_ONLY, null, projectResource, null));
+                    resourceDifferences.add(new ResourceDifference(DifferenceType.PROJECT_ONLY, null, projectResource, null, resourceKey));
                 } else if (projectResource == null) {
-                    resourceDifferences.add(new ResourceDifference(DifferenceType.PROJECT_ONLY, processedResource, null, null));
+                    resourceDifferences.add(new ResourceDifference(DifferenceType.PROJECT_ONLY, processedResource, null, null, resourceKey));
                 } else {
                     List<AttributeDifference> attributeDifferences = evaluateAttributeDifference(processedResource, projectResource);
-                    resourceDifferences.add(new ResourceDifference(DifferenceType.DIFFER, processedResource, projectResource, attributeDifferences));
+                    resourceDifferences.add(new ResourceDifference(DifferenceType.DIFFER, processedResource, projectResource, attributeDifferences, resourceKey));
                 }
             }
         }
         return resourceDifferences;
+    }
+
+    private Map<String, Resource> groupByName(List<Resource> processedResources) {
+        return processedResources != null ? processedResources.stream().collect(Collectors.toMap(Resource::getName, Function.identity())) : new HashMap<>();
     }
 
 
@@ -59,7 +64,7 @@ public class NamespaceDiffService {
         for (JsonNode diff : diffs) {
             String path = diff.get("path").textValue();
             Operation op = Operation.byName(diff.get("op").textValue());
-            String value = diff.get("value").textValue();
+            String value = diff.get("value").toString();
             attributeDifferences.add(new AttributeDifference(proccessed.getName(), proccessed.getKind(), path, value, op));
         }
         return attributeDifferences;

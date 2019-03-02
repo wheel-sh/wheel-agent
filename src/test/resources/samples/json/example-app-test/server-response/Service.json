@@ -1,1 +1,44 @@
-{"apiVersion":"v1","items":[{"apiVersion":"v1","kind":"Service","metadata":{"creationTimestamp":"2019-02-18T23:20:49Z","labels":{"app":"example-app"},"name":"example-app","namespace":"example-app-test","resourceVersion":"5574746","selfLink":"/api/v1/namespaces/example-app-test/services/example-app","uid":"d3a204b5-33d3-11e9-818e-0200c0a87ac9"},"spec":{"clusterIP":"172.30.129.253","ports":[{"name":"8080-tcp","port":8080,"protocol":"TCP","targetPort":8080}],"selector":{"deploymentconfig":"example-app"},"sessionAffinity":"None","type":"ClusterIP"},"status":{"loadBalancer":{}}}],"kind":"List","metadata":{"resourceVersion":"","selfLink":""}}
+{
+  "apiVersion": "v1",
+  "items": [
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "creationTimestamp": "2019-02-18T23:20:49Z",
+        "labels": {
+          "app": "example-app"
+        },
+        "name": "example-app",
+        "namespace": "example-app-test",
+        "resourceVersion": "5574746",
+        "selfLink": "/api/v1/namespaces/example-app-test/services/example-app",
+        "uid": "d3a204b5-33d3-11e9-818e-0200c0a87ac9"
+      },
+      "spec": {
+        "clusterIP": "172.30.129.253",
+        "ports": [
+          {
+            "name": "8080-tcp",
+            "port": 8080,
+            "protocol": "TCP",
+            "targetPort": 8080
+          }
+        ],
+        "selector": {
+          "deploymentconfig": "example-app"
+        },
+        "sessionAffinity": "None",
+        "type": "ClusterIP"
+      },
+      "status": {
+        "loadBalancer": {}
+      }
+    }
+  ],
+  "kind": "List",
+  "metadata": {
+    "resourceVersion": "",
+    "selfLink": ""
+  }
+}

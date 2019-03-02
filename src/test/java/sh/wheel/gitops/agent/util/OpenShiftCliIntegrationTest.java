@@ -75,10 +75,10 @@ class OpenShiftCliIntegrationTest {
         params.put("IMAGE_NAME", "bitnami/nginx");
         params.put("IMAGE_VERSION", "1.14-ol-7");
         JsonNode process = oc.process(Samples.TEMPLATE1.toPath().toAbsolutePath().toString(), params);
-
-        try (PrintStream out = new PrintStream(new FileOutputStream("example-app-processed.json"))) {
-            out.print(process);
-        }
+//
+//        try (PrintStream out = new PrintStream(new FileOutputStream("example-app-processed.json"))) {
+//            out.print(process);
+//        }
     }
 
     @Test
