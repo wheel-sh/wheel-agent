@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import sh.wheel.gitops.agent.model.Resource;
 import sh.wheel.gitops.agent.testutil.Samples;
 
 import java.io.FileNotFoundException;
@@ -114,5 +113,11 @@ class OpenShiftCliIntegrationTest {
                 }
             }
         }
+    }
+
+    @Test
+    void whoami() {
+        String whoami = oc.getWhoAmI();
+        assertNotNull(whoami);
     }
 }

@@ -33,6 +33,7 @@ public class OpenShiftCliMockUtil {
         doReturn(exampleTestAppProjectProcessed).when(mock).process(ArgumentMatchers.endsWith("project.yaml"), ArgumentMatchers.notNull());
         doReturn(exampleTestAppResourcesServerResponse).when(mock).getAllNamespacedResource(ArgumentMatchers.notNull());
         doReturn(exampleTestAppProjectServerResponse).when(mock).getResource(ArgumentMatchers.eq("project"), ArgumentMatchers.notNull(), ArgumentMatchers.notNull());
+        doReturn("system:serviceaccount:example-app-test:default").when(mock).getWhoAmI();
         return mock;
     }
 

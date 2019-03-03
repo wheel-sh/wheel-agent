@@ -25,6 +25,7 @@ public class OpenShiftCli {
     private static final String GET_API_RESOURCE = "oc api-resources -o name";
     private static final String NAMESPACED_ARG = " --namespaced=${namespaced}";
     private static final String PROCESS_TEMPLATE = "oc process -f ${path} --local";
+    private static final String WHOAMI = "oc whoami";
 
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -61,7 +62,7 @@ public class OpenShiftCli {
     }
 
     public JsonNode process(String templatePath, Map<String, String> params) {
-        StringBuilder command = new StringBuilder(PROCESS_TEMPLATE +" ");
+        StringBuilder command = new StringBuilder(WHOAMI +" ");
         for (Map.Entry<String, String> e : params.entrySet()) {
             command.append("-p ").append(e.getKey()).append("=").append("\'").append(e.getValue()).append("\'").append(" ");
         }
@@ -97,6 +98,10 @@ public class OpenShiftCli {
             command += EXPORT_ARG;
         }
         return command;
+    }
+
+    public String getWhoAmI() {
+        return execToString(WHOAMI, null).trim();
     }
 
     private JsonNode execToJsonNode(String command, Map<String, ?> substitutionMap) {

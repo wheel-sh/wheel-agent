@@ -81,4 +81,8 @@ public class OpenShiftService {
                 .collect(Collectors.groupingBy(Resource::getKind));
     }
 
+    public String getWhoAmI() {
+        return oc.getWhoAmI();
+    }
+
 }
