@@ -25,4 +25,13 @@ public class Resource {
     public JsonNode getJsonNode() {
         return jsonNode;
     }
+
+    @Override
+    public String toString() {
+        return "Resource{" +
+                "kind='" + kind + '\'' +
+                ", name='" + name + '\'' +
+                ", jsonNode=" + jsonNode +
+                '}';
+    }
 }

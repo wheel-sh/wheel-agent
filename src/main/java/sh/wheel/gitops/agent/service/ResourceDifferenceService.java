@@ -24,9 +24,9 @@ public class ResourceDifferenceService {
         IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("ServiceAccount", null, "builder"));
         IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("ServiceAccount", null, "deployer"));
         // TODO: implement better default.. So RoleBindings could be edited
-        IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("RoleBinding", null, "system:deployers"));
-        IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("RoleBinding", null, "system:image-builders"));
-        IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("RoleBinding", null, "system:image-pullers"));
+//        IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("RoleBinding", null, "system:deployers"));
+//        IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("RoleBinding", null, "system:image-builders"));
+//        IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("RoleBinding", null, "system:image-pullers"));
 
         IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/status", null));
         IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/metadata/creationTimestamp", null));
@@ -36,10 +36,14 @@ public class ResourceDifferenceService {
         IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/metadata/uid", null));
         IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/spec/clusterIP", null));
         IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/spec/type", "ClusterIP"));
-        
+        IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/roleRef/apiGroup", "rbac.authorization.k8s.io"));
+        IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/kind", "ClusterRole"));
+        IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/apiVersion", "authorization.openshift.io/v1"));
+        IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/apiVersion", "rbac.authorization.k8s.io/v1"));
+        IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/apiGroup", "rbac.authorization.k8s.io"));
     }
 
-    public List<ResourceAction> createResourceActions(List<ResourceDifference> resourceDifferences, NamespaceState processed, NamespaceState project) {
+    public List<ResourceAction> createResourceActions(List<ResourceDifference> resourceDifferences, ProjectState processed, ProjectState project) {
         return resourceDifferences.stream()
                 .filter(this::filterIgnoredResources)
                 .map(resourceDifference -> createAction(resourceDifference, processed, project))
@@ -47,7 +51,7 @@ public class ResourceDifferenceService {
                 .collect(Collectors.toList());
     }
 
-    private ResourceAction createAction(ResourceDifference resourceDifference, NamespaceState processed, NamespaceState project) {
+    private ResourceAction createAction(ResourceDifference resourceDifference, ProjectState processed, ProjectState project) {
         switch (resourceDifference.getType()) {
             case PROCESSED_ONLY:
                 return new ResourceAction(ActionType.CREATE, resourceDifference.getProcessed(), resourceDifference.getAttributeDifferences());
@@ -60,7 +64,7 @@ public class ResourceDifferenceService {
         }
     }
 
-    private ResourceAction createActionForProjectOnly(ResourceDifference resourceDifference, NamespaceState processed, NamespaceState project) {
+    private ResourceAction createActionForProjectOnly(ResourceDifference resourceDifference, ProjectState processed, ProjectState project) {
         Resource resource = resourceDifference.getProject();
         JsonNode ownerReference = resource.getJsonNode().get("metadata").get("ownerReferences");
         List<Resource> owners = getOwners(ownerReference, project);
@@ -71,7 +75,7 @@ public class ResourceDifferenceService {
         }
     }
 
-    private boolean areOwnersInProcessed(List<Resource> owners, NamespaceState processed) {
+    private boolean areOwnersInProcessed(List<Resource> owners, ProjectState processed) {
         for (Resource owner : owners) {
             List<Resource> processedByKind = processed.getResourcesByKind().get(owner.getKind());
             boolean foundOwner = processedByKind.stream().anyMatch(r -> r.getName().equals(owner.getName()));
@@ -82,7 +86,7 @@ public class ResourceDifferenceService {
         return true;
     }
 
-    private List<Resource> getOwners(JsonNode ownerReferencerces, NamespaceState projectState) {
+    private List<Resource> getOwners(JsonNode ownerReferencerces, ProjectState projectState) {
         List<Resource> owners = new ArrayList<>();
         if(ownerReferencerces == null) {
             return owners;
@@ -119,7 +123,8 @@ public class ResourceDifferenceService {
 
     private boolean filterAttributeDifference(AttributeDifference attributeDifference) {
         for (IgnoredAttributeIdentifier ignoredAttribute : IGNORED_ATTRIBUTES) {
-            if (attributeDifference.getAttributeName().startsWith(ignoredAttribute.getAttributeName())) {
+            String attributeName = attributeDifference.getAttributeName();
+            if (attributeName.startsWith(ignoredAttribute.getAttributeName()) || attributeName.endsWith(ignoredAttribute.getAttributeName())) {
                 if (ignoredAttribute.getValue() == null || ignoredAttribute.getValue().equals(attributeDifference.getAttributeValue())) {
                     return false;
                 }

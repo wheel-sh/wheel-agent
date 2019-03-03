@@ -32,4 +32,12 @@ public class IgnoredAttributeIdentifier  {
     public int hashCode() {
         return Objects.hash(attributeName, value);
     }
+
+    @Override
+    public String toString() {
+        return "IgnoredAttributeIdentifier{" +
+                "attributeName='" + attributeName + '\'' +
+                ", value='" + value + '\'' +
+                '}';
+    }
 }

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.model.DifferenceType;
-import sh.wheel.gitops.agent.model.NamespaceState;
+import sh.wheel.gitops.agent.model.ProjectState;
 import sh.wheel.gitops.agent.model.Resource;
 import sh.wheel.gitops.agent.model.ResourceDifference;
 import sh.wheel.gitops.agent.testutil.OpenShiftCliMockUtil;
@@ -28,15 +28,15 @@ class NamespaceDiffServiceTest {
 
     @Test
     void compare() {
-        Map<String, List<Resource>> allNamespacedResourcesTestData = getAllNamespacedResourcesTestData();
+        ProjectState allNamespacedResourcesTestData = getAllNamespacedResourcesTestData();
         Map<String, List<Resource>> processTestData = processTestData();
-        Map<String, List<Resource>> processDeloymentConfig = allNamespacedResourcesTestData.entrySet().stream().filter(e -> e.getKey().equals("DeploymentConfig")).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<String, List<Resource>> processDeloymentConfig = allNamespacedResourcesTestData.getResourcesByKind().entrySet().stream().filter(e -> e.getKey().equals("DeploymentConfig")).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         Map<String, List<Resource>> projectDeloymentConfig = processTestData.entrySet().stream().filter(e -> e.getKey().equals("DeploymentConfig")).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        NamespaceState processedNamespaceState = new NamespaceState("example-app-test", processDeloymentConfig);
-        NamespaceState projectNamespaceState = new NamespaceState("example-app-test", projectDeloymentConfig);
+        ProjectState processedProjectState = new ProjectState("example-app-test", processDeloymentConfig);
+        ProjectState projectProjectState = new ProjectState("example-app-test", projectDeloymentConfig);
 
-        List<ResourceDifference> resourceDifferences = namespaceDiffService.evaluateDifference(processedNamespaceState, projectNamespaceState);
+        List<ResourceDifference> resourceDifferences = namespaceDiffService.evaluateDifference(processedProjectState, projectProjectState);
 
         Assertions.assertEquals(1, resourceDifferences.size());
         ResourceDifference difference = resourceDifferences.get(0);
@@ -44,8 +44,8 @@ class NamespaceDiffServiceTest {
 
     }
 
-    private Map<String, List<Resource>> getAllNamespacedResourcesTestData() {
-        return openShiftService.getAllNamespacedResources("example-app-test");
+    private ProjectState getAllNamespacedResourcesTestData() {
+        return openShiftService.getProjectStateFromCluster("example-app-test");
     }
 
 

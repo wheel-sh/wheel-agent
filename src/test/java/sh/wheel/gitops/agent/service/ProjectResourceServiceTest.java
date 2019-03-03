@@ -36,7 +36,7 @@ class ProjectResourceServiceTest {
 //        InputStream is = ReplaceValueStream.replaceValues(new FileInputStream(path.toFile()), params);
 //        List<HasMetadata> items = client.templates().load(is).processLocally(params).getItems();
 //        client.resource(items.get(0)).inNamespace("example-app-test").get();
-//        projectResourceService.getNamespaceState("example-app-test");
+//        projectResourceService.getProjectStateFromCluster("example-app-test");
 //        System.out.println();
 
     }

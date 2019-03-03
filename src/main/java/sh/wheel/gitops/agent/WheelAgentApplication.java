@@ -26,7 +26,7 @@ public class WheelAgentApplication {
 //                            .build());
 //                }
 //                List<HasMetadata> processedTemplateItems = new LocalTemplateProcessor().processTemplate(tplPath, params, client);
-//                Map<String, List<HasMetadata>> projectResources = new ProjectResourceLoader().getNamespaceState(namespaceConfig.getName(), client);
+//                Map<String, List<HasMetadata>> projectResources = new ProjectResourceLoader().getProjectStateFromCluster(namespaceConfig.getName(), client);
 //                for (HasMetadata processedTemplateItem : processedTemplateItems) {
 //                    List<HasMetadata> projectResourceList = projectResources.getResourceList(processedTemplateItem.getKind());
 //                    boolean create = true;

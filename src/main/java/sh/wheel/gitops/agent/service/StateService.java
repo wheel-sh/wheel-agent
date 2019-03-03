@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import sh.wheel.gitops.agent.model.NamespaceState;
+import sh.wheel.gitops.agent.model.ProjectState;
 import sh.wheel.gitops.agent.model.WheelRepository;
 
 import javax.annotation.PostConstruct;
@@ -28,8 +28,8 @@ public class StateService {
     @Value("${sh.wheel.repository.branch}")
     private String repositoryBranch;
 
-    private Map<String, NamespaceState> clusterState;
-    private Map<String, NamespaceState> expectedState;
+    private Map<String, ProjectState> clusterState;
+    private Map<String, ProjectState> expectedState;
 
     @Autowired
     public StateService(WheelRepositoryService wheelRepositoryService, ConfigProcessingService configProcessingService) {
@@ -40,18 +40,18 @@ public class StateService {
     @PostConstruct
     public void init() throws IOException, GitAPIException {
         WheelRepository wheelRepository = wheelRepositoryService.loadRepository(repositoryUrl, repositoryBranch);
-        List<NamespaceState> namespaceStates = configProcessingService.processExpectedNamespaceStates(wheelRepository);
+        List<ProjectState> projectStates = configProcessingService.processExpectedNamespaceStates(wheelRepository);
 //        gitRepositoryService.pullLatest();
 //        WheelRepository repositoryState = repositoryConfigService.getRepositoryState(Paths.getResourceList(gitRepositoryService.getRepositoryPath()));
 
 
     }
 
-    public Map<String, NamespaceState> getClusterState() {
+    public Map<String, ProjectState> getClusterState() {
         return clusterState;
     }
 
-    public Map<String, NamespaceState> getExpectedState() {
+    public Map<String, ProjectState> getExpectedState() {
         return expectedState;
     }
 }

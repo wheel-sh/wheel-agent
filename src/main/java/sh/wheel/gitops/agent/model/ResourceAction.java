@@ -24,4 +24,13 @@ public class ResourceAction {
     public List<AttributeDifference> getAttributeDifferences() {
         return attributeDifferences;
     }
+
+    @Override
+    public String toString() {
+        return "ResourceAction{" +
+                "type=" + type +
+                ", resource=" + resource +
+                ", attributeDifferences=" + attributeDifferences +
+                '}';
+    }
 }

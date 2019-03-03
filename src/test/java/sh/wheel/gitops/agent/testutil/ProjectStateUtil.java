@@ -47,4 +47,20 @@ public class ProjectStateUtil {
             throw new RuntimeException(e);
         }
     }
+
+    public static JsonNode createExampleTestAppProjectProcessed() {
+        try {
+            return READER.readTree(new FileInputStream(Samples.EXAMPLE_APP_PROJECT_PROCESSED_FILE.toPath().toFile()));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public static JsonNode createExampleTestAppProjectServerResponse() {
+        try {
+            return READER.readTree(new FileInputStream(Samples.EXAMPLE_APP_PROJECT_SERVER_RESPONSE.toPath().toFile()));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
 }

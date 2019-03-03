@@ -3,11 +3,11 @@ package sh.wheel.gitops.agent.model;
 import java.util.List;
 import java.util.Map;
 
-public class NamespaceState {
+public class ProjectState {
     private String name;
     private Map<String, List<Resource>> resourcesByKind;
 
-    public NamespaceState(String name, Map<String, List<Resource>> resourcesByKind) {
+    public ProjectState(String name, Map<String, List<Resource>> resourcesByKind) {
         this.name = name;
         this.resourcesByKind = resourcesByKind;
     }

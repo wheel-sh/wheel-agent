@@ -81,6 +81,34 @@
           "name": "system:serviceaccounts:example-app-test"
         }
       ]
+    },
+    {
+      "apiVersion": "authorization.openshift.io/v1",
+      "groupNames": null,
+      "kind": "RoleBinding",
+      "metadata": {
+        "annotations": {
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"rbac.authorization.k8s.io/v1\",\"kind\":\"RoleBinding\",\"metadata\":{\"annotations\":{},\"name\":\"admin\",\"namespace\":\"example-app-test\"},\"roleRef\":{\"apiGroup\":\"rbac.authorization.k8s.io\",\"kind\":\"ClusterRole\",\"name\":\"admin\"},\"subjects\":[{\"apiGroup\":\"rbac.authorization.k8s.io\",\"kind\":\"User\",\"name\":\"admin@nikio.io\"}]}\n"
+        },
+        "creationTimestamp": "2019-03-02T22:10:16Z",
+        "name": "admin",
+        "namespace": "example-app-test",
+        "resourceVersion": "7857685",
+        "selfLink": "/apis/authorization.openshift.io/v1/namespaces/example-app-test/rolebindings/admin",
+        "uid": "f5851325-3d37-11e9-9ed9-0200c0a87ac9"
+      },
+      "roleRef": {
+        "name": "admin"
+      },
+      "subjects": [
+        {
+          "kind": "User",
+          "name": "admin@nikio.io"
+        }
+      ],
+      "userNames": [
+        "admin@nikio.io"
+      ]
     }
   ],
   "kind": "List",

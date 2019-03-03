@@ -20,7 +20,7 @@ public class NamespaceDiffService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    public List<ResourceDifference> evaluateDifference(NamespaceState processed, NamespaceState project) {
+    public List<ResourceDifference> evaluateDifference(ProjectState processed, ProjectState project) {
         List<ResourceDifference> resourceDifferences = new ArrayList<>();
         Map<String, List<Resource>> processedResourcesByKind = processed.getResourcesByKind();
         Map<String, List<Resource>> projectResourcesByKind = project.getResourcesByKind();
@@ -38,7 +38,7 @@ public class NamespaceDiffService {
                 if (processedResource == null) {
                     resourceDifferences.add(new ResourceDifference(DifferenceType.PROJECT_ONLY, null, projectResource, null, resourceKey));
                 } else if (projectResource == null) {
-                    resourceDifferences.add(new ResourceDifference(DifferenceType.PROJECT_ONLY, processedResource, null, null, resourceKey));
+                    resourceDifferences.add(new ResourceDifference(DifferenceType.PROCESSED_ONLY, processedResource, null, null, resourceKey));
                 } else {
                     List<AttributeDifference> attributeDifferences = evaluateAttributeDifference(processedResource, projectResource);
                     resourceDifferences.add(new ResourceDifference(DifferenceType.DIFFER, processedResource, projectResource, attributeDifferences, resourceKey));
@@ -64,7 +64,8 @@ public class NamespaceDiffService {
         for (JsonNode diff : diffs) {
             String path = diff.get("path").textValue();
             Operation op = Operation.byName(diff.get("op").textValue());
-            String value = diff.get("value").toString();
+            JsonNode jsonNodeValue = diff.get("value");
+            String value = jsonNodeValue.textValue() != null ? jsonNodeValue.textValue() : jsonNodeValue.toString();
             attributeDifferences.add(new AttributeDifference(proccessed.getName(), proccessed.getKind(), path, value, op));
         }
         return attributeDifferences;

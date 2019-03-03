@@ -1,0 +1,28 @@
+{
+  "apiVersion": "project.openshift.io/v1",
+  "kind": "Project",
+  "metadata": {
+    "annotations": {
+      "openshift.io/display-name": "",
+      "openshift.io/sa.scc.mcs": "s0:c21,c15",
+      "openshift.io/description": "",
+      "openshift.io/display-name": "",
+      "openshift.io/requester": "admin@nikio.io",
+      "openshift.io/sa.scc.supplemental-groups": "1000450000/10000",
+      "openshift.io/sa.scc.uid-range": "1000450000/10000"
+    },
+    "creationTimestamp": "2019-02-18T23:20:48Z",
+    "name": "example-app-test",
+    "resourceVersion": "5574722",
+    "selfLink": "/apis/project.openshift.io/v1/projects/example-app-test",
+    "uid": "d321a42b-33d3-11e9-818e-0200c0a87ac9"
+  },
+  "spec": {
+    "finalizers": [
+      "kubernetes"
+    ]
+  },
+  "status": {
+    "phase": "Active"
+  }
+}

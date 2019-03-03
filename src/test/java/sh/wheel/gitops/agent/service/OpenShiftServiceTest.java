@@ -2,6 +2,7 @@ package sh.wheel.gitops.agent.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import sh.wheel.gitops.agent.model.ProjectState;
 import sh.wheel.gitops.agent.model.Resource;
 import sh.wheel.gitops.agent.testutil.OpenShiftCliMockUtil;
 import sh.wheel.gitops.agent.testutil.Samples;
@@ -25,7 +26,8 @@ class OpenShiftServiceTest {
 
     @Test
     void getAllNamespacedResources() {
-        Map<String, List<Resource>> allNamespacedResources = openShiftService.getAllNamespacedResources("example-app-test");
+        ProjectState projectStateFromCluster = openShiftService.getProjectStateFromCluster("example-app-test");
+        Map<String, List<Resource>> allNamespacedResources = projectStateFromCluster.getResourcesByKind();
 
         assertTrue(allNamespacedResources.size() > 5);
     }
