@@ -40,7 +40,7 @@ public class StateService {
     @PostConstruct
     public void init() throws IOException, GitAPIException {
         WheelRepository wheelRepository = wheelRepositoryService.loadRepository(repositoryUrl, repositoryBranch);
-        List<ProjectState> projectStates = configProcessingService.processExpectedNamespaceStates(wheelRepository);
+        List<ProjectState> projectStates = configProcessingService.processExpectedProjectStates(wheelRepository);
 //        gitRepositoryService.pullLatest();
 //        WheelRepository repositoryState = repositoryConfigService.getRepositoryState(Paths.getResourceList(gitRepositoryService.getRepositoryPath()));
 

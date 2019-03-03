@@ -30,7 +30,7 @@ public class ResourceDifferenceService {
 
         IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/status", null));
         IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/metadata/creationTimestamp", null));
-        IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/metadata/namespace", null));
+        IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/metadata/project", null));
         IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/metadata/resourceVersion", null));
         IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/metadata/selfLink", null));
         IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/metadata/uid", null));

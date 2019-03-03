@@ -91,12 +91,12 @@ class WheelRepositoryServiceTest {
         assertNotNull(app.getBuildConfigs().get(0).getGitUrl());
         assertNotNull(app.getBuildConfigs().get(0).getJenkinsfilePath());
         assertNotNull(app.getBuildConfigs().get(0).getName());
-        assertNotNull(app.getNamespaceConfigs().get(0).getName());
-        assertNotNull(app.getNamespaceConfigs().get(0).getTemplateFile());
-        assertNotNull(app.getNamespaceConfigs().get(0).getRequests());
-        assertNotNull(app.getNamespaceConfigs().get(0).getLimits());
-        assertNotNull(app.getNamespaceConfigs().get(0).getParameters());
-        assertNotNull(app.getNamespaceConfigs().get(0).getPool());
+        assertNotNull(app.getProjectConfigs().get(0).getName());
+        assertNotNull(app.getProjectConfigs().get(0).getTemplateFile());
+        assertNotNull(app.getProjectConfigs().get(0).getRequests());
+        assertNotNull(app.getProjectConfigs().get(0).getLimits());
+        assertNotNull(app.getProjectConfigs().get(0).getParameters());
+        assertNotNull(app.getProjectConfigs().get(0).getPool());
     }
 
     @Test
@@ -145,10 +145,18 @@ class WheelRepositoryServiceTest {
         Files.createDirectories(testDir.resolve("apps"));
         FileNotFoundException fileNotFoundException_groups = assertThrows(FileNotFoundException.class, () -> wheelRepositoryService.getRepositoryState(testDir));
         Files.createDirectories(testDir.resolve("groups"));
+        FileNotFoundException fileNotFoundException_base = assertThrows(FileNotFoundException.class, () -> wheelRepositoryService.getRepositoryState(testDir));
+        Path basePath = testDir.resolve("base");
+        Files.createDirectories(basePath);
+        FileNotFoundException fileNotFoundException_project_template = assertThrows(FileNotFoundException.class, () -> wheelRepositoryService.getRepositoryState(testDir));
+        Files.createDirectories(basePath.resolve("template"));
+        Files.createFile(basePath.resolve("template/project.yaml"));
         WheelRepository repositoryState = wheelRepositoryService.getRepositoryState(testDir);
 
-        assertTrue(fileNotFoundException_apps.getMessage().contains("apps/"));
-        assertTrue(fileNotFoundException_groups.getMessage().contains("groups/"));
+        assertTrue(fileNotFoundException_apps.getMessage().contains("/apps"));
+        assertTrue(fileNotFoundException_groups.getMessage().contains("/groups"));
+        assertTrue(fileNotFoundException_base.getMessage().contains("/base"));
+        assertTrue(fileNotFoundException_project_template.getMessage().contains("/template/project.yaml"));
         assertEquals(0, repositoryState.getApps().size());
         assertEquals(0, repositoryState.getGroups().size());
     }

@@ -21,7 +21,7 @@ class ResourceDifferenceServiceTest {
     @BeforeEach
     void setUp() {
         OpenShiftService openShiftService = new OpenShiftService(OpenShiftCliMockUtil.createOpenShiftCliMock());
-        NamespaceDiffService namespaceDiffService = new NamespaceDiffService();
+        ProjectDifferenceService projectDifferenceService = new ProjectDifferenceService();
         clusterProjectState = openShiftService.getProjectStateFromCluster("example-app-test");
 
         Map<String, String> appParams = new HashMap<>();
@@ -35,7 +35,7 @@ class ResourceDifferenceServiceTest {
         appParams.put("PROJECT_ADMIN_USER", "admin@nikio.io");
         processedProjectState = openShiftService.getProjectStateFromTemplate(Samples.PROJECT_TEMPLATE.toPath(), projectParams, Samples.TEMPLATE1.toPath(), appParams);
 
-        resourceDifferences = namespaceDiffService.evaluateDifference(processedProjectState, clusterProjectState);
+        resourceDifferences = projectDifferenceService.evaluateDifference(processedProjectState, clusterProjectState);
     }
 
     @Test
@@ -49,7 +49,5 @@ class ResourceDifferenceServiceTest {
         assertEquals(4, byType.get(ActionType.WARNING).size());
         assertEquals(2, byType.get(ActionType.IGNORE).size());
     }
-
-
 
 }

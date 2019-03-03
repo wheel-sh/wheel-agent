@@ -15,7 +15,7 @@ public class WheelAgentApplication {
 //        Path appsPath = repositoryPath.resolve("apps");
 //        List<App> apps = new AppsConfigReader().readAllApps(appsPath);
 //        for (App app : apps) {
-//            for (NamespaceConfig namespaceConfig : app.getNamespaceConfigs()) {
+//            for (ProjectConfig namespaceConfig : app.getProjectConfigs()) {
 //                String templateFile = namespaceConfig.getTemplateFile();
 //                Path tplPath = app.getAppDir().resolve(TEMPLATE_DIR).resolve(templateFile);
 //                Map<String, String> params = namespaceConfig.getParameters().stream().collect(Collectors.toMap(ParameterConfig::getName, ParameterConfig::getValue));

@@ -52,52 +52,52 @@ public class ProjectResourceService {
         };
     }
 
-//    public ProjectState getProjectStateFromCluster(String namespace) {
+//    public ProjectState getProjectStateFromCluster(String project) {
 //        List<HasMetadata> namespaceResources = Arrays.stream(resourceOperations).parallel()
-//                .map(ro -> ro.inNamespace(namespace).list().getItems())
+//                .map(ro -> ro.inNamespace(project).list().getItems())
 //                .flatMap(Collection::stream)
 //                .collect(Collectors.toList());
-//        return new ProjectState(namespace, namespaceResources);
+//        return new ProjectState(project, namespaceResources);
 //
 //    }
 
-    //    public ProjectResources getAll(String namespace, OpenShiftClient client) {
+    //    public ProjectResources getAll(String project, OpenShiftClient client) {
 //        return ProjectResources.newBuilder()
-//                .buildConfigList(client.buildConfigs().inNamespace(namespace).list())
-//                .imageStreamList(client.imageStreams().inNamespace(namespace).list())
-//                .imageStreamTagList(client.imageStreamTags().inNamespace(namespace).list())
-//                .roleList(client.roles().inNamespace(namespace).list())
-//                .roleBindingList(client.roleBindings().inNamespace(namespace).list())
-//                .routeList(client.routes().inNamespace(namespace).list())
-//                .templateList(client.templates().inNamespace(namespace).list())
-//                .limitRangeList(client.limitRanges().inNamespace(namespace).list())
-//                .podList(client.pods().inNamespace(namespace).list())
-//                .persistentVolumeClaimList(client.persistentVolumeClaims().inNamespace(namespace).list())
-//                .replicationControllerList(client.replicationControllers().inNamespace(namespace).list())
-//                .resourceQuotaList(client.resourceQuotas().inNamespace(namespace).list())
-//                .serviceList(client.services().inNamespace(namespace).list())
-//                .serviceAccountList(client.serviceAccounts().inNamespace(namespace).list())
-//                .secretList(client.secrets().inNamespace(namespace).list())
-//                .configMapList(client.configMaps().inNamespace(namespace).list())
+//                .buildConfigList(client.buildConfigs().inNamespace(project).list())
+//                .imageStreamList(client.imageStreams().inNamespace(project).list())
+//                .imageStreamTagList(client.imageStreamTags().inNamespace(project).list())
+//                .roleList(client.roles().inNamespace(project).list())
+//                .roleBindingList(client.roleBindings().inNamespace(project).list())
+//                .routeList(client.routes().inNamespace(project).list())
+//                .templateList(client.templates().inNamespace(project).list())
+//                .limitRangeList(client.limitRanges().inNamespace(project).list())
+//                .podList(client.pods().inNamespace(project).list())
+//                .persistentVolumeClaimList(client.persistentVolumeClaims().inNamespace(project).list())
+//                .replicationControllerList(client.replicationControllers().inNamespace(project).list())
+//                .resourceQuotaList(client.resourceQuotas().inNamespace(project).list())
+//                .serviceList(client.services().inNamespace(project).list())
+//                .serviceAccountList(client.serviceAccounts().inNamespace(project).list())
+//                .secretList(client.secrets().inNamespace(project).list())
+//                .configMapList(client.configMaps().inNamespace(project).list())
 //                .build();
 //    }
 
-//        namespaceResources.addAll(Collections.unmodifiableList(client.routes().inNamespace(namespace).list().getItems()));
-//        namespaceResources.addAll(Collections.unmodifiableList(client.services().inNamespace(namespace).list().getItems()));
-//        namespaceResources.addAll(Collections.unmodifiableList(client.buildConfigs().inNamespace(namespace).list().getItems()));
-//        namespaceResources.addAll(Collections.unmodifiableList(client.imageStreams().inNamespace(namespace).list().getItems()));
-//        namespaceResources.addAll(Collections.unmodifiableList(client.imageStreamTags().inNamespace(namespace).list().getItems()));
-//        namespaceResources.addAll(Collections.unmodifiableList(client.roles().inNamespace(namespace).list().getItems()));
-//        namespaceResources.addAll(Collections.unmodifiableList(client.roleBindings().inNamespace(namespace).list().getItems()));
-//        namespaceResources.addAll(Collections.unmodifiableList(client.routes().inNamespace(namespace).list().getItems()));
-//        namespaceResources.addAll(Collections.unmodifiableList(client.templates().inNamespace(namespace).list().getItems()));
-//        namespaceResources.addAll(Collections.unmodifiableList(client.limitRanges().inNamespace(namespace).list().getItems()));
-//        namespaceResources.addAll(Collections.unmodifiableList(client.pods().inNamespace(namespace).list().getItems()));
-//        namespaceResources.addAll(Collections.unmodifiableList(client.persistentVolumeClaims().inNamespace(namespace).list().getItems()));
-//        namespaceResources.addAll(Collections.unmodifiableList(client.replicationControllers().inNamespace(namespace).list().getItems()));
-//        namespaceResources.addAll(Collections.unmodifiableList(client.resourceQuotas().inNamespace(namespace).list().getItems()));
-//        namespaceResources.addAll(Collections.unmodifiableList(client.serviceAccounts().inNamespace(namespace).list().getItems()));
-//        namespaceResources.addAll(Collections.unmodifiableList(client.secrets().inNamespace(namespace).list().getItems()));
-//        namespaceResources.addAll(Collections.unmodifiableList(client.configMaps().inNamespace(namespace).list().getItems()));
-//        namespaceResources.addAll(Collections.unmodifiableList(client.persistentVolumeClaims().inNamespace(namespace).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.routes().inNamespace(project).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.services().inNamespace(project).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.buildConfigs().inNamespace(project).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.imageStreams().inNamespace(project).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.imageStreamTags().inNamespace(project).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.roles().inNamespace(project).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.roleBindings().inNamespace(project).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.routes().inNamespace(project).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.templates().inNamespace(project).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.limitRanges().inNamespace(project).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.pods().inNamespace(project).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.persistentVolumeClaims().inNamespace(project).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.replicationControllers().inNamespace(project).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.resourceQuotas().inNamespace(project).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.serviceAccounts().inNamespace(project).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.secrets().inNamespace(project).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.configMaps().inNamespace(project).list().getItems()));
+//        namespaceResources.addAll(Collections.unmodifiableList(client.persistentVolumeClaims().inNamespace(project).list().getItems()));
 }

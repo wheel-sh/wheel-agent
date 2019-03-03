@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import sh.wheel.gitops.agent.config.*;
 import sh.wheel.gitops.agent.model.App;
+import sh.wheel.gitops.agent.model.BaseConfig;
 import sh.wheel.gitops.agent.model.Group;
 import sh.wheel.gitops.agent.model.WheelRepository;
 import sh.wheel.gitops.agent.util.GenericYamlDeserializer;
@@ -26,10 +27,14 @@ public class WheelRepositoryService {
     public static final String APP_CONFIG = "config.yaml";
     public static final String GROUP_CONFIG = "config.yaml";
     public static final String BUILD_CONFIG_DIR = "build/";
-    public static final String NAMESPACE_CONFIG_DIR = "namespace/";
+    public static final String PROJECT_CONFIG_DIR = "project/";
     public static final String TEMPLATE_DIR = "template/";
     public static final String APPS_DIR = "apps";
     public static final String GROUPS_DIR = "groups";
+    public static final String BASE_DIR = "base";
+    public static final String BASE_TEMPLATE_DIR = "template";
+    public static final String BASE_PROJECT_TEMPLATE = "project.yaml";
+
     public static final String GROUP_MEMBERS_CONFIG = "members.yaml";
 
     private final GenericYamlDeserializer deserializer = new GenericYamlDeserializer();
@@ -93,8 +98,8 @@ public class WheelRepositoryService {
     private App readApp(Path appDir) throws IOException {
         AppConfig appConfig = deserializer.deserialize(appDir.resolve(GROUP_CONFIG), AppConfig.class);
         List<BuildConfig> buildConfigs = deserializer.readDirectory(appDir.resolve(BUILD_CONFIG_DIR), BuildConfig.class);
-        List<NamespaceConfig> namespaceConfigs = deserializer.readDirectory(appDir.resolve(NAMESPACE_CONFIG_DIR), NamespaceConfig.class);
-        return new App(appConfig, buildConfigs, namespaceConfigs, appDir);
+        List<ProjectConfig> projectConfigs = deserializer.readDirectory(appDir.resolve(PROJECT_CONFIG_DIR), ProjectConfig.class);
+        return new App(appConfig, buildConfigs, projectConfigs, appDir);
     }
 
 
@@ -121,15 +126,28 @@ public class WheelRepositoryService {
     WheelRepository getRepositoryState(Path repository) throws IOException {
         Path appsDir = repository.resolve(APPS_DIR);
         Path groupsDir = repository.resolve(GROUPS_DIR);
+        Path baseDir = repository.resolve(BASE_DIR);
         if (!Files.exists(appsDir)) {
-            throw new FileNotFoundException("Could not find apps/ directory in " + repository);
+            throw new FileNotFoundException(String.format("Could not find %s directory in %s", appsDir.toAbsolutePath().toString(), repository));
         }
         if (!Files.exists(groupsDir)) {
-            throw new FileNotFoundException("Could not find groups/ directory in " + repository);
+            throw new FileNotFoundException(String.format("Could not find %s directory in %s", groupsDir.toAbsolutePath().toString(), repository));
+        }
+        if (!Files.exists(baseDir)) {
+            throw new FileNotFoundException(String.format("Could not find %s directory in %s", baseDir.toAbsolutePath().toString(), repository));
         }
         List<App> apps = readAllApps(appsDir);
         List<Group> groups = readAllGroups(groupsDir);
-        return WheelRepository.newInstance(apps, groups);
+        BaseConfig baseConfig = readBaseConfig(baseDir);
+        return WheelRepository.newInstance(apps, groups, baseConfig);
+    }
+
+    private BaseConfig readBaseConfig(Path baseDir) throws FileNotFoundException {
+        Path projectTemplate = baseDir.resolve(BASE_TEMPLATE_DIR).resolve(BASE_PROJECT_TEMPLATE);
+        if (!Files.exists(projectTemplate)) {
+            throw new FileNotFoundException(String.format("Could not find %s directory in %s", projectTemplate.toAbsolutePath().toString(), baseDir.toAbsolutePath().toString()));
+        }
+        return new BaseConfig(projectTemplate);
     }
 
 }

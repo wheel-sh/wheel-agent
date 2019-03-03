@@ -2,7 +2,7 @@ package sh.wheel.gitops.agent.model;
 
 import sh.wheel.gitops.agent.config.AppConfig;
 import sh.wheel.gitops.agent.config.BuildConfig;
-import sh.wheel.gitops.agent.config.NamespaceConfig;
+import sh.wheel.gitops.agent.config.ProjectConfig;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -12,13 +12,13 @@ public class App {
 
     private final AppConfig appConfig;
     private final List<BuildConfig> buildConfigs;
-    private final List<NamespaceConfig> namespaceConfigs;
+    private final List<ProjectConfig> projectConfigs;
     private final Path appDir;
 
-    public App(AppConfig appConfig, List<BuildConfig> buildConfigs, List<NamespaceConfig> namespaceConfigs, Path appDir) {
+    public App(AppConfig appConfig, List<BuildConfig> buildConfigs, List<ProjectConfig> projectConfigs, Path appDir) {
         this.appConfig = appConfig;
         this.buildConfigs = buildConfigs;
-        this.namespaceConfigs = namespaceConfigs;
+        this.projectConfigs = projectConfigs;
         this.appDir = appDir;
     }
 
@@ -30,8 +30,8 @@ public class App {
         return buildConfigs;
     }
 
-    public List<NamespaceConfig> getNamespaceConfigs() {
-        return namespaceConfigs;
+    public List<ProjectConfig> getProjectConfigs() {
+        return projectConfigs;
     }
 
     public Path getAppDir() {

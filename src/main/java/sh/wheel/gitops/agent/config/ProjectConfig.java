@@ -2,7 +2,7 @@ package sh.wheel.gitops.agent.config;
 
 import java.util.List;
 
-public class NamespaceConfig {
+public class ProjectConfig {
 
     private String name;
     private String pool;

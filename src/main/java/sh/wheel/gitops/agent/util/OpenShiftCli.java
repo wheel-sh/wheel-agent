@@ -62,7 +62,7 @@ public class OpenShiftCli {
     }
 
     public JsonNode process(String templatePath, Map<String, String> params) {
-        StringBuilder command = new StringBuilder(WHOAMI +" ");
+        StringBuilder command = new StringBuilder(PROCESS_TEMPLATE +" ");
         for (Map.Entry<String, String> e : params.entrySet()) {
             command.append("-p ").append(e.getKey()).append("=").append("\'").append(e.getValue()).append("\'").append(" ");
         }

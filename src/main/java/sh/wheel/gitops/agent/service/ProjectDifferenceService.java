@@ -16,32 +16,32 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
-public class NamespaceDiffService {
+public class ProjectDifferenceService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    public List<ResourceDifference> evaluateDifference(ProjectState processed, ProjectState project) {
+    public List<ResourceDifference> evaluateDifference(ProjectState processed, ProjectState cluster) {
         List<ResourceDifference> resourceDifferences = new ArrayList<>();
         Map<String, List<Resource>> processedResourcesByKind = processed.getResourcesByKind();
-        Map<String, List<Resource>> projectResourcesByKind = project.getResourcesByKind();
-        Set<String> availableKinds = Stream.concat(processedResourcesByKind.keySet().stream(), projectResourcesByKind.keySet().stream()).collect(Collectors.toSet());
+        Map<String, List<Resource>> clusterResourcesByKind = cluster.getResourcesByKind();
+        Set<String> availableKinds = Stream.concat(processedResourcesByKind.keySet().stream(), clusterResourcesByKind.keySet().stream()).collect(Collectors.toSet());
         for (String kind : availableKinds) {
             List<Resource> processedResources = processedResourcesByKind.get(kind);
-            List<Resource> projectResources = projectResourcesByKind.get(kind);
+            List<Resource> clusterResources = clusterResourcesByKind.get(kind);
             Map<String, Resource> processedResourceByName = groupByName(processedResources);
-            Map<String, Resource> projectResourceByName = groupByName(projectResources);
-            Set<String> availableResourceNames = Stream.concat(processedResourceByName.keySet().stream(), projectResourceByName.keySet().stream()).collect(Collectors.toSet());
+            Map<String, Resource> clusterResourceByName = groupByName(clusterResources);
+            Set<String> availableResourceNames = Stream.concat(processedResourceByName.keySet().stream(), clusterResourceByName.keySet().stream()).collect(Collectors.toSet());
             for (String name : availableResourceNames) {
                 Resource processedResource = processedResourceByName.get(name);
-                Resource projectResource = projectResourceByName.get(name);
+                Resource clusterResource = clusterResourceByName.get(name);
                 ResourceKey resourceKey = new ResourceKey(kind, name);
                 if (processedResource == null) {
-                    resourceDifferences.add(new ResourceDifference(DifferenceType.PROJECT_ONLY, null, projectResource, null, resourceKey));
-                } else if (projectResource == null) {
+                    resourceDifferences.add(new ResourceDifference(DifferenceType.PROJECT_ONLY, null, clusterResource, null, resourceKey));
+                } else if (clusterResource == null) {
                     resourceDifferences.add(new ResourceDifference(DifferenceType.PROCESSED_ONLY, processedResource, null, null, resourceKey));
                 } else {
-                    List<AttributeDifference> attributeDifferences = evaluateAttributeDifference(processedResource, projectResource);
-                    resourceDifferences.add(new ResourceDifference(DifferenceType.DIFFER, processedResource, projectResource, attributeDifferences, resourceKey));
+                    List<AttributeDifference> attributeDifferences = evaluateAttributeDifference(processedResource, clusterResource);
+                    resourceDifferences.add(new ResourceDifference(DifferenceType.DIFFER, processedResource, clusterResource, attributeDifferences, resourceKey));
                 }
             }
         }
@@ -53,13 +53,13 @@ public class NamespaceDiffService {
     }
 
 
-    private List<AttributeDifference> evaluateAttributeDifference(Resource proccessed, Resource project) {
+    private List<AttributeDifference> evaluateAttributeDifference(Resource proccessed, Resource cluster) {
         JsonNode processedJsonNode = proccessed.getJsonNode();
-        JsonNode projectJsonNode = project.getJsonNode();
-        if (processedJsonNode == null && projectJsonNode == null) {
+        JsonNode clusterJsonNode = cluster.getJsonNode();
+        if (processedJsonNode == null && clusterJsonNode == null) {
             throw new IllegalStateException("Cannot evaluate difference between two null resources");
         }
-        JsonNode diffs = JsonDiff.asJson(processedJsonNode, projectJsonNode, DiffFlags.dontNormalizeOpIntoMoveAndCopy());
+        JsonNode diffs = JsonDiff.asJson(processedJsonNode, clusterJsonNode, DiffFlags.dontNormalizeOpIntoMoveAndCopy());
         List<AttributeDifference> attributeDifferences = new ArrayList<>();
         for (JsonNode diff : diffs) {
             String path = diff.get("path").textValue();

@@ -15,15 +15,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-class NamespaceDiffServiceTest {
+class ProjectDifferenceServiceTest {
 
     private OpenShiftService openShiftService;
-    private NamespaceDiffService namespaceDiffService;
+    private ProjectDifferenceService projectDifferenceService;
 
     @BeforeEach
     void setUp() {
         openShiftService = new OpenShiftService(OpenShiftCliMockUtil.createOpenShiftCliMock());
-        namespaceDiffService = new NamespaceDiffService();
+        projectDifferenceService = new ProjectDifferenceService();
     }
 
     @Test
@@ -36,7 +36,7 @@ class NamespaceDiffServiceTest {
         ProjectState processedProjectState = new ProjectState("example-app-test", processDeloymentConfig);
         ProjectState projectProjectState = new ProjectState("example-app-test", projectDeloymentConfig);
 
-        List<ResourceDifference> resourceDifferences = namespaceDiffService.evaluateDifference(processedProjectState, projectProjectState);
+        List<ResourceDifference> resourceDifferences = projectDifferenceService.evaluateDifference(processedProjectState, projectProjectState);
 
         Assertions.assertEquals(1, resourceDifferences.size());
         ResourceDifference difference = resourceDifferences.get(0);
