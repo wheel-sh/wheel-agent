@@ -29,9 +29,9 @@ class ProjectDifferenceServiceTest {
     @Test
     void compare() {
         ProjectState allNamespacedResourcesTestData = getAllNamespacedResourcesTestData();
-        Map<String, List<Resource>> processTestData = processTestData();
-        Map<String, List<Resource>> processDeloymentConfig = allNamespacedResourcesTestData.getResourcesByKind().entrySet().stream().filter(e -> e.getKey().equals("DeploymentConfig")).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        Map<String, List<Resource>> projectDeloymentConfig = processTestData.entrySet().stream().filter(e -> e.getKey().equals("DeploymentConfig")).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        ProjectState processedState = processTestData();
+        Map<String, List<Resource>> processDeloymentConfig = processedState.getResourcesByKind().entrySet().stream().filter(e -> e.getKey().equals("DeploymentConfig")).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<String, List<Resource>> projectDeloymentConfig = allNamespacedResourcesTestData.getResourcesByKind().entrySet().stream().filter(e -> e.getKey().equals("DeploymentConfig")).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         ProjectState processedProjectState = new ProjectState("example-app-test", processDeloymentConfig);
         ProjectState projectProjectState = new ProjectState("example-app-test", projectDeloymentConfig);
@@ -49,14 +49,17 @@ class ProjectDifferenceServiceTest {
     }
 
 
-    private Map<String, List<Resource>> processTestData() {
-        Map<String, String> params = new HashMap<>();
-        params.put("REPLICA_COUNT", "2");
-        params.put("IMAGE_NAME", "bitnami/nginx");
-        params.put("IMAGE_VERSION", "1.14-ol-7");
+    private ProjectState processTestData() {
+        Map<String, String> appParams = new HashMap<>();
+        appParams.put("REPLICA_COUNT", "2");
+        appParams.put("IMAGE_NAME", "bitnami/nginx");
+        appParams.put("IMAGE_VERSION", "1.14-ol-7");
 
-        Map<String, List<Resource>> process = openShiftService.process(Samples.TEMPLATE1.toPath(), params);
-        return process;
+        Map<String, String> projectParams = new HashMap<>();
+        appParams.put("PROJECT_NAME", "example-app-test");
+        appParams.put("PROJECT_REQUESTING_USER", "admin@nikio.io");
+        appParams.put("PROJECT_ADMIN_USER", "admin@nikio.io");
+        return openShiftService.getProjectStateFromTemplate(Samples.PROJECT_TEMPLATE.toPath(), projectParams, Samples.TEMPLATE1.toPath(), appParams);
     }
 
 }

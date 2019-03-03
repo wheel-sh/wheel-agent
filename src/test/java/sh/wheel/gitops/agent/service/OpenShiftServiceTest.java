@@ -29,7 +29,7 @@ class OpenShiftServiceTest {
         ProjectState projectStateFromCluster = openShiftService.getProjectStateFromCluster("example-app-test");
         Map<String, List<Resource>> allNamespacedResources = projectStateFromCluster.getResourcesByKind();
 
-        assertTrue(allNamespacedResources.size() > 5);
+        assertTrue(allNamespacedResources.size() > 0);
     }
 
     @Test
@@ -43,4 +43,5 @@ class OpenShiftServiceTest {
 
         assertTrue(process.size() > 2);
     }
+
 }

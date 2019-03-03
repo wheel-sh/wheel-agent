@@ -29,7 +29,7 @@ class OpenShiftCliIntegrationTest {
 
     @Test
     void getResourceList() {
-        JsonNode resourceList = oc.getResourceList("pods", "default");
+        JsonNode resourceList = oc.getResourceList("template", "openshift");
 
         assertNotNull(resourceList);
         assertEquals("List", resourceList.get("kind").textValue());
@@ -40,11 +40,11 @@ class OpenShiftCliIntegrationTest {
 
     @Test
     void getResource() {
-        JsonNode resource = oc.getResource("deploymentconfig", "example-app", "example-app-test");
+        JsonNode resource = oc.getResource("template", "system", "openshift");
 
         assertNotNull(resource);
-        assertEquals("DeploymentConfig", resource.get("kind").textValue());
-        assertEquals(1, resource.get("spec").get("replicas").intValue());
+        assertEquals("Template", resource.get("kind").textValue());
+        assertEquals("system", resource.get("metadata").get("name").textValue());
     }
 
     @Test
@@ -65,6 +65,12 @@ class OpenShiftCliIntegrationTest {
         List<String> apiResources = oc.getApiResources(false);
         assertTrue(apiResources.contains("namespaces"));
         assertFalse(apiResources.contains("configmaps"));
+    }
+
+    @Test
+    void getApiResourcesWideNamespaced_True() {
+        List<String> apiResources = oc.getApiResourcesWide(true);
+        assertTrue(apiResources.size() > 50);
     }
 
     @Test
@@ -119,5 +125,11 @@ class OpenShiftCliIntegrationTest {
     void whoami() {
         String whoami = oc.getWhoAmI();
         assertNotNull(whoami);
+    }
+
+    @Test
+    void canI() {
+        boolean b = oc.canI("get", "pods");
+        assertTrue(b);
     }
 }

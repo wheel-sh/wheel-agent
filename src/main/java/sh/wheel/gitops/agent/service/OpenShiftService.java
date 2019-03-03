@@ -6,11 +6,9 @@ import sh.wheel.gitops.agent.model.ProjectState;
 import sh.wheel.gitops.agent.model.Resource;
 import sh.wheel.gitops.agent.util.OpenShiftCli;
 
+import javax.annotation.PostConstruct;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -20,6 +18,8 @@ import java.util.stream.StreamSupport;
 public class OpenShiftService {
 
     private OpenShiftCli oc;
+    private List<String> requiredOperations = Arrays.asList("create", "delete", "deletecollection", "get", "list", "patch", "update", "watch");
+    private List<String> apiResources;
 
     public OpenShiftService() {
         this.oc = new OpenShiftCli();
@@ -29,14 +29,10 @@ public class OpenShiftService {
         this.oc = openShiftCli;
     }
 
-//    public List<Resource> getAllNamespacedResources2(String project) {
-//        List<String> apiResources = oc.getApiResources(true);
-//        String resources = String.join(",", apiResources);
-//        JsonNode resourceList = oc.getResourceList(resources, project);
-//        return StreamSupport.stream(resourceList.get("items").spliterator(), false)
-//                .map(this::mapToResource)
-//                .collect(Collectors.toList());
-//    }
+    @PostConstruct
+    public void init() {
+        apiResources = getManageableResources();
+    }
 
     Resource mapToResource(JsonNode jsonNode) {
         String kind = jsonNode.get("kind").textValue();
@@ -44,8 +40,15 @@ public class OpenShiftService {
         return new Resource(kind, name, jsonNode);
     }
 
+    public List<ProjectState> getProjectStatesFromCluster() {
+        return oc.getManageableProjects().parallelStream()
+                .map(mp -> mp.get("metadata").get("name").textValue())
+                .map(this::getProjectStateFromCluster)
+                .collect(Collectors.toList());
+    }
+
     public ProjectState getProjectStateFromCluster(String projectName) {
-        List<JsonNode> allResources = oc.getAllNamespacedResource(projectName);
+        List<JsonNode> allResources = oc.getResources(projectName, apiResources);
         Map<String, List<Resource>> projectResources = allResources.stream()
                 .map(ll -> StreamSupport.stream(ll.get("items").spliterator(), false).collect(Collectors.toList()))
                 .flatMap(Collection::stream)
@@ -58,10 +61,26 @@ public class OpenShiftService {
         return new ProjectState(projectName, projectResources);
     }
 
+    List<String> getManageableResources() {
+        List<String> apiResourcesWide = oc.getApiResourcesWide(true);
+        List<String> result = new ArrayList<>();
+        for (String detail : apiResourcesWide) {
+            String[] split = detail.split("\\s+");
+            String resourceName = split[0];
+            String operations = detail.substring(detail.indexOf("[") + 1, detail.indexOf("]"));
+            List<String> givenOperations = Arrays.asList(operations.split(" "));
+            boolean hasAllRequiredOperations = givenOperations.containsAll(requiredOperations);
+            if (hasAllRequiredOperations && oc.canI("get", resourceName)) {
+                result.add(resourceName);
+            }
+        }
+        return result;
+    }
+
     public ProjectState getProjectStateFromTemplate(Path projectTemplate, Map<String, String> projectParams, Path appTemplate, Map<String, String> appParams) {
         Map<String, List<Resource>> projectProcessed = process(projectTemplate, projectParams);
         List<Resource> projectList = projectProcessed.get("Project");
-        if(projectList.size() != 1) {
+        if (projectList.size() != 1) {
             throw new IllegalStateException("Project size is not 1 (" + projectList.size() + ")");
         }
         Resource project = projectList.get(0);
@@ -71,7 +90,6 @@ public class OpenShiftService {
                 Map.Entry::getValue));
         return new ProjectState(project.getName(), resources);
     }
-
 
 
     public Map<String, List<Resource>> process(Path templatePath, Map<String, String> params) {
