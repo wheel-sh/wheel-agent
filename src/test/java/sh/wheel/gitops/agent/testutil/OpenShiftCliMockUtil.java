@@ -20,6 +20,8 @@ public class OpenShiftCliMockUtil {
     private static final JsonNode EXAMPLE_TEST_APP_PROJECT_SERVER_RESPONSE = ProjectStateUtil.createExampleTestAppProjectServerResponse();
     private static final JsonNode EXAMPLE_TEST_APP_RESOURCES_PROCESSED = ProjectStateUtil.createExampleTestAppResourcesProcessed();
     private static final JsonNode EXAMPLE_TEST_APP_PROJECT_PROCESSED = ProjectStateUtil.createExampleTestAppProjectProcessed();
+    private static final List<JsonNode> EXAMPLE_MANAGABLE_PROJECTS = ProjectStateUtil.createExampleManagableProjects();
+    private static final List<String> EXAMPLE_API_RESOURCES_WIDE = ProjectStateUtil.createExampleApiResourcesWide();
     public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 
@@ -29,11 +31,15 @@ public class OpenShiftCliMockUtil {
         JsonNode exampleTestAppProjectProcessed = deepCopy(EXAMPLE_TEST_APP_PROJECT_PROCESSED);
         JsonNode exampleTestAppProjectServerResponse = deepCopy(EXAMPLE_TEST_APP_PROJECT_SERVER_RESPONSE);
         List<JsonNode> exampleTestAppResourcesServerResponse = EXAMPLE_TEST_APP_RESOURCES_SERVER_RESPONSE.stream().map(OpenShiftCliMockUtil::deepCopy).collect(Collectors.toList());
+        List<JsonNode> manageableProjects = EXAMPLE_MANAGABLE_PROJECTS.stream().map(OpenShiftCliMockUtil::deepCopy).collect(Collectors.toList());
+
         doReturn(exampleTestAppResourcesProcessed).when(mock).process(ArgumentMatchers.endsWith("app.v1.yaml"), ArgumentMatchers.notNull());
         doReturn(exampleTestAppProjectProcessed).when(mock).process(ArgumentMatchers.endsWith("project.yaml"), ArgumentMatchers.notNull());
         doReturn(exampleTestAppResourcesServerResponse).when(mock).getResources(ArgumentMatchers.any(), ArgumentMatchers.any());
         doReturn(exampleTestAppProjectServerResponse).when(mock).getResource(ArgumentMatchers.eq("project"), ArgumentMatchers.notNull(), ArgumentMatchers.notNull());
         doReturn("system:serviceaccount:example-app-test:default").when(mock).getWhoAmI();
+        doReturn(manageableProjects).when(mock).getManageableProjects();
+        doReturn(EXAMPLE_API_RESOURCES_WIDE).when(mock).getApiResourcesWide(ArgumentMatchers.eq(true));
         return mock;
     }
 

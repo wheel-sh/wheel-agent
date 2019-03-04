@@ -18,7 +18,9 @@ public enum Samples {
     EXAMPLE_APP_PROCESSED_FILE("json/example-app-test/processed/example-app-processed.json"),
     EXAMPLE_APP_PROJECT_PROCESSED_FILE("json/example-app-test/processed/example-app-project-processed.json"),
     EXAMPLE_APP_SERVER_RESPONSE_DIR("json/example-app-test/server-response/"),
-    EXAMPLE_APP_PROJECT_SERVER_RESPONSE("json/example-app-test/server-response/Project.json_");
+    EXAMPLE_APP_PROJECT_SERVER_RESPONSE("json/example-app-test/server-response/Project.json_"),
+    EXAMPLE_MANAGEABLE_PROJECTS("hack/manageable-projects.json"),
+    EXAMPLE_API_RESOURCES_WIDE("hack/api-resources-wide.txt");
 
     private static final String SAMPLES_FOLDER = "/samples/";
     public static final String TESTREPO1_PATH = SAMPLES_FOLDER + "testrepo1/";

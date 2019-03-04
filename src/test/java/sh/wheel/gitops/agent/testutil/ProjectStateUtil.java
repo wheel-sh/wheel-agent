@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class ProjectStateUtil {
 
@@ -59,6 +60,23 @@ public class ProjectStateUtil {
     public static JsonNode createExampleTestAppProjectServerResponse() {
         try {
             return READER.readTree(new FileInputStream(Samples.EXAMPLE_APP_PROJECT_SERVER_RESPONSE.toPath().toFile()));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public static List<JsonNode> createExampleManagableProjects() {
+        try {
+            JsonNode jsonNode = READER.readTree(new FileInputStream(Samples.EXAMPLE_MANAGEABLE_PROJECTS.toPath().toFile()));
+            return StreamSupport.stream(jsonNode.get("items").spliterator(), false).collect(Collectors.toList());
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public static List<String> createExampleApiResourcesWide() {
+        try {
+            return Files.lines(Samples.EXAMPLE_API_RESOURCES_WIDE.toPath()).collect(Collectors.toList());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

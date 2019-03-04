@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class OpenShiftServiceTest {
 
@@ -44,4 +44,11 @@ class OpenShiftServiceTest {
         assertTrue(process.size() > 2);
     }
 
+    @Test
+    void clusterState() {
+        List<ProjectState> projectStatesFromCluster = openShiftService.getProjectStatesFromCluster();
+
+        assertNotNull(projectStatesFromCluster);
+        assertEquals(1, projectStatesFromCluster.size());
+    }
 }
