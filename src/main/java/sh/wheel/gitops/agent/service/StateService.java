@@ -13,7 +13,6 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class StateService {
@@ -21,37 +20,38 @@ public class StateService {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final WheelRepositoryService wheelRepositoryService;
     private final ConfigProcessingService configProcessingService;
+    private OpenShiftService openShiftService;
 
     @Value("${sh.wheel.repository.url}")
-    private String repositoryUrl;
+    String repositoryUrl;
 
     @Value("${sh.wheel.repository.branch}")
-    private String repositoryBranch;
+    String repositoryBranch;
+    private List<ProjectState> processedProjectStates;
+    private List<ProjectState> clusterProjectStates;
 
-    private Map<String, ProjectState> clusterState;
-    private Map<String, ProjectState> expectedState;
 
     @Autowired
-    public StateService(WheelRepositoryService wheelRepositoryService, ConfigProcessingService configProcessingService) {
+    public StateService(WheelRepositoryService wheelRepositoryService, ConfigProcessingService configProcessingService, OpenShiftService openShiftService) {
         this.wheelRepositoryService = wheelRepositoryService;
         this.configProcessingService = configProcessingService;
+        this.openShiftService = openShiftService;
     }
 
     @PostConstruct
     public void init() throws IOException, GitAPIException {
         WheelRepository wheelRepository = wheelRepositoryService.loadRepository(repositoryUrl, repositoryBranch);
-        List<ProjectState> projectStates = configProcessingService.processExpectedProjectStates(wheelRepository);
-//        gitRepositoryService.pullLatest();
-//        WheelRepository repositoryState = repositoryConfigService.getRepositoryState(Paths.getResourceList(gitRepositoryService.getRepositoryPath()));
+        processedProjectStates = configProcessingService.processExpectedProjectStates(wheelRepository);
+        clusterProjectStates = openShiftService.getProjectStatesFromCluster();
 
 
     }
 
-    public Map<String, ProjectState> getClusterState() {
-        return clusterState;
+    public List<ProjectState> getProcessedProjectStates() {
+        return processedProjectStates;
     }
 
-    public Map<String, ProjectState> getExpectedState() {
-        return expectedState;
+    public List<ProjectState> getClusterProjectStates() {
+        return clusterProjectStates;
     }
 }

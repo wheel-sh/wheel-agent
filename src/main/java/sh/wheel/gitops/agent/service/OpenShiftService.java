@@ -1,12 +1,15 @@
 package sh.wheel.gitops.agent.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import sh.wheel.gitops.agent.model.ProjectState;
 import sh.wheel.gitops.agent.model.Resource;
 import sh.wheel.gitops.agent.util.OpenShiftCli;
 
 import javax.annotation.PostConstruct;
+import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,6 +19,8 @@ import java.util.stream.StreamSupport;
 @Service
 //TODO: Change to REST...
 public class OpenShiftService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private OpenShiftCli oc;
     private List<String> requiredOperations = Arrays.asList("create", "delete", "deletecollection", "get", "list", "patch", "update", "watch");
@@ -103,4 +108,12 @@ public class OpenShiftService {
         return oc.getWhoAmI();
     }
 
+    public void apply(String projectName, Resource resource) {
+        LOG.info(String.format("Applied resource %s/%s in project %s", resource.getKind(), resource.getName(), projectName));
+
+    }
+
+    public void delete(String projectName, Resource resource) {
+        LOG.info(String.format("Deleted resource %s/%s in project %s", resource.getKind(), resource.getName(), projectName));
+    }
 }
