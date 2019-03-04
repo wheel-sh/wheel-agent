@@ -1,11 +1,10 @@
 package sh.wheel.gitops.agent.service;
 
-import io.fabric8.openshift.client.DefaultOpenShiftClient;
-import io.fabric8.openshift.client.OpenShiftClient;
-import io.fabric8.openshift.client.server.mock.OpenShiftServer;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Assert;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.config.AppConfig;
 import sh.wheel.gitops.agent.model.App;
 import sh.wheel.gitops.agent.model.BaseConfig;
@@ -14,10 +13,8 @@ import sh.wheel.gitops.agent.model.WheelRepository;
 import sh.wheel.gitops.agent.testutil.OpenShiftCliMockUtil;
 import sh.wheel.gitops.agent.testutil.Samples;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -25,7 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class ConfigProcessingServiceTest {
 

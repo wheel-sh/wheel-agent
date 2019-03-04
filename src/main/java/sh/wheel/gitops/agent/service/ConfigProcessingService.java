@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sh.wheel.gitops.agent.config.AppConfig;
-import sh.wheel.gitops.agent.config.ProjectConfig;
 import sh.wheel.gitops.agent.config.ParameterConfig;
+import sh.wheel.gitops.agent.config.ProjectConfig;
 import sh.wheel.gitops.agent.model.App;
 import sh.wheel.gitops.agent.model.Group;
 import sh.wheel.gitops.agent.model.ProjectState;
@@ -41,7 +41,7 @@ public class ConfigProcessingService {
                 for (ProjectConfig projectConfig : app.getProjectConfigs()) {
                     Path appTemplate = app.getAppDir().resolve("template").resolve(projectConfig.getTemplateFile());
                     String projectName = projectConfig.getName();
-                    if(!Files.exists(appTemplate)) {
+                    if (!Files.exists(appTemplate)) {
                         throw new IllegalStateException(String.format("Cannot find template %s for app %s in project %s", appTemplate.toString(), app.getAppConfig().getName(), projectName));
                     }
                     Map<String, String> appParams = projectConfig.getParameters().stream().collect(Collectors.toMap(ParameterConfig::getName, ParameterConfig::getValue));
@@ -51,10 +51,10 @@ public class ConfigProcessingService {
                 }
             } catch (Exception e) {
                 String appName = null;
-                if(app.getAppConfig() != null && app.getAppConfig().getName() != null) {
+                if (app.getAppConfig() != null && app.getAppConfig().getName() != null) {
                     appName = app.getAppConfig().getName();
                 }
-                LOG.error("Could not process app "+appName, e);
+                LOG.error("Could not process app " + appName, e);
             }
         }
         return projectStates;
@@ -64,8 +64,8 @@ public class ConfigProcessingService {
         Objects.requireNonNull(appConfig);
         Objects.requireNonNull(groups);
         Group group = groups.get(appConfig.getGroup());
-        if(group == null) {
-            throw new IllegalStateException("Group '"+appConfig.getGroup()+"' configured in '"+appConfig.getName()+"' not found");
+        if (group == null) {
+            throw new IllegalStateException("Group '" + appConfig.getGroup() + "' configured in '" + appConfig.getName() + "' not found");
         }
         return group;
     }

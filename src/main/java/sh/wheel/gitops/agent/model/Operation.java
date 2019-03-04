@@ -18,11 +18,11 @@ public enum Operation {
         this.name = name;
     }
 
-    public String getName() {
-        return this.name;
-    }
-
     public static Operation byName(String name) {
         return Arrays.stream(values()).filter(v -> v.getName().toLowerCase().equals(name.toLowerCase())).findFirst().orElse(null);
+    }
+
+    public String getName() {
+        return this.name;
     }
 }

@@ -2,7 +2,10 @@ package sh.wheel.gitops.agent.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import sh.wheel.gitops.agent.model.*;
+import sh.wheel.gitops.agent.model.ActionType;
+import sh.wheel.gitops.agent.model.ProjectState;
+import sh.wheel.gitops.agent.model.ResourceAction;
+import sh.wheel.gitops.agent.model.ResourceDifference;
 import sh.wheel.gitops.agent.testutil.OpenShiftCliMockUtil;
 import sh.wheel.gitops.agent.testutil.Samples;
 
@@ -11,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ResourceDifferenceServiceTest {
     private List<ResourceDifference> resourceDifferences;

@@ -16,14 +16,13 @@ import static org.mockito.Mockito.doReturn;
 
 public class OpenShiftCliMockUtil {
 
+    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final List<JsonNode> EXAMPLE_TEST_APP_RESOURCES_SERVER_RESPONSE = ProjectStateUtil.createExampleTestAppResourcesServerResponse();
     private static final JsonNode EXAMPLE_TEST_APP_PROJECT_SERVER_RESPONSE = ProjectStateUtil.createExampleTestAppProjectServerResponse();
     private static final JsonNode EXAMPLE_TEST_APP_RESOURCES_PROCESSED = ProjectStateUtil.createExampleTestAppResourcesProcessed();
     private static final JsonNode EXAMPLE_TEST_APP_PROJECT_PROCESSED = ProjectStateUtil.createExampleTestAppProjectProcessed();
     private static final List<JsonNode> EXAMPLE_MANAGABLE_PROJECTS = ProjectStateUtil.createExampleManagableProjects();
     private static final List<String> EXAMPLE_API_RESOURCES_WIDE = ProjectStateUtil.createExampleApiResourcesWide();
-    public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
 
     public static OpenShiftCli createOpenShiftCliMock() {
         OpenShiftCli mock = Mockito.mock(OpenShiftCli.class);

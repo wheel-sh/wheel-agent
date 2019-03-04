@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
-import org.apache.commons.exec.ExecuteResultHandler;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.exec.util.StringUtils;
 import org.slf4j.Logger;
@@ -21,6 +20,9 @@ import java.util.stream.StreamSupport;
 
 public class OpenShiftCli {
     public static final String API_RESOURCES_WIDE = "oc api-resources -owide --no-headers";
+    public static final String METHOD_NOT_ALLOWED_ERROR_STR = "Error from server (MethodNotAllowed): the server does not allow this method on the requested resource";
+    public static final String FORBIDDEN_ERROR_STR = "Error from server (Forbidden)";
+    public static final String BAD_REQUEST_ERROR_STR = "Error from server (BadRequest)";
     private static final String BASIC_GET_ARGS = " -ojson --ignore-not-found";
     private static final String EXPORT_ARG = " --export";
     private static final String GET_RESOURCES = "oc get ${kind} -n ${project}" + BASIC_GET_ARGS;
@@ -30,13 +32,7 @@ public class OpenShiftCli {
     private static final String PROCESS_TEMPLATE = "oc process -f ${path} --local";
     private static final String WHOAMI = "oc whoami";
     private static final String CAN_I = "oc auth can-i ${verb} ${resource}";
-
-
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    public static final String METHOD_NOT_ALLOWED_ERROR_STR = "Error from server (MethodNotAllowed): the server does not allow this method on the requested resource";
-    public static final String FORBIDDEN_ERROR_STR = "Error from server (Forbidden)";
-    public static final String BAD_REQUEST_ERROR_STR = "Error from server (BadRequest)";
-
 
     public JsonNode getResourceList(String kind, String project) {
         Map<String, String> substitutionMap = new HashMap<>();
@@ -124,7 +120,7 @@ public class OpenShiftCli {
         return execToString(WHOAMI, null).trim();
     }
 
-    public boolean canI(String verb, String resource)  {
+    public boolean canI(String verb, String resource) {
         try {
             Map<String, String> substitutionMap = new HashMap<>();
             substitutionMap.put("verb", verb);

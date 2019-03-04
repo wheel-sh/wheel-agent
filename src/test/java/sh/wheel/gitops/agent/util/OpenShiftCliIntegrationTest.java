@@ -112,9 +112,9 @@ class OpenShiftCliIntegrationTest {
         System.out.println(System.nanoTime() - start);
         for (JsonNode projectResource : projectResources) {
             JsonNode items = projectResource.get("items");
-            if(items != null && items.size() > 0) {
+            if (items != null && items.size() > 0) {
                 String kind = items.get(0).get("kind").textValue();
-                try (PrintStream out = new PrintStream(new FileOutputStream(kind+ ".json"))) {
+                try (PrintStream out = new PrintStream(new FileOutputStream(kind + ".json"))) {
                     out.print(projectResource);
                 }
             }

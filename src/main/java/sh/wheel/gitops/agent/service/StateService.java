@@ -20,13 +20,11 @@ public class StateService {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final WheelRepositoryService wheelRepositoryService;
     private final ConfigProcessingService configProcessingService;
-    private OpenShiftService openShiftService;
-
     @Value("${sh.wheel.repository.url}")
     String repositoryUrl;
-
     @Value("${sh.wheel.repository.branch}")
     String repositoryBranch;
+    private OpenShiftService openShiftService;
     private List<ProjectState> processedProjectStates;
     private List<ProjectState> clusterProjectStates;
 

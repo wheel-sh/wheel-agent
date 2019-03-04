@@ -10,7 +10,7 @@ public class FileUtils {
 
     public static void deleteRecursivly(Path path) {
         try {
-            if(Files.exists(path)) {
+            if (Files.exists(path)) {
                 Files.walk(path)
                         .map(Path::toFile)
                         .sorted((o1, o2) -> -o1.compareTo(o2))

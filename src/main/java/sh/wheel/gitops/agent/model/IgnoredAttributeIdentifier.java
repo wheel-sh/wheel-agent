@@ -2,7 +2,7 @@ package sh.wheel.gitops.agent.model;
 
 import java.util.Objects;
 
-public class IgnoredAttributeIdentifier  {
+public class IgnoredAttributeIdentifier {
     private final String attributeName;
     private final String value;
 

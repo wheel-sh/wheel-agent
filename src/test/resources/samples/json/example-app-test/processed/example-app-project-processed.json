@@ -1,108 +1,108 @@
 {
-    "kind": "List",
-    "apiVersion": "v1",
-    "metadata": {},
-    "items": [
-        {
-            "apiVersion": "project.openshift.io/v1",
-            "kind": "Project",
-            "metadata": {
-                "annotations": {
-                    "openshift.io/description": "",
-                    "openshift.io/display-name": "",
-                    "openshift.io/requester": "admin@nikio.io"
-                },
-                "name": "example-app-test"
-            }
+  "kind": "List",
+  "apiVersion": "v1",
+  "metadata": {},
+  "items": [
+    {
+      "apiVersion": "project.openshift.io/v1",
+      "kind": "Project",
+      "metadata": {
+        "annotations": {
+          "openshift.io/description": "",
+          "openshift.io/display-name": "",
+          "openshift.io/requester": "admin@nikio.io"
         },
-        {
-            "apiVersion": "rbac.authorization.k8s.io/v1",
-            "kind": "RoleBinding",
-            "metadata": {
-                "annotations": {
-                    "openshift.io/description": "Allows all pods in this namespace to pull images from this namespace.  It is auto-managed by a controller; remove subjects to disable."
-                },
-                "name": "system:image-pullers",
-                "namespace": "example-app-test"
-            },
-            "roleRef": {
-                "apiGroup": "rbac.authorization.k8s.io",
-                "kind": "ClusterRole",
-                "name": "system:image-puller"
-            },
-            "subjects": [
-                {
-                    "apiGroup": "rbac.authorization.k8s.io",
-                    "kind": "Group",
-                    "name": "system:serviceaccounts:example-app-test"
-                }
-            ]
+        "name": "example-app-test"
+      }
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "RoleBinding",
+      "metadata": {
+        "annotations": {
+          "openshift.io/description": "Allows all pods in this namespace to pull images from this namespace.  It is auto-managed by a controller; remove subjects to disable."
         },
+        "name": "system:image-pullers",
+        "namespace": "example-app-test"
+      },
+      "roleRef": {
+        "apiGroup": "rbac.authorization.k8s.io",
+        "kind": "ClusterRole",
+        "name": "system:image-puller"
+      },
+      "subjects": [
         {
-            "apiVersion": "rbac.authorization.k8s.io/v1",
-            "kind": "RoleBinding",
-            "metadata": {
-                "annotations": {
-                    "openshift.io/description": "Allows builds in this namespace to push images to this namespace.  It is auto-managed by a controller; remove subjects to disable."
-                },
-                "name": "system:image-builders",
-                "namespace": "example-app-test"
-            },
-            "roleRef": {
-                "apiGroup": "rbac.authorization.k8s.io",
-                "kind": "ClusterRole",
-                "name": "system:image-builder"
-            },
-            "subjects": [
-                {
-                    "kind": "ServiceAccount",
-                    "name": "builder",
-                    "namespace": "example-app-test"
-                }
-            ]
-        },
-        {
-            "apiVersion": "rbac.authorization.k8s.io/v1",
-            "kind": "RoleBinding",
-            "metadata": {
-                "annotations": {
-                    "openshift.io/description": "Allows deploymentconfigs in this namespace to rollout pods in this namespace.  It is auto-managed by a controller; remove subjects to disable."
-                },
-                "name": "system:deployers",
-                "namespace": "example-app-test"
-            },
-            "roleRef": {
-                "apiGroup": "rbac.authorization.k8s.io",
-                "kind": "ClusterRole",
-                "name": "system:deployer"
-            },
-            "subjects": [
-                {
-                    "kind": "ServiceAccount",
-                    "name": "deployer",
-                    "namespace": "example-app-test"
-                }
-            ]
-        },
-        {
-            "apiVersion": "rbac.authorization.k8s.io/v1",
-            "kind": "RoleBinding",
-            "metadata": {
-                "name": "admin",
-                "namespace": "example-app-test"
-            },
-            "roleRef": {
-                "apiGroup": "rbac.authorization.k8s.io",
-                "kind": "ClusterRole",
-                "name": "admin"
-            },
-            "subjects": [
-                {
-                    "apiGroup": "rbac.authorization.k8s.io",
-                    "kind": "User",
-                    "name": "admin@nikio.io"
-                }
-            ]
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "Group",
+          "name": "system:serviceaccounts:example-app-test"
         }
-    ]
+      ]
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "RoleBinding",
+      "metadata": {
+        "annotations": {
+          "openshift.io/description": "Allows builds in this namespace to push images to this namespace.  It is auto-managed by a controller; remove subjects to disable."
+        },
+        "name": "system:image-builders",
+        "namespace": "example-app-test"
+      },
+      "roleRef": {
+        "apiGroup": "rbac.authorization.k8s.io",
+        "kind": "ClusterRole",
+        "name": "system:image-builder"
+      },
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "builder",
+          "namespace": "example-app-test"
+        }
+      ]
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "RoleBinding",
+      "metadata": {
+        "annotations": {
+          "openshift.io/description": "Allows deploymentconfigs in this namespace to rollout pods in this namespace.  It is auto-managed by a controller; remove subjects to disable."
+        },
+        "name": "system:deployers",
+        "namespace": "example-app-test"
+      },
+      "roleRef": {
+        "apiGroup": "rbac.authorization.k8s.io",
+        "kind": "ClusterRole",
+        "name": "system:deployer"
+      },
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "name": "deployer",
+          "namespace": "example-app-test"
+        }
+      ]
+    },
+    {
+      "apiVersion": "rbac.authorization.k8s.io/v1",
+      "kind": "RoleBinding",
+      "metadata": {
+        "name": "admin",
+        "namespace": "example-app-test"
+      },
+      "roleRef": {
+        "apiGroup": "rbac.authorization.k8s.io",
+        "kind": "ClusterRole",
+        "name": "admin"
+      },
+      "subjects": [
+        {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "User",
+          "name": "admin@nikio.io"
+        }
+      ]
+    }
+  ]
 }

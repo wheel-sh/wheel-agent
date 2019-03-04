@@ -20,6 +20,23 @@ public class ProjectDifferenceService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    private static JsonNode merge(JsonNode mainNode, JsonNode updateNode) {
+        updateNode.fieldNames().forEachRemaining(fieldName -> {
+            JsonNode jsonNode = mainNode.get(fieldName);
+            // if field exists and is an embedded object
+            if (jsonNode != null && jsonNode.isObject()) {
+                merge(jsonNode, updateNode.get(fieldName));
+            } else {
+                if (mainNode instanceof ObjectNode) {
+                    // Overwrite field
+                    JsonNode value = updateNode.get(fieldName);
+                    ((ObjectNode) mainNode).replace(fieldName, value);
+                }
+            }
+        });
+        return mainNode;
+    }
+
     public List<ResourceDifference> evaluateDifference(ProjectState processed, ProjectState cluster) {
         List<ResourceDifference> resourceDifferences = new ArrayList<>();
         Map<String, List<Resource>> processedResourcesByKind = processed.getResourcesByKind();
@@ -52,7 +69,6 @@ public class ProjectDifferenceService {
         return processedResources != null ? processedResources.stream().collect(Collectors.toMap(Resource::getName, Function.identity())) : new HashMap<>();
     }
 
-
     private List<AttributeDifference> evaluateAttributeDifference(Resource proccessed, Resource cluster) {
         JsonNode processedJsonNode = proccessed.getJsonNode();
         JsonNode clusterJsonNode = cluster.getJsonNode();
@@ -78,24 +94,6 @@ public class ProjectDifferenceService {
     private boolean isRemoveEmptyNode(JsonNode diff) {
         JsonNode value = diff.get("value");
         return "remove".equals(diff.get("op").textValue()) && value.isObject() && value.size() == 0;
-    }
-
-
-    private static JsonNode merge(JsonNode mainNode, JsonNode updateNode) {
-        updateNode.fieldNames().forEachRemaining(fieldName -> {
-            JsonNode jsonNode = mainNode.get(fieldName);
-            // if field exists and is an embedded object
-            if (jsonNode != null && jsonNode.isObject()) {
-                merge(jsonNode, updateNode.get(fieldName));
-            } else {
-                if (mainNode instanceof ObjectNode) {
-                    // Overwrite field
-                    JsonNode value = updateNode.get(fieldName);
-                    ((ObjectNode) mainNode).replace(fieldName, value);
-                }
-            }
-        });
-        return mainNode;
     }
 
 }

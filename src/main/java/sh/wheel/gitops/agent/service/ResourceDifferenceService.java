@@ -23,10 +23,6 @@ public class ResourceDifferenceService {
         IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("ServiceAccount", null, "default"));
         IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("ServiceAccount", null, "builder"));
         IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("ServiceAccount", null, "deployer"));
-        // TODO: implement better default.. So RoleBindings could be edited
-//        IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("RoleBinding", null, "system:deployers"));
-//        IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("RoleBinding", null, "system:image-builders"));
-//        IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("RoleBinding", null, "system:image-pullers"));
 
         IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/status", null));
         IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/metadata/creationTimestamp", null));
@@ -60,7 +56,7 @@ public class ResourceDifferenceService {
             case DIFFER:
                 return createActionForDiff(resourceDifference);
             default:
-                throw new IllegalStateException("Unkown DifferenceType "+resourceDifference.getType());
+                throw new IllegalStateException("Unkown DifferenceType " + resourceDifference.getType());
         }
     }
 
@@ -68,7 +64,7 @@ public class ResourceDifferenceService {
         Resource resource = resourceDifference.getProject();
         JsonNode ownerReference = resource.getJsonNode().get("metadata").get("ownerReferences");
         List<Resource> owners = getOwners(ownerReference, project);
-        if(!owners.isEmpty() && areOwnersInProcessed(owners, processed)) {
+        if (!owners.isEmpty() && areOwnersInProcessed(owners, processed)) {
             return new ResourceAction(ActionType.IGNORE, resource, resourceDifference.getAttributeDifferences());
         } else {
             return new ResourceAction(ActionType.DELETE, resource, resourceDifference.getAttributeDifferences());
@@ -79,7 +75,7 @@ public class ResourceDifferenceService {
         for (Resource owner : owners) {
             List<Resource> processedByKind = processed.getResourcesByKind().get(owner.getKind());
             boolean foundOwner = processedByKind.stream().anyMatch(r -> r.getName().equals(owner.getName()));
-            if(!foundOwner) {
+            if (!foundOwner) {
                 return false;
             }
         }
@@ -88,7 +84,7 @@ public class ResourceDifferenceService {
 
     private List<Resource> getOwners(JsonNode ownerReferencerces, ProjectState projectState) {
         List<Resource> owners = new ArrayList<>();
-        if(ownerReferencerces == null) {
+        if (ownerReferencerces == null) {
             return owners;
         }
         for (JsonNode ownerReferencerce : ownerReferencerces) {
@@ -100,7 +96,7 @@ public class ResourceDifferenceService {
                 continue;
             }
             JsonNode ownerReference = resource.getJsonNode().get("metadata").get("ownerReferences");
-            if(ownerReference != null) {
+            if (ownerReference != null) {
                 return getOwners(ownerReference, projectState);
             }
             owners.add(resource);
@@ -113,9 +109,9 @@ public class ResourceDifferenceService {
         List<AttributeDifference> projectOnly = differencesByOperation.get(Operation.ADD);
         List<AttributeDifference> processedOnly = differencesByOperation.get(Operation.REMOVE);
         List<AttributeDifference> updated = differencesByOperation.get(Operation.REPLACE);
-        if(updated != null || processedOnly != null) {
+        if (updated != null || processedOnly != null) {
             return new ResourceAction(ActionType.APPLY, resourceDifference.getProcessed(), updated != null ? updated : processedOnly);
-        } else if(projectOnly != null) {
+        } else if (projectOnly != null) {
             return new ResourceAction(ActionType.WARNING, resourceDifference.getProject(), projectOnly);
         }
         return null;
@@ -134,7 +130,7 @@ public class ResourceDifferenceService {
     }
 
     private boolean filterIgnoredResources(ResourceDifference resourceDifference) {
-        if(DifferenceType.PROJECT_ONLY.equals(resourceDifference.getType())) {
+        if (DifferenceType.PROJECT_ONLY.equals(resourceDifference.getType())) {
             String kind = resourceDifference.getResourceKey().getKind();
             String name = getResourceName(resourceDifference.getProject());
             String type = getResourceType(resourceDifference.getProject());
@@ -142,9 +138,9 @@ public class ResourceDifferenceService {
                 String ignoredKind = ignoredResource.getKind();
                 String ignoredType = ignoredResource.getType();
                 String ignoredName = ignoredResource.getName();
-                if((ignoredKind == null || ignoredKind.equals(kind))
-                && (ignoredType == null || ignoredType.equals(type))
-                && (ignoredName == null || ignoredName.equals(name))) {
+                if ((ignoredKind == null || ignoredKind.equals(kind))
+                        && (ignoredType == null || ignoredType.equals(type))
+                        && (ignoredName == null || ignoredName.equals(name))) {
                     return false;
                 }
             }
