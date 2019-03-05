@@ -1,0 +1,22 @@
+{
+  "apiVersion": "route.openshift.io/v1",
+  "kind": "Route",
+  "metadata": {
+    "labels": {
+      "app": "example-app"
+    },
+    "name": "example-app-test-route"
+  },
+  "spec": {
+    "port": {
+      "targetPort": "8080-tcp"
+    },
+    "tls": {
+      "termination": "edge"
+    },
+    "to": {
+      "kind": "Service",
+      "name": "example-app"
+    }
+  }
+}

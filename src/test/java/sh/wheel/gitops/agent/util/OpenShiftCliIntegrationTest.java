@@ -1,6 +1,8 @@
 package sh.wheel.gitops.agent.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -8,6 +10,7 @@ import sh.wheel.gitops.agent.testutil.Samples;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.List;
@@ -131,5 +134,17 @@ class OpenShiftCliIntegrationTest {
     void canI() {
         boolean b = oc.canI("get", "pods");
         assertTrue(b);
+    }
+
+    @Test
+    void apply() throws IOException {
+        JsonNode jsonNode = new ObjectMapper().readTree(Samples.EXAMPLE_PROCESSED_ROUTE.toPath().toFile());
+        ((ObjectNode) jsonNode.get("metadata")).put("name", "test123");
+        oc.apply("example-app-test", jsonNode);
+    }
+
+    @Test
+    void delete() throws IOException {
+        oc.delete("example-app-test", "route", "example-app-test-route");
     }
 }

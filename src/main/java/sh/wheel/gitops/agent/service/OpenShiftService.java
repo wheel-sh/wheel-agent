@@ -110,7 +110,7 @@ public class OpenShiftService {
 
     public void apply(String projectName, Resource resource) {
         LOG.info(String.format("Applied resource %s/%s in project %s", resource.getKind(), resource.getName(), projectName));
-
+        oc.apply(projectName, resource.getJsonNode());
     }
 
     public void delete(String projectName, Resource resource) {

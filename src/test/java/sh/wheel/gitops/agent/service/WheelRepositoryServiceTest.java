@@ -150,13 +150,13 @@ class WheelRepositoryServiceTest {
         Files.createDirectories(basePath);
         FileNotFoundException fileNotFoundException_project_template = assertThrows(FileNotFoundException.class, () -> wheelRepositoryService.getRepositoryState(testDir));
         Files.createDirectories(basePath.resolve("template"));
-        Files.createFile(basePath.resolve("template/project.yaml"));
+        Files.createFile(basePath.resolve("template/project.json"));
         WheelRepository repositoryState = wheelRepositoryService.getRepositoryState(testDir);
 
         assertTrue(fileNotFoundException_apps.getMessage().contains("/apps"));
         assertTrue(fileNotFoundException_groups.getMessage().contains("/groups"));
         assertTrue(fileNotFoundException_base.getMessage().contains("/base"));
-        assertTrue(fileNotFoundException_project_template.getMessage().contains("/template/project.yaml"));
+        assertTrue(fileNotFoundException_project_template.getMessage().contains("/template/project.json"));
         assertEquals(0, repositoryState.getApps().size());
         assertEquals(0, repositoryState.getGroups().size());
     }

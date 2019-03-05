@@ -4,25 +4,30 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.exec.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.invoke.MethodHandles;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class OpenShiftCli {
-    public static final String API_RESOURCES_WIDE = "oc api-resources -owide --no-headers";
-    public static final String METHOD_NOT_ALLOWED_ERROR_STR = "Error from server (MethodNotAllowed): the server does not allow this method on the requested resource";
-    public static final String FORBIDDEN_ERROR_STR = "Error from server (Forbidden)";
-    public static final String BAD_REQUEST_ERROR_STR = "Error from server (BadRequest)";
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    private static final String API_RESOURCES_WIDE = "oc api-resources -owide --no-headers";
+    private static final String METHOD_NOT_ALLOWED_ERROR_STR = "Error from server (MethodNotAllowed): the server does not allow this method on the requested resource";
+    private static final String FORBIDDEN_ERROR_STR = "Error from server (Forbidden)";
+    private static final String BAD_REQUEST_ERROR_STR = "Error from server (BadRequest)";
     private static final String BASIC_GET_ARGS = " -ojson --ignore-not-found";
     private static final String EXPORT_ARG = " --export";
     private static final String GET_RESOURCES = "oc get ${kind} -n ${project}" + BASIC_GET_ARGS;
@@ -32,7 +37,8 @@ public class OpenShiftCli {
     private static final String PROCESS_TEMPLATE = "oc process -f ${path} --local";
     private static final String WHOAMI = "oc whoami";
     private static final String CAN_I = "oc auth can-i ${verb} ${resource}";
-    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final String OC_APPLY = "oc apply -f - -n ${project}";
+    public static final String OC_DELETE = "oc delete ${kind} ${name} -n ${project}";
 
     public JsonNode getResourceList(String kind, String project) {
         Map<String, String> substitutionMap = new HashMap<>();
@@ -178,4 +184,29 @@ public class OpenShiftCli {
         }
     }
 
+    public void apply(String projectName, JsonNode jsonNode) {
+        try {
+            Map<String, String> substitutionMap = new HashMap<>();
+            substitutionMap.put("project", projectName);
+            CommandLine command = CommandLine.parse(OC_APPLY, substitutionMap);
+            Executor exec = new DefaultExecutor();
+            ByteArrayInputStream input = new ByteArrayInputStream(jsonNode.toString().getBytes(StandardCharsets.UTF_8));
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            exec.setStreamHandler(new PumpStreamHandler(output, null, input));
+            exec.execute(command);
+            LOG.info(String.format("Output of '%s':\n%s", command.toString(), output));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    public void delete(String projectName, String kind, String name) {
+        Map<String, String> substitutionMap = new HashMap<>();
+        substitutionMap.put("project", projectName);
+        substitutionMap.put("kind", kind);
+        substitutionMap.put("name", name);
+        StringBuffer executedCommand = StringUtils.stringSubstitution(OC_DELETE, substitutionMap, true);
+        String s = execToString(OC_DELETE, substitutionMap);
+        LOG.info(String.format("Output of command '%s':\n", executedCommand, s));
+    }
 }
