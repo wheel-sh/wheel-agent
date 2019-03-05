@@ -1,6 +1,7 @@
 package sh.wheel.gitops.agent.model;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ResourceAction {
     private final ActionType type;
@@ -23,6 +24,21 @@ public class ResourceAction {
 
     public List<AttributeDifference> getAttributeDifferences() {
         return attributeDifferences;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ResourceAction that = (ResourceAction) o;
+        return type == that.type &&
+                Objects.equals(resource, that.resource) &&
+                Objects.equals(attributeDifferences, that.attributeDifferences);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(type, resource, attributeDifferences);
     }
 
     @Override

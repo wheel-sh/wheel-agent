@@ -39,6 +39,7 @@ public class OpenShiftCli {
     private static final String CAN_I = "oc auth can-i ${verb} ${resource}";
     private static final String OC_APPLY = "oc apply -f - -n ${project}";
     public static final String OC_DELETE = "oc delete ${kind} ${name} -n ${project}";
+    public static final String OC_NEW_PROJECT = "oc new-project ${project}";
 
     public JsonNode getResourceList(String kind, String project) {
         Map<String, String> substitutionMap = new HashMap<>();
@@ -93,7 +94,7 @@ public class OpenShiftCli {
     }
 
 
-    public List<JsonNode> getResources(String project, List<String> apiResources) {
+    public List<JsonNode> getResources(String project, Set<String> apiResources) {
         final AtomicLong max = new AtomicLong();
         long start = System.nanoTime();
         return apiResources.stream().parallel().map(ar -> {
@@ -198,6 +199,14 @@ public class OpenShiftCli {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    public void newProject(String projectName) {
+        Map<String, String> substitutionMap = new HashMap<>();
+        substitutionMap.put("project", projectName);
+        String s = execToString(OC_NEW_PROJECT, substitutionMap);
+        StringBuffer executedCommand = StringUtils.stringSubstitution(OC_NEW_PROJECT, substitutionMap, true);
+        LOG.info(String.format("Output of command '%s':\n", executedCommand, s));
     }
 
     public void delete(String projectName, String kind, String name) {

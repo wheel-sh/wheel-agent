@@ -24,7 +24,7 @@ public class OpenShiftService {
 
     private OpenShiftCli oc;
     private List<String> requiredOperations = Arrays.asList("create", "delete", "deletecollection", "get", "list", "patch", "update", "watch");
-    private List<String> apiResources;
+    private Set<String> apiResources;
 
     public OpenShiftService() {
         this.oc = new OpenShiftCli();
@@ -36,6 +36,7 @@ public class OpenShiftService {
 
     @PostConstruct
     public void init() {
+        // TODO: Analyze why events is in there twice?
         apiResources = getManageableResources();
     }
 
@@ -48,6 +49,7 @@ public class OpenShiftService {
     public List<ProjectState> getProjectStatesFromCluster() {
         return oc.getManageableProjects().parallelStream()
                 .map(mp -> mp.get("metadata").get("name").textValue())
+                .filter(Objects::nonNull)
                 .map(this::getProjectStateFromCluster)
                 .collect(Collectors.toList());
     }
@@ -66,9 +68,9 @@ public class OpenShiftService {
         return new ProjectState(projectName, projectResources);
     }
 
-    List<String> getManageableResources() {
+    Set<String> getManageableResources() {
         List<String> apiResourcesWide = oc.getApiResourcesWide(true);
-        List<String> result = new ArrayList<>();
+        Set<String> result = new HashSet<>();
         for (String detail : apiResourcesWide) {
             String[] split = detail.split("\\s+");
             String resourceName = split[0];
@@ -113,7 +115,11 @@ public class OpenShiftService {
         oc.apply(projectName, resource.getJsonNode());
     }
 
+    public void newProject(String projectName) {
+        oc.newProject(projectName);
+    }
+
     public void delete(String projectName, Resource resource) {
-        LOG.info(String.format("Deleted resource %s/%s in project %s", resource.getKind(), resource.getName(), projectName));
+        oc.delete(projectName, resource.getKind(), resource.getName());
     }
 }

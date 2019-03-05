@@ -1,6 +1,7 @@
 package sh.wheel.gitops.agent.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.stereotype.Service;
 import sh.wheel.gitops.agent.model.*;
 
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Service
 public class ResourceDifferenceService {
 
 
@@ -20,6 +22,7 @@ public class ResourceDifferenceService {
         IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("Secret", "kubernetes.io/service-account-token", null));
         IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("PodMetrics", null, null));
         IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("Endpoints", null, null));
+        IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("Event", null, null));
         IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("ServiceAccount", null, "default"));
         IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("ServiceAccount", null, "builder"));
         IGNORED_RESOURCES.add(new IgnoredResourceIdentifier("ServiceAccount", null, "deployer"));

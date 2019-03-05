@@ -33,7 +33,7 @@ public class OpenShiftCliMockUtil {
         List<JsonNode> manageableProjects = EXAMPLE_MANAGABLE_PROJECTS.stream().map(OpenShiftCliMockUtil::deepCopy).collect(Collectors.toList());
 
         doReturn(exampleTestAppResourcesProcessed).when(mock).process(ArgumentMatchers.endsWith("app.v1.yaml"), ArgumentMatchers.notNull());
-        doReturn(exampleTestAppProjectProcessed).when(mock).process(ArgumentMatchers.endsWith("project.json"), ArgumentMatchers.notNull());
+        doReturn(exampleTestAppProjectProcessed).when(mock).process(ArgumentMatchers.endsWith("project.yaml"), ArgumentMatchers.notNull());
         doReturn(exampleTestAppResourcesServerResponse).when(mock).getResources(ArgumentMatchers.any(), ArgumentMatchers.any());
         doReturn(exampleTestAppProjectServerResponse).when(mock).getResource(ArgumentMatchers.eq("project"), ArgumentMatchers.notNull(), ArgumentMatchers.notNull());
         doReturn("system:serviceaccount:example-app-test:default").when(mock).getWhoAmI();

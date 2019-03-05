@@ -56,19 +56,23 @@ public class AgentService {
 
     private void execute(String projectName, List<ResourceAction> resourceActions) {
         for (ResourceAction resourceAction : resourceActions) {
-            switch (resourceAction.getType()) {
-                case CREATE:
-                case APPLY:
-                    openShiftService.apply(projectName, resourceAction.getResource());
-                    break;
-                case DELETE:
-                    openShiftService.delete(projectName, resourceAction.getResource());
-                    break;
-                case WARNING:
-                    LOG.warn(String.format("Project %s has warning in diff %s", projectName, resourceAction));
-                    break;
-                case IGNORE:
-                    break;
+            try {
+                switch (resourceAction.getType()) {
+                    case CREATE:
+                    case APPLY:
+                        openShiftService.apply(projectName, resourceAction.getResource());
+                        break;
+                    case DELETE:
+                        openShiftService.delete(projectName, resourceAction.getResource());
+                        break;
+                    case WARNING:
+                        LOG.warn(String.format("Project %s has warning in diff %s", projectName, resourceAction));
+                        break;
+                    case IGNORE:
+                        break;
+                }
+            } catch (Exception e) {
+                LOG.warn("Error while executing resource action: "+resourceAction);
             }
         }
     }
@@ -81,10 +85,7 @@ public class AgentService {
     private void createProject(ProjectState repositoryState) {
         Map<String, List<Resource>> resourcesByKind = repositoryState.getResourcesByKind();
         String projectName = repositoryState.getName();
-        resourcesByKind.get("Project")
-                .forEach(p -> openShiftService.apply(projectName, p));
-        resourcesByKind.get("RoleBinding")
-                .forEach(p -> openShiftService.apply(projectName, p));
+        resourcesByKind.get("Project").forEach(p -> openShiftService.newProject(projectName));
         Set<String> resources = resourcesByKind.keySet();
         resources.remove("Project");
         resources.remove("RoleBinding");

@@ -6,6 +6,7 @@ import sh.wheel.gitops.agent.model.ProjectState;
 import sh.wheel.gitops.agent.util.OpenShiftCli;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -23,7 +24,7 @@ class OpenShiftServiceIntegrationTest {
 
     @Test
     void getManagableResources() {
-        List<String> manageableResources = openShiftService.getManageableResources();
+        Set<String> manageableResources = openShiftService.getManageableResources();
         assertTrue(manageableResources.size() > 40);
     }
 

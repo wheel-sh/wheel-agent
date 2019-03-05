@@ -65,8 +65,9 @@ public class ProjectDifferenceService {
         return resourceDifferences;
     }
 
-    private Map<String, Resource> groupByName(List<Resource> processedResources) {
-        return processedResources != null ? processedResources.stream().collect(Collectors.toMap(Resource::getName, Function.identity())) : new HashMap<>();
+    private Map<String, Resource> groupByName(List<Resource> resources) {
+        //TODO Analyze why multiple Events with same name were given?
+        return resources != null ? resources.stream().collect(Collectors.toMap(Resource::getName, Function.identity())) : new HashMap<>();
     }
 
     private List<AttributeDifference> evaluateAttributeDifference(Resource proccessed, Resource cluster) {
