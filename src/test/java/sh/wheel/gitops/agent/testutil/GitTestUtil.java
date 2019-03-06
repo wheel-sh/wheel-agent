@@ -3,6 +3,7 @@ package sh.wheel.gitops.agent.testutil;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.Repository;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -22,12 +23,16 @@ public class GitTestUtil {
             git.commit()
                     .setMessage("Initial commit")
                     .call();
+            git.close();
         }
     }
 
     public static String getHeadId(Path repository) {
         try {
-            return Git.open(repository.toFile()).getRepository().resolve(Constants.HEAD).getName();
+            Git open = Git.open(repository.toFile());
+            Repository repository1 = open.getRepository();
+            open.close();
+            return repository1.resolve(Constants.HEAD).getName();
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -35,7 +40,9 @@ public class GitTestUtil {
 
     public static void addEmptyCommit(Path repository, String message) {
         try {
-            Git.open(repository.toFile()).commit().setMessage(message).call();
+            Git open = Git.open(repository.toFile());
+            open.commit().setMessage(message).call();
+            open.close();
         } catch (GitAPIException | IOException e) {
             throw new RuntimeException(e);
         }

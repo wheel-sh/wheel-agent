@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.util.FileSystemUtils;
 import sh.wheel.gitops.agent.config.MemberConfig;
 import sh.wheel.gitops.agent.config.PoolConfig;
 import sh.wheel.gitops.agent.model.App;
@@ -15,6 +16,7 @@ import sh.wheel.gitops.agent.testutil.FileUtils;
 import sh.wheel.gitops.agent.testutil.GitTestUtil;
 import sh.wheel.gitops.agent.testutil.Samples;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URI;
@@ -35,16 +37,14 @@ class WheelRepositoryServiceTest {
     @BeforeAll
     static void initRepo() throws GitAPIException, URISyntaxException, IOException {
         TESTREPO1_PATH = Paths.get(WheelRepositoryServiceTest.class.getResource(Samples.TESTREPO1_PATH).toURI());
-        GitTestUtil.initGitRepoIfNotExists(TESTREPO1_PATH);
         URI resourceBasePath = WheelRepositoryServiceTest.class.getResource("/").toURI();
         REPOSITORIES_BASE_PATH = Paths.get(resourceBasePath).resolve("wheel-test-repos");
+        GitTestUtil.initGitRepoIfNotExists(TESTREPO1_PATH);
         Files.createDirectories(REPOSITORIES_BASE_PATH);
     }
 
     @AfterAll
     static void cleanUp() throws IOException {
-        FileUtils.deleteRecursivly(TESTREPO1_PATH.resolve(".git"));
-        FileUtils.deleteRecursivly(REPOSITORIES_BASE_PATH);
     }
 
 
@@ -56,9 +56,7 @@ class WheelRepositoryServiceTest {
 
     @Test
     void cloneOrPullRepository() throws IOException, GitAPIException {
-        // safety cleanup
         Path expectedRepositoryPath = REPOSITORIES_BASE_PATH.resolve("testrepo1");
-        FileUtils.deleteRecursivly(expectedRepositoryPath);
 
         wheelRepositoryService.cloneOrPullRepository(TESTREPO1_PATH.toString(), "master");
         String initialHead = GitTestUtil.getHeadId(expectedRepositoryPath);
@@ -138,7 +136,7 @@ class WheelRepositoryServiceTest {
     void missingFolders() throws URISyntaxException, IOException {
         Path testResources = Paths.get(this.getClass().getResource("/").toURI());
         Path testDir = testResources.resolve(this.getClass().getSimpleName());
-        FileUtils.deleteRecursivly(testDir); // cleanup
+        FileSystemUtils.deleteRecursively(testDir); // cleanup
         Files.createDirectories(testDir);
 
         FileNotFoundException fileNotFoundException_apps = assertThrows(FileNotFoundException.class, () -> wheelRepositoryService.getRepositoryState(testDir));
@@ -153,10 +151,10 @@ class WheelRepositoryServiceTest {
         Files.createFile(basePath.resolve("template/project.yaml"));
         WheelRepository repositoryState = wheelRepositoryService.getRepositoryState(testDir);
 
-        assertTrue(fileNotFoundException_apps.getMessage().contains("/apps"));
-        assertTrue(fileNotFoundException_groups.getMessage().contains("/groups"));
-        assertTrue(fileNotFoundException_base.getMessage().contains("/base"));
-        assertTrue(fileNotFoundException_project_template.getMessage().contains("/template/project.yaml"));
+        assertTrue(fileNotFoundException_apps.getMessage().contains(File.separator + "apps"));
+        assertTrue(fileNotFoundException_groups.getMessage().contains(File.separator + "groups"));
+        assertTrue(fileNotFoundException_base.getMessage().contains(File.separator + "base"));
+        assertTrue(fileNotFoundException_project_template.getMessage().contains(File.separator + "project.yaml"));
         assertEquals(0, repositoryState.getApps().size());
         assertEquals(0, repositoryState.getGroups().size());
     }

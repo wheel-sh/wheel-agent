@@ -2,8 +2,8 @@ apiVersion: build.openshift.io/v1
 kind: BuildConfig
 metadata:
   labels:
-    build: wheel-agent
-  name: wheel-agent
+    build: wheel-agent-pipeline
+  name: wheel-agent-pipeline
 spec:
   source:
     git:
