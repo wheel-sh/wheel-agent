@@ -67,7 +67,8 @@ public class WheelRepositoryService {
                 .setRemote("origin")
                 .setBranch(branch)
                 .setDirectory(localRepositoryPath.toFile())
-                .call();
+                .call()
+                .close();
     }
 
     private void pullRepository(String branch, Path localRepositoryPath) throws IOException, GitAPIException {
@@ -78,6 +79,7 @@ public class WheelRepositoryService {
                 .setRemoteBranchName(branch)
                 .setRebase(true)
                 .call();
+        git.close();
     }
 
 
