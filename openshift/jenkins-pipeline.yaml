@@ -1,0 +1,22 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    build: wheel-agent
+  name: wheel-agent
+spec:
+  source:
+    git:
+      ref: master
+      uri: 'https://github.com/wheel-sh/wheel-agent.git'
+    type: Git
+  strategy:
+    jenkinsPipelineStrategy:
+      jenkinsfilePath: Jenkinsfile
+      env:
+        - name: APP_NAME
+          value: wheel-agent
+        - name: DOCKER_REGISTRY
+          value: 'docker-registry.default.svc:5000'
+    type: JenkinsPipeline
+successfulBuildsHistoryLimit: 5
