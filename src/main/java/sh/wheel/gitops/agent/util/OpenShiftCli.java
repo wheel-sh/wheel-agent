@@ -45,11 +45,12 @@ public class OpenShiftCli {
     private static final String OC_NEW_PROJECT = "oc new-project ${project}";
     private static final String OC_LOGIN = "oc login https://kubernetes.default.svc:443 --token=${token}";
 
-    static {
+    public OpenShiftCli() {
+        // hackerio :-/
         login();
     }
 
-    public static void login() {
+    public void login() {
         Path userHome = Paths.get(System.getProperty("user.home"));
         Path kubeConfig = userHome.resolve(".kube/config");
         if(!Files.exists(kubeConfig)) {
