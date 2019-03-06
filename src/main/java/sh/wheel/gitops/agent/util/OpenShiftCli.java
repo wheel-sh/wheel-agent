@@ -16,6 +16,9 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
@@ -38,8 +41,35 @@ public class OpenShiftCli {
     private static final String WHOAMI = "oc whoami";
     private static final String CAN_I = "oc auth can-i ${verb} ${resource}";
     private static final String OC_APPLY = "oc apply -f - -n ${project}";
-    public static final String OC_DELETE = "oc delete ${kind} ${name} -n ${project}";
-    public static final String OC_NEW_PROJECT = "oc new-project ${project}";
+    private static final String OC_DELETE = "oc delete ${kind} ${name} -n ${project}";
+    private static final String OC_NEW_PROJECT = "oc new-project ${project}";
+    private static final String OC_LOGIN = "oc login https://kubernetes.default.svc:443 --token=${token}";
+
+    static {
+        login();
+    }
+
+    public static void login() {
+        Path userHome = Paths.get(System.getProperty("user.home"));
+        Path kubeConfig = userHome.resolve(".kube/config");
+        if(!Files.exists(kubeConfig)) {
+            Path tokenPath = Paths.get("/var/run/secrets/kubernetes.io/serviceaccount/token");
+            try {
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                String token = Files.lines(tokenPath).findFirst().orElse(null);
+                Map<String, String> substitutionMap = new HashMap<>();
+                substitutionMap.put("token", token);
+                DefaultExecutor exec = new DefaultExecutor();
+                PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
+                exec.setStreamHandler(streamHandler);
+                CommandLine commandline = CommandLine.parse(OC_LOGIN, substitutionMap);
+                int execute = exec.execute(commandline);
+                LOG.info("Output of oc login: " + outputStream.toString());
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
+        }
+    }
 
     public JsonNode getResourceList(String kind, String project) {
         Map<String, String> substitutionMap = new HashMap<>();

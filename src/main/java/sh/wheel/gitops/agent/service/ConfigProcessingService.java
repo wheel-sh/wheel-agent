@@ -27,8 +27,8 @@ public class ConfigProcessingService {
     private OpenShiftService openShiftService;
 
     @Autowired
-    public ConfigProcessingService(OpenShiftService openShiftClient) {
-        this.openShiftService = openShiftClient;
+    public ConfigProcessingService(OpenShiftService openShiftService) {
+        this.openShiftService = openShiftService;
     }
 
     public List<ProjectState> processExpectedProjectStates(WheelRepository repository) {

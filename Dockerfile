@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-alpine
+FROM registry.cloud.nikio.io/base/oc-java-8
 ADD entrypoint.sh entrypoint.sh
 ADD target/*.jar /opt/app.jar
 EXPOSE 8080

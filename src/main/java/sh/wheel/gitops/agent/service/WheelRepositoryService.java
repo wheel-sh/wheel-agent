@@ -16,7 +16,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,8 +38,8 @@ public class WheelRepositoryService {
 
     private final GenericYamlDeserializer deserializer = new GenericYamlDeserializer();
 
-    @Value("#{java.nio.file.Paths.get('${sh.wheel.repository.base.path:/tmp/wheel-repos}')}")
-    Path repositoryBasePath;
+    @Value("${sh.wheel.repository.base.path:/tmp/wheel-repos}")
+    public Path repositoryBasePath;
 
 
     public WheelRepository loadRepository(String gitURI, String branch) throws IOException, GitAPIException {
@@ -49,9 +48,7 @@ public class WheelRepositoryService {
     }
 
     Path cloneOrPullRepository(String gitURI, String branch) throws IOException, GitAPIException {
-        Files.createDirectories(repositoryBasePath);
-        Path gitPath = Paths.get(gitURI);
-        Path repoName = gitPath.getFileName();
+        String repoName = getRepoName(gitURI);
         Path localRepositoryPath = repositoryBasePath.resolve(repoName);
         if (Files.exists(localRepositoryPath.resolve(".git"))) {
             pullRepository(branch, localRepositoryPath);
@@ -59,6 +56,23 @@ public class WheelRepositoryService {
             cloneRepository(gitURI, branch, localRepositoryPath);
         }
         return localRepositoryPath;
+    }
+
+    private String getRepoName(String gitURI) {
+        String path = gitURI;
+        if (gitURI.endsWith(".git")) {
+            int gitIndex = gitURI.lastIndexOf(".git");
+            path = gitURI.substring(0, gitIndex);
+        }
+        int slashIndex = gitURI.lastIndexOf("/");
+        int backslahIndex = gitURI.lastIndexOf("\\");
+        if (slashIndex > 0) {
+            return path.substring(slashIndex+ 1);
+        } else if (backslahIndex > 0) {
+            return path.substring(backslahIndex + 1);
+        } else {
+            throw new IllegalArgumentException("Cannot convert gitURI " + gitURI + " to repoName");
+        }
     }
 
     private void cloneRepository(String gitURI, String branch, Path localRepositoryPath) throws GitAPIException {
