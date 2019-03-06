@@ -21,7 +21,6 @@ public class AgentService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-
     private final StateService stateService;
     private final ProjectDifferenceService projectDifferenceService;
     private final ResourceDifferenceService resourceDifferenceService;

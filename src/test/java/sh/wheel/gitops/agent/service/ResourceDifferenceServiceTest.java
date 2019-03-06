@@ -36,7 +36,7 @@ class ResourceDifferenceServiceTest {
         appParams.put("PROJECT_NAME", "example-app-test");
         appParams.put("PROJECT_REQUESTING_USER", "admin@nikio.io");
         appParams.put("PROJECT_ADMIN_USER", "admin@nikio.io");
-        processedProjectState = openShiftService.getProjectStateFromTemplate(Samples.PROJECT_TEMPLATE.toPath(), projectParams, Samples.TEMPLATE1.toPath(), appParams);
+        processedProjectState = openShiftService.getProjectStateFromTemplate(Samples.BASE_PROJECT_TEMPLATE.toPath(), projectParams, Samples.TEMPLATE1.toPath(), appParams);
 
         resourceDifferences = projectDifferenceService.evaluateDifference(processedProjectState, clusterProjectState);
     }

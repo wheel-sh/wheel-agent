@@ -59,7 +59,7 @@ class ProjectDifferenceServiceTest {
         appParams.put("PROJECT_NAME", "example-app-test");
         appParams.put("PROJECT_REQUESTING_USER", "admin@nikio.io");
         appParams.put("PROJECT_ADMIN_USER", "admin@nikio.io");
-        return openShiftService.getProjectStateFromTemplate(Samples.PROJECT_TEMPLATE.toPath(), projectParams, Samples.TEMPLATE1.toPath(), appParams);
+        return openShiftService.getProjectStateFromTemplate(Samples.BASE_PROJECT_TEMPLATE.toPath(), projectParams, Samples.TEMPLATE1.toPath(), appParams);
     }
 
 }

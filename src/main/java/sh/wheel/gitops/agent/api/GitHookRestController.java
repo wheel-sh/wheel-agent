@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-public class HelloWorldRestController {
+public class GitHookRestController {
 
-    @RequestMapping("/hello")
+    @RequestMapping("/hook")
     public String doGet() {
         return "Hello from Spring Boot";
     }
