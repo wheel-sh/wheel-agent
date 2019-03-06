@@ -23,7 +23,12 @@ pipeline {
                 script {
                     version = sh returnStdout: true, script: 'mvn -q -Dexec.executable=echo -Dexec.args=\'${project.version}\' --non-recursive exec:exec'
                     echo "Current project version is ${version}"
-                    currentProject = ${openshift.project()}
+                    openshift.withCluster() {
+                        openshift.withProject() {
+                            currentProject = openshift.project()
+                            echo "Current project is ${currentProject}"
+                        }
+                    }
                 }
             }
         }
@@ -60,7 +65,7 @@ pipeline {
             steps {
                 script {
                     openshift.withCluster() {
-                        openshift.withProject(devProject) {
+                        openshift.withProject() {
                             openshift.newBuild("--name=${appName}", "--strategy docker", "--binary=true", "--docker-image openjdk:8-jre-alpine")
                         }
                     }
