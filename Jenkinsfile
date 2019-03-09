@@ -66,7 +66,10 @@ pipeline {
                 script {
                     openshift.withCluster() {
                         openshift.withProject() {
-                            openshift.newBuild("--name=${appName}", "--strategy docker", "--binary=true", "--docker-image=registry.cloud.nikio.io/base/oc-java-8")
+                            if(openshift.selector("bc", appName).exists()) {
+                                openshift.selector("bc", appName).delete()
+                            }
+                            openshift.newBuild("--name=${appName}", "--strategy docker", "--binary=true", "--docker-image=docker-registry.default.svc:5000/base/oc-java-8:latest")
                         }
                     }
                 }
