@@ -20,7 +20,8 @@ public enum Samples {
     EXAMPLE_APP_PROJECT_SERVER_RESPONSE("json/example-app-test/server-response/Project.json_"),
     EXAMPLE_MANAGEABLE_PROJECTS("hack/manageable-projects.json"),
     EXAMPLE_API_RESOURCES_WIDE("hack/api-resources-wide.txt"),
-    EXAMPLE_PROCESSED_ROUTE("hack/Route.json");
+    EXAMPLE_PROCESSED_ROUTE("hack/Route.json"),
+    TESTREPO1("testrepo1/");
 
     private static final String SAMPLES_FOLDER = "/samples/";
     public static final String TESTREPO1_PATH = SAMPLES_FOLDER + "testrepo1/";

@@ -89,7 +89,22 @@ public class OpenShiftCli {
 
     public List<JsonNode> getManageableProjects() {
         JsonNode jsonNode = execToJsonNode("oc get projects -ojson --export");
-        return StreamSupport.stream(jsonNode.get("items").spliterator(), false).collect(Collectors.toList());
+        String whoAmiI = getWhoAmI();
+        return StreamSupport.stream(jsonNode.get("items").spliterator(), false)
+                .filter(jn -> isCallerRequestor(jn, whoAmiI))
+                .collect(Collectors.toList());
+    }
+
+    private boolean isCallerRequestor(JsonNode project, String whoAmiI) {
+        JsonNode jsonNode = project.get("metadata").get("annotations");
+        if(jsonNode != null) {
+            JsonNode requestor = jsonNode.get("openshift.io/requester");
+            if(requestor != null) {
+                String requestorName = requestor.textValue();
+                return whoAmiI.equals(requestorName);
+            }
+        }
+        return false;
     }
 
     public List<String> getAllApiResources() {
