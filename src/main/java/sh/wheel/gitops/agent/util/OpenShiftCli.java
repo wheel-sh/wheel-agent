@@ -51,6 +51,14 @@ public class OpenShiftCli {
     }
 
     public void login() {
+        try {
+            String whoAmI = getWhoAmI();
+            if(!whoAmI.isEmpty()) {
+                return;
+            }
+        } catch (Exception e) {
+            LOG.debug("Exception occured while calling getWhoAmiI()", e);
+        }
         Path userHome = Paths.get(System.getProperty("user.home"));
         Path kubeConfig = userHome.resolve(".kube/config");
         if(!Files.exists(kubeConfig)) {
