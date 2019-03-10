@@ -22,7 +22,7 @@ public class StateService {
     private final ConfigProcessingService configProcessingService;
     @Value("${CONFIG_REPOSITORY_URL}")
     String repositoryUrl;
-    @Value("${CONFIG_REPOSITORY_BRANCH}")
+    @Value("${CONFIG_REPOSITORY_BRANCH:master}")
     String repositoryBranch;
     private OpenShiftService openShiftService;
     private List<ProjectState> processedProjectStates;
