@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sh.wheel.gitops.agent.service.AgentService;
+import sh.wheel.gitops.agent.service.OpenShiftService;
 import sh.wheel.gitops.agent.service.StateService;
 
 import java.io.IOException;
@@ -16,16 +17,18 @@ import java.lang.invoke.MethodHandles;
 
 
 @RestController
-public class GitHookRestController {
+public class WheelRestController {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private AgentService agentService;
     private StateService stateService;
+    private OpenShiftService openShiftService;
 
     @Autowired
-    public GitHookRestController(AgentService agentService, StateService stateService) {
+    public WheelRestController(AgentService agentService, StateService stateService, OpenShiftService openShiftService) {
         this.agentService = agentService;
         this.stateService = stateService;
+        this.openShiftService = openShiftService;
     }
 
     @RequestMapping("/hook")
@@ -45,6 +48,12 @@ public class GitHookRestController {
         return "Reload started...";
     }
 
+    @RequestMapping("/refresh")
+    public String refresh() {
+        this.callOpenShiftService();
+        return "Reload started...";
+    }
+
     @Async
     void callAgentService() {
         agentService.synchronize();
@@ -56,6 +65,14 @@ public class GitHookRestController {
             stateService.init();
         } catch (Exception e) {
             LOG.warn("Error occured while calling StateService", e);
+        }
+    }
+    @Async
+    void callOpenShiftService() {
+        try {
+            openShiftService.init();
+        } catch (Exception e) {
+            LOG.warn("Error occured while calling OpenShiftService", e);
         }
     }
 }
