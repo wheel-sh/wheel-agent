@@ -23,7 +23,7 @@ public class OpenShiftService {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private OpenShiftCli oc;
-    private List<String> requiredOperations = Arrays.asList("create", "delete", "deletecollection", "get", "list", "patch", "update", "watch");
+    private List<String> requiredOperations = Arrays.asList("create", "delete", "get", "list", "patch", "update", "watch");
     private Set<String> apiResources;
 
     public OpenShiftService() {
