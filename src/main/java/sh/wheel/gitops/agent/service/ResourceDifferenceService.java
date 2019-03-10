@@ -78,6 +78,9 @@ public class ResourceDifferenceService {
     private boolean areOwnersInProcessed(List<Resource> owners, ProjectState processed) {
         for (Resource owner : owners) {
             List<Resource> processedByKind = processed.getResourcesByKind().get(owner.getKind());
+            if(processedByKind == null)  {
+                return false;
+            }
             boolean foundOwner = processedByKind.stream().anyMatch(r -> r.getName().equals(owner.getName()));
             if (!foundOwner) {
                 return false;
@@ -95,6 +98,9 @@ public class ResourceDifferenceService {
             String kind = ownerReferencerce.get("kind").textValue();
             String name = ownerReferencerce.get("name").textValue();
             List<Resource> resources = projectState.getResourcesByKind().get(kind);
+            if(resources == null) {
+                continue;
+            }
             Resource resource = resources.stream().filter(r -> r.getName().equals(name)).findFirst().orElse(null);
             if (resource == null) {
                 continue;
