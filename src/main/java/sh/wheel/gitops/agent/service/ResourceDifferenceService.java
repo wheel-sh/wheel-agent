@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ResourceDifferenceService {
@@ -108,16 +109,25 @@ public class ResourceDifferenceService {
     }
 
     private ResourceAction createActionForDiff(ResourceDifference resourceDifference) {
+
         Map<Operation, List<AttributeDifference>> differencesByOperation = resourceDifference.getAttributeDifferences().stream().filter(this::filterAttributeDifference).collect(Collectors.groupingBy(AttributeDifference::getOperation));
-        List<AttributeDifference> projectOnly = differencesByOperation.get(Operation.ADD);
-        List<AttributeDifference> processedOnly = differencesByOperation.get(Operation.REMOVE);
-        List<AttributeDifference> updated = differencesByOperation.get(Operation.REPLACE);
-        if (updated != null || processedOnly != null) {
-            return new ResourceAction(ActionType.APPLY, resourceDifference.getProcessed(), updated != null ? updated : processedOnly);
-        } else if (projectOnly != null) {
+        List<AttributeDifference> projectOnly = getOrReturnEmptyList(differencesByOperation.get(Operation.ADD));
+        List<AttributeDifference> processedOnly = getOrReturnEmptyList(differencesByOperation.get(Operation.REMOVE));
+        List<AttributeDifference> updated = getOrReturnEmptyList(differencesByOperation.get(Operation.REPLACE));
+        if (!updated.isEmpty() || !processedOnly.isEmpty()) {
+            List<AttributeDifference> collect = Stream.concat(updated.stream(), processedOnly.stream()).collect(Collectors.toList());
+            return new ResourceAction(ActionType.APPLY, resourceDifference.getProcessed(), collect);
+        } else if (!projectOnly.isEmpty()) {
             return new ResourceAction(ActionType.WARNING, resourceDifference.getProject(), projectOnly);
         }
         return null;
+    }
+
+    private List<AttributeDifference> getOrReturnEmptyList(List<AttributeDifference> attributeDifferences) {
+        if(attributeDifferences == null) {
+            return new ArrayList<>();
+        }
+        return attributeDifferences;
     }
 
     private boolean filterAttributeDifference(AttributeDifference attributeDifference) {

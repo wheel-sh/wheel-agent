@@ -1,7 +1,6 @@
 package sh.wheel.gitops.agent.api;
 
 
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import sh.wheel.gitops.agent.service.AgentService;
 import sh.wheel.gitops.agent.service.OpenShiftService;
 import sh.wheel.gitops.agent.service.StateService;
 
-import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 
@@ -60,7 +58,7 @@ public class WheelRestController {
     }
 
     @Async
-    void callStateService() {
+    void    callStateService() {
         try {
             stateService.init();
         } catch (Exception e) {

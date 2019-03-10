@@ -1,5 +1,7 @@
 package sh.wheel.gitops.agent.model;
 
+import java.util.Objects;
+
 public class AttributeDifference {
 
     private String resourceKind;
@@ -46,5 +48,22 @@ public class AttributeDifference {
                 ", attributeValue='" + attributeValue + '\'' +
                 ", operation=" + operation +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AttributeDifference that = (AttributeDifference) o;
+        return Objects.equals(resourceKind, that.resourceKind) &&
+                Objects.equals(resourceName, that.resourceName) &&
+                Objects.equals(attributeName, that.attributeName) &&
+                Objects.equals(attributeValue, that.attributeValue) &&
+                operation == that.operation;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(resourceKind, resourceName, attributeName, attributeValue, operation);
     }
 }
