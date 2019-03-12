@@ -1,13 +1,19 @@
 package sh.wheel.gitops.agent.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import sh.wheel.gitops.agent.model.ApiResource;
+import sh.wheel.gitops.agent.model.Resource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -67,6 +73,33 @@ class OpenShiftRestClientIntegrationTest {
 
     @Test
     void fetchResources() {
-//        ApiResource{name='deploymentconfigs', subresource=false, kind='DeploymentConfig', apiGroup='apps.openshift.io', apiVersion='v1', namespaced=true, verbs=[create, delete, deletecollection, get, list, patch, update, watch]}
+        ApiResource dc = ApiResource.newBuilder()
+                .name("deploymentconfigs")
+                .kind("DeploymentConfig")
+                .groupName("apps.openshift.io")
+                .groupVersion("apps.openshift.io/v1")
+                .apiVersion("v1")
+                .coreApi(false)
+                .subresource(false)
+                .namespaced(true)
+                .build();
+        List<Resource> resources = openShiftRestClient.fetchNamespacedResourceList(dc, "example-app-test");
+
+        assertNotNull(resources);
+    }
+
+    @Test
+    void fetchAllManageableResourcesInNamespace() {
+        List<String> requiredVerbs = Arrays.asList("create", "delete", "get", "list", "patch", "update", "watch");
+        long start = System.currentTimeMillis();
+        List<ApiResource> apiResources = openShiftRestClient.getFilteredApiResources(true, requiredVerbs);
+        List<ApiResource> manageableResources = openShiftRestClient.getManageableResources(openShiftRestClient.whoAmI(), "example-app-test", requiredVerbs, apiResources);
+
+//        openShiftRestClient.fetchResourcesFromNamespace(List<ApiResource> apiResources, "example-app-test");
+
+//        CompletableFuture.supplyAsync(() -> {
+//
+//        });
+
     }
 }

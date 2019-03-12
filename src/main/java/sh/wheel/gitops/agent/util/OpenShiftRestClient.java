@@ -37,17 +37,28 @@ public class OpenShiftRestClient {
         return new OpenShiftRestClient(apiServerUrl, accessToken, new RestTemplate());
     }
 
-    public List<Resource> fetchResources(ApiResource apiResource, String namespace) {
+    public List<Resource> fetchNamespacedResourceList(ApiResource apiResource, String namespace) {
         final HttpHeaders headers = createHttpHeaders();
         HttpEntity<String> entity = new HttpEntity<>(headers);
         String baseUrl;
-        if(apiResource.getApiGroup().isEmpty()) {
-            baseUrl = "/api/"+apiResource.getApiVersion();
+        if (apiResource.isCoreApi()) {
+            baseUrl = "/api/" + apiResource.getGroupVersion() + "/namespaces/" + namespace + "/";
+        } else {
+            baseUrl = "/apis/" + apiResource.getGroupVersion() + "/namespaces/" + namespace + "/";
         }
-        String endpoint = apiServerUrl + "/apis/project.openshift.io/v1/projects";
-        ResponseEntity<ObjectNode> user = restTemplate.exchange(endpoint, HttpMethod.GET, entity, ObjectNode.class);
+        String endpoint = apiServerUrl + baseUrl + apiResource.getName();
+        ResponseEntity<ObjectNode> resourceList = restTemplate.exchange(endpoint, HttpMethod.GET, entity, ObjectNode.class);
+        String listKind = resourceList.getBody().get("kind").textValue();
+        String kind = listKind.substring(0, listKind.lastIndexOf("List"));
+        String apiVersion = resourceList.getBody().get("apiVersion").textValue();
+        return StreamSupport.stream(resourceList.getBody().get("items").spliterator(), false)
+                .map(jsonNode -> mapToResource(jsonNode, apiVersion, kind))
+                .collect(Collectors.toList());
+    }
 
-        return null;
+    private Resource mapToResource(JsonNode jsonNode, String apiVersion, String kind) {
+        String name = jsonNode.get("metadata").get("name").textValue();
+        return new Resource(kind, name, apiVersion, jsonNode);
     }
 
     public String whoAmI() {
@@ -74,14 +85,23 @@ public class OpenShiftRestClient {
         return headers;
     }
 
-    private ApiResource createApiResource(JsonNode r, String apiGroup, String version) {
+    private ApiResource createApiResource(JsonNode r, String groupName, String groupVersion, String apiVersion) {
         String name = r.get("name").textValue();
         boolean isSubresource = name.contains("/");
         String kind = r.get("kind").textValue();
         boolean namespaced = r.get("namespaced").booleanValue();
         List<String> verbs = StreamSupport.stream(r.get("verbs").spliterator(), false).map(JsonNode::textValue).collect(Collectors.toList());
-
-        return new ApiResource(name, isSubresource, kind, apiGroup, version, namespaced, verbs);
+        return ApiResource.newBuilder()
+                .name(name)
+                .kind(kind)
+                .groupName(groupName)
+                .groupVersion(groupVersion)
+                .apiVersion(apiVersion)
+                .coreApi(groupVersion.isEmpty())
+                .subresource(isSubresource)
+                .namespaced(namespaced)
+                .verbs(verbs)
+                .build();
     }
 
     public List<ApiResource> getManageableResources(String user, String namespace, List<String> requiredVerbs, List<ApiResource> relevantApiResources) {
@@ -141,8 +161,8 @@ public class OpenShiftRestClient {
         String apiGroup = rule.get("apiGroups").get(0).textValue();
         List<String> verbs = StreamSupport.stream(rule.get("verbs").spliterator(), false).map(JsonNode::textValue).collect(Collectors.toList());
         if (apiResource.getName().equals(resource) || resource.equals("*")) {
-            if (apiResource.getApiGroup().isEmpty() && apiGroup.isEmpty()
-                    || (!apiGroup.isEmpty() && apiResource.getApiGroup().startsWith(apiGroup))
+            if (apiResource.getGroupVersion().isEmpty() && apiGroup.isEmpty()
+                    || (!apiGroup.isEmpty() && apiResource.getGroupVersion().startsWith(apiGroup))
                     || apiGroup.equals("*")) {
                 if (verbs.contains("*") || verbs.containsAll(requiredVerbs)) {
                     return true;
@@ -199,11 +219,11 @@ public class OpenShiftRestClient {
             List<ApiResource> result = new ArrayList<>();
             ResponseEntity<ObjectNode> apiResources = restTemplate.exchange(request.getApiEndpoint(), HttpMethod.GET, entity, ObjectNode.class);
             ObjectNode body = apiResources.getBody();
-            JsonNode resources = body.get("resources");
             String apiVersion = body.get("apiVersion") != null ? body.get("apiVersion").textValue() : "";
             String groupVersion = body.get("groupVersion").textValue();
+            JsonNode resources = body.get("resources");
             for (JsonNode resource : resources) {
-                result.add(createApiResource(resource, request.getApiGroup(), apiVersion));
+                result.add(createApiResource(resource, request.getGroupName(), groupVersion, apiVersion));
             }
             return result;
         });

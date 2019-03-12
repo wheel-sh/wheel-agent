@@ -42,8 +42,9 @@ public class OpenShiftService {
 
     Resource mapToResource(JsonNode jsonNode) {
         String kind = jsonNode.get("kind").textValue();
+        String apiVersion = jsonNode.get("apiVersion").textValue();
         String name = jsonNode.get("metadata").get("name").textValue();
-        return new Resource(kind, name, jsonNode);
+        return new Resource(kind, name, apiVersion, jsonNode);
     }
 
     public List<ProjectState> getProjectStatesFromCluster() {

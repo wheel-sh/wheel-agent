@@ -4,20 +4,25 @@ import java.util.List;
 import java.util.Objects;
 
 public class ApiResource {
+
     private final String name;
-    private boolean subresource;
     private final String kind;
-    private final String apiGroup;
+    private final String groupName;
+    private final String groupVersion;
     private final String apiVersion;
+    private final boolean coreApi;
+    private final boolean subresource;
     private final boolean namespaced;
     private final List<String> verbs;
 
-    public ApiResource(String name, boolean subresource, String kind, String apiGroup, String apiVersion, boolean namespaced, List<String> verbs) {
+    public ApiResource(String name, String kind, String groupName, String groupVersion, String apiVersion, boolean coreApi, boolean subresource, boolean namespaced, List<String> verbs) {
         this.name = name;
-        this.subresource = subresource;
         this.kind = kind;
-        this.apiGroup = apiGroup;
+        this.groupName = groupName;
+        this.groupVersion = groupVersion;
         this.apiVersion = apiVersion;
+        this.coreApi = coreApi;
+        this.subresource = subresource;
         this.namespaced = namespaced;
         this.verbs = verbs;
     }
@@ -30,12 +35,24 @@ public class ApiResource {
         return kind;
     }
 
-    public String getApiGroup() {
-        return apiGroup;
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public String getGroupVersion() {
+        return groupVersion;
     }
 
     public String getApiVersion() {
         return apiVersion;
+    }
+
+    public boolean isCoreApi() {
+        return coreApi;
+    }
+
+    public boolean isSubresource() {
+        return subresource;
     }
 
     public boolean isNamespaced() {
@@ -46,39 +63,112 @@ public class ApiResource {
         return verbs;
     }
 
-    public boolean isSubresource() {
-        return subresource;
-    }
-
-    @Override
-    public String toString() {
-        return "ApiResource{" +
-                "name='" + name + '\'' +
-                ", subresource=" + subresource +
-                ", kind='" + kind + '\'' +
-                ", apiGroup='" + apiGroup + '\'' +
-                ", apiVersion='" + apiVersion + '\'' +
-                ", namespaced=" + namespaced +
-                ", verbs=" + verbs +
-                '}';
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ApiResource that = (ApiResource) o;
-        return subresource == that.subresource &&
+        return coreApi == that.coreApi &&
+                subresource == that.subresource &&
                 namespaced == that.namespaced &&
                 Objects.equals(name, that.name) &&
                 Objects.equals(kind, that.kind) &&
-                Objects.equals(apiGroup, that.apiGroup) &&
+                Objects.equals(groupName, that.groupName) &&
+                Objects.equals(groupVersion, that.groupVersion) &&
                 Objects.equals(apiVersion, that.apiVersion) &&
                 Objects.equals(verbs, that.verbs);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, subresource, kind, apiGroup, apiVersion, namespaced, verbs);
+        return Objects.hash(name, kind, groupName, groupVersion, apiVersion, coreApi, subresource, namespaced, verbs);
+    }
+
+    @Override
+    public String toString() {
+        return "ApiResource{" +
+                "name='" + name + '\'' +
+                ", kind='" + kind + '\'' +
+                ", groupName='" + groupName + '\'' +
+                ", groupVersion='" + groupVersion + '\'' +
+                ", apiVersion='" + apiVersion + '\'' +
+                ", coreApi=" + coreApi +
+                ", subresource=" + subresource +
+                ", namespaced=" + namespaced +
+                ", verbs=" + verbs +
+                '}';
+    }
+
+    public static ApiResourceBuilder newBuilder() {
+        return new ApiResourceBuilder();
+    }
+
+
+    public static final class ApiResourceBuilder {
+        private String name;
+        private String kind;
+        private String groupName;
+        private String groupVersion;
+        private String apiVersion;
+        private boolean coreApi;
+        private boolean subresource;
+        private boolean namespaced;
+        private List<String> verbs;
+
+        private ApiResourceBuilder() {
+        }
+
+        public static ApiResourceBuilder anApiResource() {
+            return new ApiResourceBuilder();
+        }
+
+        public ApiResourceBuilder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public ApiResourceBuilder kind(String kind) {
+            this.kind = kind;
+            return this;
+        }
+
+        public ApiResourceBuilder groupName(String groupName) {
+            this.groupName = groupName;
+            return this;
+        }
+
+        public ApiResourceBuilder groupVersion(String groupVersion) {
+            this.groupVersion = groupVersion;
+            return this;
+        }
+
+        public ApiResourceBuilder apiVersion(String apiVersion) {
+            this.apiVersion = apiVersion;
+            return this;
+        }
+
+        public ApiResourceBuilder coreApi(boolean coreApi) {
+            this.coreApi = coreApi;
+            return this;
+        }
+
+        public ApiResourceBuilder subresource(boolean subresource) {
+            this.subresource = subresource;
+            return this;
+        }
+
+        public ApiResourceBuilder namespaced(boolean namespaced) {
+            this.namespaced = namespaced;
+            return this;
+        }
+
+        public ApiResourceBuilder verbs(List<String> verbs) {
+            this.verbs = verbs;
+            return this;
+        }
+
+        public ApiResource build() {
+            return new ApiResource(name, kind, groupName, groupVersion, apiVersion, coreApi, subresource, namespaced, verbs);
+        }
     }
 }

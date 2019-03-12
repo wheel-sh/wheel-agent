@@ -4,19 +4,19 @@ import java.util.Objects;
 
 public class ApiResourceRequest {
     private final String apiEndpoint;
-    private final String apiGroup;
+    private final String groupName;
 
-    public ApiResourceRequest(String apiEndpoint, String apiGroup) {
+    public ApiResourceRequest(String apiEndpoint, String groupName) {
         this.apiEndpoint = apiEndpoint;
-        this.apiGroup = apiGroup;
+        this.groupName = groupName;
     }
 
     public String getApiEndpoint() {
         return apiEndpoint;
     }
 
-    public String getApiGroup() {
-        return apiGroup;
+    public String getGroupName() {
+        return groupName;
     }
 
     @Override
@@ -25,19 +25,19 @@ public class ApiResourceRequest {
         if (o == null || getClass() != o.getClass()) return false;
         ApiResourceRequest that = (ApiResourceRequest) o;
         return Objects.equals(apiEndpoint, that.apiEndpoint) &&
-                Objects.equals(apiGroup, that.apiGroup);
+                Objects.equals(groupName, that.groupName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(apiEndpoint, apiGroup);
+        return Objects.hash(apiEndpoint, groupName);
     }
 
     @Override
     public String toString() {
         return "ApiResourceRequest{" +
                 "apiEndpoint='" + apiEndpoint + '\'' +
-                ", apiGroup='" + apiGroup + '\'' +
+                ", groupName='" + groupName + '\'' +
                 '}';
     }
 }
