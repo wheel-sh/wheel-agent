@@ -1,19 +1,14 @@
 package sh.wheel.gitops.agent.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import sh.wheel.gitops.agent.model.ApiResource;
 import sh.wheel.gitops.agent.model.Resource;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -73,19 +68,42 @@ class OpenShiftRestClientIntegrationTest {
 
     @Test
     void fetchResources() {
-        ApiResource dc = ApiResource.newBuilder()
-                .name("deploymentconfigs")
-                .kind("DeploymentConfig")
-                .groupName("apps.openshift.io")
-                .groupVersion("apps.openshift.io/v1")
+        ApiResource dcv1beta1 = ApiResource.newBuilder()
+                .name("deployments")
+                .kind("Deployment")
+                .groupName("extensions")
+                .groupVersion("extensions/v1beta1")
+                .apiVersion("v1beta1")
+                .coreApi(false)
+                .subresource(false)
+                .namespaced(true)
+                .build();
+        ApiResource dcv1beta2 = ApiResource.newBuilder()
+                .name("deployments")
+                .kind("Deployment")
+                .groupName("apps")
+                .groupVersion("apps/v1beta2")
+                .apiVersion("v1beta2")
+                .coreApi(false)
+                .subresource(false)
+                .namespaced(true)
+                .build();
+        ApiResource dcv1 = ApiResource.newBuilder()
+                .name("deployments")
+                .kind("Deployment")
+                .groupName("apps")
+                .groupVersion("apps/v1")
                 .apiVersion("v1")
                 .coreApi(false)
                 .subresource(false)
                 .namespaced(true)
                 .build();
-        List<Resource> resources = openShiftRestClient.fetchNamespacedResourceList(dc, "example-app-test");
 
-        assertNotNull(resources);
+        List<Resource> resourcesv1beta1 = openShiftRestClient.fetchNamespacedResourceList(dcv1beta1, "chartmuseum");
+        List<Resource> resourcesv1beta2 = openShiftRestClient.fetchNamespacedResourceList(dcv1beta2, "chartmuseum");
+        List<Resource> resourcesv1 = openShiftRestClient.fetchNamespacedResourceList(dcv1, "chartmuseum");
+
+        assertNotNull(resourcesv1beta1);
     }
 
     @Test
@@ -94,12 +112,8 @@ class OpenShiftRestClientIntegrationTest {
         long start = System.currentTimeMillis();
         List<ApiResource> apiResources = openShiftRestClient.getFilteredApiResources(true, requiredVerbs);
         List<ApiResource> manageableResources = openShiftRestClient.getManageableResources(openShiftRestClient.whoAmI(), "example-app-test", requiredVerbs, apiResources);
+        List<Resource> resources = openShiftRestClient.fetchResourcesFromNamespace(manageableResources, "example-app-test");
 
-//        openShiftRestClient.fetchResourcesFromNamespace(List<ApiResource> apiResources, "example-app-test");
-
-//        CompletableFuture.supplyAsync(() -> {
-//
-//        });
-
+        assertNotNull(resources);
     }
 }

@@ -58,7 +58,8 @@ public class OpenShiftRestClient {
 
     private Resource mapToResource(JsonNode jsonNode, String apiVersion, String kind) {
         String name = jsonNode.get("metadata").get("name").textValue();
-        return new Resource(kind, name, apiVersion, jsonNode);
+        String uid = jsonNode.get("metadata").get("uid").textValue();
+        return new Resource(kind, name, apiVersion, uid, jsonNode);
     }
 
     public String whoAmI() {
@@ -229,4 +230,11 @@ public class OpenShiftRestClient {
         });
     }
 
+    public List<Resource> fetchResourcesFromNamespace(List<ApiResource> manageableResources, String namespace) {
+        long start = System.currentTimeMillis();
+        List<CompletableFuture<List<Resource>>> requests = manageableResources.stream().map(ar -> CompletableFuture.supplyAsync(() -> fetchNamespacedResourceList(ar, namespace))).collect(Collectors.toList());
+        List<Resource> result = requests.stream().map(CompletableFuture::join).flatMap(Collection::stream).collect(Collectors.toList());
+        LOG.info("Time to gather " + manageableResources.size() + " resources: " + (System.currentTimeMillis() - start) + "ms");
+        return result;
+    }
 }

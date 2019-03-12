@@ -9,12 +9,14 @@ public class Resource {
     private final String kind;
     private final String name;
     private String apiVersion;
+    private String uid;
     private final JsonNode jsonNode;
 
-    public Resource(String kind, String name, String apiVersion, JsonNode jsonNode) {
+    public Resource(String kind, String name, String apiVersion, String uid, JsonNode jsonNode) {
         this.kind = kind;
         this.name = name;
         this.apiVersion = apiVersion;
+        this.uid = uid;
         this.jsonNode = jsonNode;
     }
 
@@ -30,12 +32,21 @@ public class Resource {
         return jsonNode;
     }
 
+    public String getApiVersion() {
+        return apiVersion;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
     @Override
     public String toString() {
         return "Resource{" +
                 "kind='" + kind + '\'' +
                 ", name='" + name + '\'' +
                 ", apiVersion='" + apiVersion + '\'' +
+                ", uid='" + uid + '\'' +
                 ", jsonNode=" + jsonNode +
                 '}';
     }
@@ -48,11 +59,12 @@ public class Resource {
         return Objects.equals(kind, resource.kind) &&
                 Objects.equals(name, resource.name) &&
                 Objects.equals(apiVersion, resource.apiVersion) &&
+                Objects.equals(uid, resource.uid) &&
                 Objects.equals(jsonNode, resource.jsonNode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(kind, name, apiVersion, jsonNode);
+        return Objects.hash(kind, name, apiVersion, uid, jsonNode);
     }
 }
