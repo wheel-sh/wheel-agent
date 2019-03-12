@@ -8,6 +8,7 @@ import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 import sh.wheel.gitops.agent.model.ApiResource;
 import sh.wheel.gitops.agent.model.ApiResourceRequest;
+import sh.wheel.gitops.agent.model.Resource;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -34,6 +35,19 @@ public class OpenShiftRestClient {
 
     public static OpenShiftRestClient create(String apiServerUrl, String accessToken) {
         return new OpenShiftRestClient(apiServerUrl, accessToken, new RestTemplate());
+    }
+
+    public List<Resource> fetchResources(ApiResource apiResource, String namespace) {
+        final HttpHeaders headers = createHttpHeaders();
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        String baseUrl;
+        if(apiResource.getApiGroup().isEmpty()) {
+            baseUrl = "/api/"+apiResource.getApiVersion();
+        }
+        String endpoint = apiServerUrl + "/apis/project.openshift.io/v1/projects";
+        ResponseEntity<ObjectNode> user = restTemplate.exchange(endpoint, HttpMethod.GET, entity, ObjectNode.class);
+
+        return null;
     }
 
     public String whoAmI() {
@@ -70,11 +84,10 @@ public class OpenShiftRestClient {
         return new ApiResource(name, isSubresource, kind, apiGroup, version, namespaced, verbs);
     }
 
-    public List<ApiResource> getManageableResources(String user, String namespace, List<String> requiredVerbs) {
-        List<ApiResource> filteredApiResources = this.getFilteredApiResources(true, requiredVerbs);
+    public List<ApiResource> getManageableResources(String user, String namespace, List<String> requiredVerbs, List<ApiResource> relevantApiResources) {
         List<JsonNode> rules = fetchRules(user, namespace);
         long start = System.currentTimeMillis();
-        List<ApiResource> manageableResources = filteredApiResources.stream().filter(r -> doRulesApply(r, rules, requiredVerbs)).collect(Collectors.toList());
+        List<ApiResource> manageableResources = relevantApiResources.stream().filter(r -> doRulesApply(r, rules, requiredVerbs)).collect(Collectors.toList());
         LOG.info("Time to calculate manageable resources: " + (System.currentTimeMillis() - start) + "ms");
         return manageableResources;
     }
@@ -188,6 +201,7 @@ public class OpenShiftRestClient {
             ObjectNode body = apiResources.getBody();
             JsonNode resources = body.get("resources");
             String apiVersion = body.get("apiVersion") != null ? body.get("apiVersion").textValue() : "";
+            String groupVersion = body.get("groupVersion").textValue();
             for (JsonNode resource : resources) {
                 result.add(createApiResource(resource, request.getApiGroup(), apiVersion));
             }

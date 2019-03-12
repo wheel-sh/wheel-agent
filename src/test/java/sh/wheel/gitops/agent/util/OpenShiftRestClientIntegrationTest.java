@@ -19,8 +19,8 @@ class OpenShiftRestClientIntegrationTest {
 
     @BeforeAll
     public static void beforeAll() {
-        apiServerUrl = System.getProperty("api.server");
-        token = System.getProperty("api.server.token");
+        apiServerUrl = System.getenv("OPENSHIFT_API_SERVER");
+        token = System.getenv("OPENSHIFT_API_TOKEN");
     }
 
     @BeforeEach
@@ -52,7 +52,8 @@ class OpenShiftRestClientIntegrationTest {
         List<String> requiredVerbs = Arrays.asList("create", "delete", "get", "list", "patch", "update", "watch");
         for (int i = 0; i < 5; i++) {
             long start = System.currentTimeMillis();
-            List<ApiResource> manageableResources = openShiftRestClient.getManageableResources(openShiftRestClient.whoAmI(), "example-app-test", requiredVerbs);
+            List<ApiResource> apiResources = openShiftRestClient.getFilteredApiResources(true, requiredVerbs);
+            List<ApiResource> manageableResources = openShiftRestClient.getManageableResources(openShiftRestClient.whoAmI(), "example-app-test", requiredVerbs, apiResources);
             System.out.println("Millis: " + (System.currentTimeMillis() - start));
             assertNotNull(manageableResources);
         }
@@ -62,5 +63,10 @@ class OpenShiftRestClientIntegrationTest {
     void whoAmI() {
         String s = openShiftRestClient.whoAmI();
         assertNotNull(s);
+    }
+
+    @Test
+    void fetchResources() {
+//        ApiResource{name='deploymentconfigs', subresource=false, kind='DeploymentConfig', apiGroup='apps.openshift.io', apiVersion='v1', namespaced=true, verbs=[create, delete, deletecollection, get, list, patch, update, watch]}
     }
 }
