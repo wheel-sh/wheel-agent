@@ -3,10 +3,7 @@ package sh.wheel.gitops.agent.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import sh.wheel.gitops.agent.model.ProjectState;
-import sh.wheel.gitops.agent.model.Resource;
-import sh.wheel.gitops.agent.model.ResourceAction;
-import sh.wheel.gitops.agent.model.ResourceDifference;
+import sh.wheel.gitops.agent.model.*;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -43,7 +40,7 @@ public class AgentService {
             if (clusterState == null) {
                 createProject(processedState);
             } else if (processedState == null) {
-                deleteProject(clusterState);
+                deleteProject(clusterState.getName());
             } else {
                 List<ResourceDifference> resourceDifferences = projectDifferenceService.evaluateDifference(processedState, clusterState);
                 List<ResourceAction> resourceActions = resourceDifferenceService.createResourceActions(resourceDifferences, processedState, clusterState);
@@ -59,10 +56,10 @@ public class AgentService {
                 switch (resourceAction.getType()) {
                     case CREATE:
                     case APPLY:
-                        openShiftService.apply(projectName, resourceAction.getResource());
+                        openShiftService.apply(resourceAction.getResource(), projectName);
                         break;
                     case DELETE:
-                        openShiftService.delete(projectName, resourceAction.getResource());
+                        openShiftService.delete(resourceAction.getResource().getResourceKey(), projectName);
                         break;
                     case WARNING:
                         LOG.warn(String.format("Project %s has warning in diff %s", projectName, resourceAction));
@@ -76,18 +73,19 @@ public class AgentService {
         }
     }
 
-    private void deleteProject(ProjectState clusterState) {
-        clusterState.getResourcesByKind().get("Project")
-                .forEach(p -> openShiftService.delete(clusterState.getName(), p));
+    private void deleteProject(String projectName) {
+        openShiftService.delete(ResourceKey.projectWithName(projectName), null);
     }
 
     private void createProject(ProjectState repositoryState) {
-        Map<String, List<Resource>> resourcesByKind = repositoryState.getResourcesByKind();
-        String projectName = repositoryState.getName();
-        resourcesByKind.get("Project").forEach(p -> openShiftService.newProject(projectName));
-        Set<String> resources = resourcesByKind.keySet();
-        resources.remove("Project");
-        resources.remove("RoleBinding");
-        resources.forEach(r -> resourcesByKind.get(r).forEach(rk -> openShiftService.apply(projectName, rk)));
+        Map<ResourceKey, Resource> resourcesByKey = repositoryState.getResourcesByKey();
+        String projectName = repositoryState.getProject().getName();
+        openShiftService.newProject(projectName);
+
+        Set<ResourceKey> resources = resourcesByKey.keySet();
+        resources.remove(ResourceKey.projectWithName(projectName));
+        List<ResourceKey> roleBinding = resources.stream().filter(rk -> rk.getKind().equals("RoleBinding")).collect(Collectors.toList());
+        resources.removeAll(roleBinding);
+        resources.forEach(r -> openShiftService.apply(resourcesByKey.get(r), projectName));
     }
 }

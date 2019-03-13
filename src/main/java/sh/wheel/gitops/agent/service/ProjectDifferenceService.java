@@ -10,10 +10,11 @@ import org.springframework.stereotype.Service;
 import sh.wheel.gitops.agent.model.*;
 
 import java.lang.invoke.MethodHandles;
-import java.util.*;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class ProjectDifferenceService {
@@ -39,35 +40,52 @@ public class ProjectDifferenceService {
 
     public List<ResourceDifference> evaluateDifference(ProjectState processed, ProjectState cluster) {
         List<ResourceDifference> resourceDifferences = new ArrayList<>();
-        Map<String, List<Resource>> processedResourcesByKind = processed.getResourcesByKind();
-        Map<String, List<Resource>> clusterResourcesByKind = cluster.getResourcesByKind();
-        Set<String> availableKinds = Stream.concat(processedResourcesByKind.keySet().stream(), clusterResourcesByKind.keySet().stream()).collect(Collectors.toSet());
-        for (String kind : availableKinds) {
-            List<Resource> processedResources = processedResourcesByKind.get(kind);
-            List<Resource> clusterResources = clusterResourcesByKind.get(kind);
-            Map<String, Resource> processedResourceByName = groupByName(processedResources);
-            Map<String, Resource> clusterResourceByName = groupByName(clusterResources);
-            Set<String> availableResourceNames = Stream.concat(processedResourceByName.keySet().stream(), clusterResourceByName.keySet().stream()).collect(Collectors.toSet());
-            for (String name : availableResourceNames) {
-                Resource processedResource = processedResourceByName.get(name);
-                Resource clusterResource = clusterResourceByName.get(name);
-                ResourceKey resourceKey = new ResourceKey(kind, name);
-                if (processedResource == null) {
-                    resourceDifferences.add(new ResourceDifference(DifferenceType.PROJECT_ONLY, null, clusterResource, null, resourceKey));
-                } else if (clusterResource == null) {
-                    resourceDifferences.add(new ResourceDifference(DifferenceType.PROCESSED_ONLY, processedResource, null, null, resourceKey));
-                } else {
-                    List<AttributeDifference> attributeDifferences = evaluateAttributeDifference(processedResource, clusterResource);
-                    resourceDifferences.add(new ResourceDifference(DifferenceType.DIFFER, processedResource, clusterResource, attributeDifferences, resourceKey));
-                }
-            }
-        }
+        Map<ResourceKey, Resource> processedResourcesByKind = processed.getResourcesByKey();
+        Map<ResourceKey, Resource> clusterResourcesByKind = cluster.getResourcesByKey();
+        Map<ResourceKey, Resource> processedOnly = getLeftSideOnly(processedResourcesByKind, clusterResourcesByKind);
+        Map<ResourceKey, Resource> clusterOnly = getLeftSideOnly(clusterResourcesByKind, processedResourcesByKind);
+        Map<ResourceKey, Resource> leftAndRightClusterResources = getLeftWhichIsinRightToo(clusterResourcesByKind, processedResourcesByKind);
+        Set<String> uids = getUids(leftAndRightClusterResources);
+        Map<ResourceKey, Resource> filteredClusterOnly = filterResourcesInUids(uids, clusterOnly);
+        Map<ResourceKey, Resource> leftAndRightProcessedResources = getLeftWhichIsinRightToo(processedResourcesByKind, clusterResourcesByKind);
+        resourceDifferences.addAll(createResourceDifferences(ResourcePresence.PROCESSED_ONLY, processedOnly, null));
+        resourceDifferences.addAll(createResourceDifferences(ResourcePresence.NAMESPACE_ONLY, null, clusterOnly));
+        resourceDifferences.addAll(createResourceDifferences(ResourcePresence.BOTH, leftAndRightProcessedResources, leftAndRightClusterResources));
         return resourceDifferences;
     }
 
-    private Map<String, Resource> groupByName(List<Resource> resources) {
-        //TODO Analyze why multiple Events with same name were given?
-        return resources != null ? resources.stream().collect(Collectors.toMap(Resource::getName, Function.identity())) : new HashMap<>();
+    private List<ResourceDifference> createResourceDifferences(ResourcePresence resourcePresence, Map<ResourceKey, Resource> processed, Map<ResourceKey, Resource> cluster) {
+        switch (resourcePresence) {
+            case NAMESPACE_ONLY:
+                return cluster.values().stream().map(r -> new ResourceDifference(resourcePresence, null, r, null)).collect(Collectors.toList());
+            case PROCESSED_ONLY:
+                return processed.values().stream().map(r -> new ResourceDifference(resourcePresence, r, null, null)).collect(Collectors.toList());
+            case BOTH:
+                return processed.entrySet().stream().map(p -> {
+                    Resource processedResource = p.getValue();
+                    Resource clusterResource = cluster.get(p.getKey());
+                    return new ResourceDifference(resourcePresence, processedResource, clusterResource, evaluateAttributeDifference(processedResource, clusterResource));
+                }).collect(Collectors.toList());
+            default:
+                throw new IllegalStateException("Unkown ResourcePresence type: " + resourcePresence);
+        }
+
+    }
+
+    private Map<ResourceKey, Resource> filterResourcesInUids(Set<String> uids, Map<ResourceKey, Resource> clusterOnly) {
+        return clusterOnly.entrySet().stream().filter(es -> uids.contains(es.getValue().getUid())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    private Set<String> getUids(Map<ResourceKey, Resource> leftAndRightClusterResources) {
+        return leftAndRightClusterResources.values().stream().map(Resource::getUid).collect(Collectors.toSet());
+    }
+
+    private Map<ResourceKey, Resource> getLeftWhichIsinRightToo(Map<ResourceKey, Resource> left, Map<ResourceKey, Resource> right) {
+        return left.entrySet().stream().filter(es -> right.containsKey(es.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    private Map<ResourceKey, Resource> getLeftSideOnly(Map<ResourceKey, Resource> left, Map<ResourceKey, Resource> right) {
+        return left.entrySet().stream().filter(es -> !right.containsKey(es.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private List<AttributeDifference> evaluateAttributeDifference(Resource proccessed, Resource cluster) {
@@ -83,7 +101,7 @@ public class ProjectDifferenceService {
             Operation op = Operation.byName(diff.get("op").textValue());
             JsonNode jsonNodeValue = diff.get("value");
             String value = jsonNodeValue.textValue() != null ? jsonNodeValue.textValue() : jsonNodeValue.toString();
-            attributeDifferences.add(new AttributeDifference(proccessed.getName(), proccessed.getKind(), path, value, op));
+            attributeDifferences.add(new AttributeDifference(proccessed.getName(), proccessed.getKind(), path, value, op, diff));
         }
         return attributeDifferences;
     }

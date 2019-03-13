@@ -39,8 +39,7 @@ class AgentServiceTest {
     void setUp() throws IOException, GitAPIException {
         WheelRepositoryService wheelRepositoryService = new WheelRepositoryService();
         wheelRepositoryService.repositoryBasePath = REPOSITORIES_BASE_PATH;
-        openShiftCliMock = OpenShiftCliMockUtil.createOpenShiftCliMock();
-        OpenShiftService openShiftService = new OpenShiftService(openShiftCliMock);
+        OpenShiftService openShiftService = new OpenShiftService();
         ConfigProcessingService configProcessingService = new ConfigProcessingService(openShiftService);
         ResourceDifferenceService resourceDifferenceService = new ResourceDifferenceService();
         ProjectDifferenceService projectDifferenceService = new ProjectDifferenceService();

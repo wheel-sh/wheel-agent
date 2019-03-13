@@ -6,26 +6,22 @@ import java.util.Objects;
 
 public class Resource {
 
-    private final String kind;
-    private final String name;
-    private String apiVersion;
+    private final ResourceKey resourceKey;
     private String uid;
     private final JsonNode jsonNode;
 
-    public Resource(String kind, String name, String apiVersion, String uid, JsonNode jsonNode) {
-        this.kind = kind;
-        this.name = name;
-        this.apiVersion = apiVersion;
+    public Resource(ResourceKey resourceKey, String uid, JsonNode jsonNode) {
+        this.resourceKey = resourceKey;
         this.uid = uid;
         this.jsonNode = jsonNode;
     }
 
     public String getKind() {
-        return kind;
+        return resourceKey.getKind();
     }
 
     public String getName() {
-        return name;
+        return resourceKey.getName();
     }
 
     public JsonNode getJsonNode() {
@@ -33,19 +29,21 @@ public class Resource {
     }
 
     public String getApiVersion() {
-        return apiVersion;
+        return resourceKey.getApiVersion();
     }
 
     public String getUid() {
         return uid;
     }
 
+    public ResourceKey getResourceKey() {
+        return resourceKey;
+    }
+
     @Override
     public String toString() {
         return "Resource{" +
-                "kind='" + kind + '\'' +
-                ", name='" + name + '\'' +
-                ", apiVersion='" + apiVersion + '\'' +
+                "resourceKey=" + resourceKey +
                 ", uid='" + uid + '\'' +
                 ", jsonNode=" + jsonNode +
                 '}';
@@ -56,15 +54,13 @@ public class Resource {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Resource resource = (Resource) o;
-        return Objects.equals(kind, resource.kind) &&
-                Objects.equals(name, resource.name) &&
-                Objects.equals(apiVersion, resource.apiVersion) &&
+        return Objects.equals(resourceKey, resource.resourceKey) &&
                 Objects.equals(uid, resource.uid) &&
                 Objects.equals(jsonNode, resource.jsonNode);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(kind, name, apiVersion, uid, jsonNode);
+        return Objects.hash(resourceKey, uid, jsonNode);
     }
 }

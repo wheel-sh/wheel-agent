@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.model.ApiResource;
 import sh.wheel.gitops.agent.model.Resource;
+import sh.wheel.gitops.agent.model.ResourceKey;
 
 import java.util.Arrays;
 import java.util.List;
@@ -54,7 +55,7 @@ class OpenShiftRestClientIntegrationTest {
         for (int i = 0; i < 5; i++) {
             long start = System.currentTimeMillis();
             List<ApiResource> apiResources = openShiftRestClient.getFilteredApiResources(true, requiredVerbs);
-            List<ApiResource> manageableResources = openShiftRestClient.getManageableResources(openShiftRestClient.whoAmI(), "example-app-test", requiredVerbs, apiResources);
+            List<ApiResource> manageableResources = openShiftRestClient.fetchManageableResources(openShiftRestClient.whoAmI(), "example-app-test", requiredVerbs, apiResources);
             System.out.println("Millis: " + (System.currentTimeMillis() - start));
             assertNotNull(manageableResources);
         }
@@ -111,9 +112,18 @@ class OpenShiftRestClientIntegrationTest {
         List<String> requiredVerbs = Arrays.asList("create", "delete", "get", "list", "patch", "update", "watch");
         long start = System.currentTimeMillis();
         List<ApiResource> apiResources = openShiftRestClient.getFilteredApiResources(true, requiredVerbs);
-        List<ApiResource> manageableResources = openShiftRestClient.getManageableResources(openShiftRestClient.whoAmI(), "example-app-test", requiredVerbs, apiResources);
+        List<ApiResource> manageableResources = openShiftRestClient.fetchManageableResources(openShiftRestClient.whoAmI(), "example-app-test", requiredVerbs, apiResources);
         List<Resource> resources = openShiftRestClient.fetchResourcesFromNamespace(manageableResources, "example-app-test");
 
         assertNotNull(resources);
+    }
+
+    @Test
+    void fetchResource() {
+        ResourceKey project = ResourceKey.PROJECT;
+        String namespace = "example-app-test";
+        Resource r = openShiftRestClient.fetchResource(ResourceKey.PROJECT, namespace);
+
+        assertNotNull(r);
     }
 }
