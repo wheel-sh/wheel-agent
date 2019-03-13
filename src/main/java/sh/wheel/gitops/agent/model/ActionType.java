@@ -4,6 +4,6 @@ public enum ActionType {
     CREATE,
     DELETE,
     PATCH,
-    WARNING,
-    IGNORE
+    IGNORE_CLUSTER_ATTR,
+    IGNORE_OWNED_RESOURCE
 }

@@ -50,8 +50,8 @@ class ResourceDifferenceServiceTest {
         assertEquals(9, resourceActions.size());
         assertEquals(1, byType.get(ActionType.PATCH).size());
         assertEquals(2, byType.get(ActionType.DELETE).size());
-        assertEquals(4, byType.get(ActionType.WARNING).size());
-        assertEquals(2, byType.get(ActionType.IGNORE).size());
+        assertEquals(4, byType.get(ActionType.IGNORE_CLUSTER_ATTR).size());
+        assertEquals(2, byType.get(ActionType.IGNORE_OWNED_RESOURCE).size());
     }
 
 }

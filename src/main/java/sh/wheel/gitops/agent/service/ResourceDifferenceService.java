@@ -66,7 +66,7 @@ public class ResourceDifferenceService {
     private ResourceAction createActionForProjectOnly(ResourceDifference resourceDifference, ProjectState processed, ProjectState project) {
         JsonNode ownerReference = resourceDifference.getCluster().getJsonNode().get("metadata").get("ownerReferences");
         if (ownerReference != null) { // don't touch owned resources
-            return new ResourceAction(ActionType.IGNORE, resourceDifference.getCluster(), resourceDifference.getAttributeDifferences());
+            return new ResourceAction(ActionType.IGNORE_OWNED_RESOURCE, resourceDifference.getCluster(), resourceDifference.getAttributeDifferences());
         } else {
             return new ResourceAction(ActionType.DELETE, resourceDifference.getCluster(), resourceDifference.getAttributeDifferences());
         }
@@ -86,7 +86,7 @@ public class ResourceDifferenceService {
             List<AttributeDifference> collect = Stream.concat(updated.stream(), processedOnly.stream()).collect(Collectors.toList());
             return new ResourceAction(ActionType.PATCH, resourceDifference.getCluster(), collect);
         } else if (!projectOnly.isEmpty()) {
-            return new ResourceAction(ActionType.WARNING, resourceDifference.getCluster(), projectOnly);
+            return new ResourceAction(ActionType.IGNORE_CLUSTER_ATTR, resourceDifference.getCluster(), projectOnly);
         }
         return null;
     }

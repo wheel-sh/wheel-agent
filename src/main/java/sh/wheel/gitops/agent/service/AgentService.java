@@ -63,14 +63,13 @@ public class AgentService {
                     case DELETE:
                         openShiftService.delete(resourceAction.getResource());
                         break;
-                    case WARNING:
-                        LOG.warn(String.format("Project %s has warning in diff %s", projectName, resourceAction));
-                        break;
-                    case IGNORE:
+                    case IGNORE_CLUSTER_ATTR:
+                    case IGNORE_OWNED_RESOURCE:
+                        LOG.debug("Ignore resource action: " + resourceAction.toString());
                         break;
                 }
             } catch (Exception e) {
-                LOG.warn("Error while executing resource action: "+resourceAction, e);
+                LOG.warn("Error while executing resource action: " + resourceAction, e);
             }
         }
     }
