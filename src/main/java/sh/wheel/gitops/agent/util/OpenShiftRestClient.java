@@ -47,8 +47,9 @@ public class OpenShiftRestClient {
             HttpEntity<String> httpEntity = new HttpEntity<>(headers);
             SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
             HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory).build();
-            RestTemplate template = new RestTemplate();
-            ((HttpComponentsClientHttpRequestFactory) template.getRequestFactory()).setHttpClient(httpClient);
+            HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+            requestFactory.setHttpClient(httpClient);
+            RestTemplate template = new RestTemplate(requestFactory);
             return new OpenShiftRestClient(apiServerUrl, accessToken, template, httpEntity);
         } catch (Exception e) {
             throw new RuntimeException(e);
