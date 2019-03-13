@@ -123,7 +123,7 @@ public class OpenShiftRestClient {
         List<JsonNode> rules = fetchRules(user, namespace);
         long start = System.currentTimeMillis();
         List<ApiResource> manageableResources = relevantApiResources.stream().filter(r -> doRulesApply(r, rules, requiredVerbs)).collect(Collectors.toList());
-        LOG.info("Time to calculate manageable resources: " + (System.currentTimeMillis() - start) + "ms");
+        LOG.info("Time to calculate manageable resources in namespace '" + namespace + "': " + (System.currentTimeMillis() - start) + "ms");
         return manageableResources;
     }
 
@@ -134,7 +134,7 @@ public class OpenShiftRestClient {
         JsonNode apis = post(endpointUrl, postRequest);
         List<JsonNode> rules = StreamSupport.stream(apis.get("status").get("rules").spliterator(), false)
                 .collect(Collectors.toList());
-        LOG.info("Time to gather rules: " + (System.currentTimeMillis() - start) + "ms");
+        LOG.info("Time to gather rules for namespace '" + namespace + "': " + (System.currentTimeMillis() - start) + "ms");
         return rules;
     }
 
@@ -252,7 +252,7 @@ public class OpenShiftRestClient {
         long start = System.currentTimeMillis();
         List<CompletableFuture<List<Resource>>> requests = manageableResources.stream().map(ar -> CompletableFuture.supplyAsync(() -> fetchNamespacedResourceList(ar, namespace))).collect(Collectors.toList());
         List<Resource> result = requests.stream().map(CompletableFuture::join).flatMap(Collection::stream).collect(Collectors.toList());
-        LOG.info("Time to gather " + manageableResources.size() + " resources: " + (System.currentTimeMillis() - start) + "ms");
+        LOG.info("Time to gather " + manageableResources.size() + " resources in namespace '" + namespace + "': " + (System.currentTimeMillis() - start) + "ms");
         return result;
     }
 

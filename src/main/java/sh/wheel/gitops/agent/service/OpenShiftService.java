@@ -67,7 +67,7 @@ public class OpenShiftService {
         List<ProjectState> collect = projectRequests.stream()
                 .map(CompletableFuture::join)
                 .collect(Collectors.toList());
-        LOG.info("Time to fetch project states from cluster: " + (System.currentTimeMillis() - start) + "ms");
+        LOG.info("Time to fetch project states ("+collect.size()+") from cluster: " + (System.currentTimeMillis() - start) + "ms");
         return collect;
     }
 
@@ -115,7 +115,7 @@ public class OpenShiftService {
         ArrayNode patchNodes = objectMapper.createArrayNode();
         attributeDifferences.stream().map(AttributeDifference::getDiff).forEach(patchNodes::addPOJO);
         JsonNode jsonNode = openShiftRestClient.patchResource(resource, patchNodes);
-        LOG.info(String.format("Applied resource %s/%s in project %s", resource.getKind(), resource.getName(), projectName));
+        LOG.info(String.format("Applied resource %s/%s in namespace %s", resource.getKind(), resource.getName(), projectName));
     }
 
     public void newProject(String projectName) {
@@ -136,7 +136,7 @@ public class OpenShiftService {
     }
 
     public void delete(Resource clusterResource) {
-        LOG.info(String.format("Deleting resource %s", clusterResource.getJsonNode().get("metadata").get("selfLink").textValue()));
+        LOG.info(String.format("Deleted resource %s", clusterResource.getJsonNode().get("metadata").get("selfLink").textValue()));
         openShiftRestClient.delete(clusterResource);
     }
 }
