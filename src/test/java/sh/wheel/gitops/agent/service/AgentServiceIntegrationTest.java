@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.testutil.GitTestUtil;
 import sh.wheel.gitops.agent.testutil.Samples;
-import sh.wheel.gitops.agent.util.OpenShiftCli;
 
 import java.io.IOException;
 import java.net.URI;
@@ -37,7 +36,6 @@ class AgentServiceIntegrationTest {
     void setUp() throws IOException, GitAPIException {
         WheelRepositoryService wheelRepositoryService = new WheelRepositoryService();
         wheelRepositoryService.repositoryBasePath = REPOSITORIES_BASE_PATH;
-        OpenShiftCli openShiftCli = new OpenShiftCli();
         OpenShiftService openShiftService = null;
         openShiftService.init();
         ConfigProcessingService configProcessingService = new ConfigProcessingService(openShiftService);

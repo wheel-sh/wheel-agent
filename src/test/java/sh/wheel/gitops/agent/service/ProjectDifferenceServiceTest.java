@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.model.*;
-import sh.wheel.gitops.agent.testutil.OpenShiftCliMockUtil;
 import sh.wheel.gitops.agent.testutil.Samples;
 
 import java.util.HashMap;

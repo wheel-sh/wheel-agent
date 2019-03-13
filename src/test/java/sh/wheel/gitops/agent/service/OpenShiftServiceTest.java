@@ -6,9 +6,7 @@ import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.model.ProjectState;
 import sh.wheel.gitops.agent.model.Resource;
 import sh.wheel.gitops.agent.model.ResourceKey;
-import sh.wheel.gitops.agent.testutil.OpenShiftCliMockUtil;
 import sh.wheel.gitops.agent.testutil.Samples;
-import sh.wheel.gitops.agent.util.OpenShiftCli;
 
 import java.util.HashMap;
 import java.util.List;

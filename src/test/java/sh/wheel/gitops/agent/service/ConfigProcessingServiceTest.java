@@ -11,7 +11,6 @@ import sh.wheel.gitops.agent.model.App;
 import sh.wheel.gitops.agent.model.BaseConfig;
 import sh.wheel.gitops.agent.model.ProjectState;
 import sh.wheel.gitops.agent.model.WheelRepository;
-import sh.wheel.gitops.agent.testutil.OpenShiftCliMockUtil;
 import sh.wheel.gitops.agent.testutil.Samples;
 
 import java.io.IOException;
