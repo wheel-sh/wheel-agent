@@ -2,9 +2,11 @@ package sh.wheel.gitops.agent.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
@@ -40,16 +42,23 @@ public class OpenShiftRestClient {
     }
 
     public static OpenShiftRestClient create(String apiServerUrl, String accessToken) {
-        final HttpHeaders headers = createHttpHeaders(accessToken);
-        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
-        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-        // TODO: Load mounted ca.crt
-        CloseableHttpClient client = HttpClients.custom()
-                .setSSLHostnameVerifier(new NoopHostnameVerifier())
-                .build();
-        requestFactory.setHttpClient(client);
-        RestTemplate restTemplate = new RestTemplate(requestFactory);
-        return new OpenShiftRestClient(apiServerUrl, accessToken, restTemplate, httpEntity);
+        try {
+            final HttpHeaders headers = createHttpHeaders(accessToken);
+            HttpEntity<String> httpEntity = new HttpEntity<>(headers);
+            HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+            // TODO: Load mounted ca.crt
+            SSLContextBuilder builder = new SSLContextBuilder();
+            builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
+            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
+                    builder.build());
+            CloseableHttpClient client = HttpClients.custom()
+                    .setSSLSocketFactory(sslsf).build();
+            requestFactory.setHttpClient(client);
+            RestTemplate restTemplate = new RestTemplate(requestFactory);
+            return new OpenShiftRestClient(apiServerUrl, accessToken, restTemplate, httpEntity);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<Resource> fetchNamespacedResourceList(ApiResource apiResource, String namespace) {
