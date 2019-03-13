@@ -234,8 +234,10 @@ public class OpenShiftRestClient {
         return result;
     }
 
-    public Resource fetchResource(ResourceKey project, String namespace) {
-        return null;
+    public Resource fetchProject(String projectName) {
+        String endpoint = apiServerUrl + "/apis/project.openshift.io/v1/projects/" + projectName;
+        JsonNode projectNode = get(endpoint);
+        return mapToResource(projectNode, "project.openshift.io/v1", "Project");
     }
 
     public void delete(ResourceKey resource, String namespace) {

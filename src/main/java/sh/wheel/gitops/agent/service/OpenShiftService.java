@@ -78,7 +78,7 @@ public class OpenShiftService {
     public ProjectState getProjectStateFromCluster(String projectName) {
         List<ApiResource> apiResources = openShiftRestClient.fetchManageableResources(whoAmI, projectName, requiredVerbs, availableApiResources);
         Map<ResourceKey, Resource> resourceByKey = openShiftRestClient.fetchResourcesFromNamespace(apiResources, projectName).stream().collect(Collectors.toMap(Resource::getResourceKey, Function.identity()));
-        Resource project = openShiftRestClient.fetchResource(ResourceKey.projectWithName(projectName), projectName);
+        Resource project = openShiftRestClient.fetchProject(projectName);
         return new ProjectState(project, resourceByKey);
     }
 

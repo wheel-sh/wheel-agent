@@ -120,9 +120,8 @@ class OpenShiftRestClientIntegrationTest {
 
     @Test
     void fetchResource() {
-        ResourceKey project = ResourceKey.PROJECT;
-        String namespace = "example-app-test";
-        Resource r = openShiftRestClient.fetchResource(ResourceKey.PROJECT, namespace);
+        String projectName = "example-app-test";
+        Resource r = openShiftRestClient.fetchProject(projectName);
 
         assertNotNull(r);
     }
