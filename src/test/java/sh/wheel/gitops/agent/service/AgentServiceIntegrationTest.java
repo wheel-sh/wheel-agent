@@ -38,7 +38,7 @@ class AgentServiceIntegrationTest {
         WheelRepositoryService wheelRepositoryService = new WheelRepositoryService();
         wheelRepositoryService.repositoryBasePath = REPOSITORIES_BASE_PATH;
         OpenShiftCli openShiftCli = new OpenShiftCli();
-        OpenShiftService openShiftService = new OpenShiftService();
+        OpenShiftService openShiftService = null;
         openShiftService.init();
         ConfigProcessingService configProcessingService = new ConfigProcessingService(openShiftService);
         ResourceDifferenceService resourceDifferenceService = new ResourceDifferenceService();

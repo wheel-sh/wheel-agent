@@ -7,7 +7,6 @@ import sh.wheel.gitops.agent.model.ActionType;
 import sh.wheel.gitops.agent.model.ProjectState;
 import sh.wheel.gitops.agent.model.ResourceAction;
 import sh.wheel.gitops.agent.model.ResourceDifference;
-import sh.wheel.gitops.agent.testutil.OpenShiftCliMockUtil;
 import sh.wheel.gitops.agent.testutil.Samples;
 
 import java.util.HashMap;
@@ -25,7 +24,7 @@ class ResourceDifferenceServiceTest {
 
     @BeforeEach
     void setUp() {
-        OpenShiftService openShiftService = new OpenShiftService();
+        OpenShiftService openShiftService = null;
         ProjectDifferenceService projectDifferenceService = new ProjectDifferenceService();
         clusterProjectState = openShiftService.getProjectStateFromCluster("example-app-test");
 
@@ -49,7 +48,7 @@ class ResourceDifferenceServiceTest {
 
         Map<ActionType, List<ResourceAction>> byType = resourceActions.stream().collect(Collectors.groupingBy(ResourceAction::getType));
         assertEquals(9, resourceActions.size());
-        assertEquals(1, byType.get(ActionType.APPLY).size());
+        assertEquals(1, byType.get(ActionType.PATCH).size());
         assertEquals(2, byType.get(ActionType.DELETE).size());
         assertEquals(4, byType.get(ActionType.WARNING).size());
         assertEquals(2, byType.get(ActionType.IGNORE).size());

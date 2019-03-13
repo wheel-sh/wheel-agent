@@ -59,4 +59,13 @@ public class ResourceKey {
     public int hashCode() {
         return Objects.hash(kind, name, apiVersion);
     }
+
+    @Override
+    public String toString() {
+        return "ResourceKey{" +
+                "kind='" + kind + '\'' +
+                ", name='" + name + '\'' +
+                ", apiVersion='" + apiVersion + '\'' +
+                '}';
+    }
 }

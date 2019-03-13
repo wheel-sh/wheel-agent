@@ -21,7 +21,7 @@ class ProjectDifferenceServiceTest {
 
     @BeforeEach
     void setUp() {
-        openShiftService = new OpenShiftService();
+        openShiftService = null;
         projectDifferenceService = new ProjectDifferenceService();
     }
 

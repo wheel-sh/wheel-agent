@@ -3,7 +3,7 @@ package sh.wheel.gitops.agent.model;
 public enum ActionType {
     CREATE,
     DELETE,
-    APPLY,
+    PATCH,
     WARNING,
     IGNORE
 }

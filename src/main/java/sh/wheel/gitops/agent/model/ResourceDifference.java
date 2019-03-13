@@ -5,13 +5,13 @@ import java.util.List;
 public class ResourceDifference {
 
     private final ResourcePresence presence;
-    private final Resource resource;
+    private final Resource processed;
     private final Resource cluster;
     private final List<AttributeDifference> attributeDifferences;
 
     public ResourceDifference(ResourcePresence presence, Resource processed, Resource cluster, List<AttributeDifference> attributeDifferences) {
         this.presence = presence;
-        this.resource = processed;
+        this.processed = processed;
         this.cluster = cluster;
         this.attributeDifferences = attributeDifferences;
     }
@@ -20,8 +20,8 @@ public class ResourceDifference {
         return presence;
     }
 
-    public Resource getResource() {
-        return resource;
+    public Resource getProcessed() {
+        return processed;
     }
 
     public Resource getCluster() {
@@ -36,7 +36,7 @@ public class ResourceDifference {
     public String toString() {
         return "ResourceDifference{" +
                 "presence=" + presence +
-                ", resource=" + resource +
+                ", processed=" + processed +
                 ", cluster=" + cluster +
                 ", attributeDifferences=" + attributeDifferences +
                 '}';

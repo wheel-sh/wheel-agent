@@ -8,18 +8,16 @@ public class ApiResource {
     private final String name;
     private final String kind;
     private final String groupName;
-    private final String groupVersion;
     private final String apiVersion;
     private final boolean coreApi;
     private final boolean subresource;
     private final boolean namespaced;
     private final List<String> verbs;
 
-    public ApiResource(String name, String kind, String groupName, String groupVersion, String apiVersion, boolean coreApi, boolean subresource, boolean namespaced, List<String> verbs) {
+    public ApiResource(String name, String kind, String groupName, String apiVersion, boolean coreApi, boolean subresource, boolean namespaced, List<String> verbs) {
         this.name = name;
         this.kind = kind;
         this.groupName = groupName;
-        this.groupVersion = groupVersion;
         this.apiVersion = apiVersion;
         this.coreApi = coreApi;
         this.subresource = subresource;
@@ -39,10 +37,6 @@ public class ApiResource {
         return groupName;
     }
 
-    public String getGroupVersion() {
-        return groupVersion;
-    }
-
     public String getApiVersion() {
         return apiVersion;
     }
@@ -57,6 +51,14 @@ public class ApiResource {
 
     public boolean isNamespaced() {
         return namespaced;
+    }
+
+    public String getApiEndpoint(String namespace) {
+        String api = coreApi ? "/api" : "/apis";
+        String version = "/" + apiVersion;
+        String namespaced = isNamespaced() ? "/namespaces/" + namespace : "";
+        String name = "/" + getName();
+        return api + version + namespaced + name;
     }
 
     public List<String> getVerbs() {
@@ -74,14 +76,13 @@ public class ApiResource {
                 Objects.equals(name, that.name) &&
                 Objects.equals(kind, that.kind) &&
                 Objects.equals(groupName, that.groupName) &&
-                Objects.equals(groupVersion, that.groupVersion) &&
                 Objects.equals(apiVersion, that.apiVersion) &&
                 Objects.equals(verbs, that.verbs);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, kind, groupName, groupVersion, apiVersion, coreApi, subresource, namespaced, verbs);
+        return Objects.hash(name, kind, groupName, apiVersion, coreApi, subresource, namespaced, verbs);
     }
 
     @Override
@@ -90,7 +91,6 @@ public class ApiResource {
                 "name='" + name + '\'' +
                 ", kind='" + kind + '\'' +
                 ", groupName='" + groupName + '\'' +
-                ", groupVersion='" + groupVersion + '\'' +
                 ", apiVersion='" + apiVersion + '\'' +
                 ", coreApi=" + coreApi +
                 ", subresource=" + subresource +
@@ -108,7 +108,6 @@ public class ApiResource {
         private String name;
         private String kind;
         private String groupName;
-        private String groupVersion;
         private String apiVersion;
         private boolean coreApi;
         private boolean subresource;
@@ -134,11 +133,6 @@ public class ApiResource {
 
         public ApiResourceBuilder groupName(String groupName) {
             this.groupName = groupName;
-            return this;
-        }
-
-        public ApiResourceBuilder groupVersion(String groupVersion) {
-            this.groupVersion = groupVersion;
             return this;
         }
 
@@ -168,7 +162,7 @@ public class ApiResource {
         }
 
         public ApiResource build() {
-            return new ApiResource(name, kind, groupName, groupVersion, apiVersion, coreApi, subresource, namespaced, verbs);
+            return new ApiResource(name, kind, groupName, apiVersion, coreApi, subresource, namespaced, verbs);
         }
     }
 }

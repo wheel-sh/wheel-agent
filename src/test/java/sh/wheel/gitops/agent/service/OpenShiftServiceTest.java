@@ -23,7 +23,7 @@ class OpenShiftServiceTest {
 
     @BeforeEach
     void setUp() {
-        openShiftService = new OpenShiftService();
+        openShiftService = null;
     }
 
     @Test

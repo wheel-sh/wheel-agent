@@ -53,7 +53,7 @@ public class ResourceDifferenceService {
     private ResourceAction createAction(ResourceDifference resourceDifference, ProjectState processed, ProjectState project) {
         switch (resourceDifference.getPresence()) {
             case PROCESSED_ONLY:
-                return new ResourceAction(ActionType.CREATE, resourceDifference.getResource(), resourceDifference.getAttributeDifferences());
+                return new ResourceAction(ActionType.CREATE, resourceDifference.getProcessed(), resourceDifference.getAttributeDifferences());
             case NAMESPACE_ONLY:
                 return createActionForProjectOnly(resourceDifference, processed, project);
             case BOTH:
@@ -65,8 +65,7 @@ public class ResourceDifferenceService {
 
     private ResourceAction createActionForProjectOnly(ResourceDifference resourceDifference, ProjectState processed, ProjectState project) {
         JsonNode ownerReference = resourceDifference.getCluster().getJsonNode().get("metadata").get("ownerReferences");
-        List<Resource> owners = getOwners(ownerReference, project);
-        if (!owners.isEmpty() && areOwnersInProcessed(owners, processed)) {
+        if (ownerReference != null) { // don't touch owned resources
             return new ResourceAction(ActionType.IGNORE, resourceDifference.getCluster(), resourceDifference.getAttributeDifferences());
         } else {
             return new ResourceAction(ActionType.DELETE, resourceDifference.getCluster(), resourceDifference.getAttributeDifferences());
@@ -74,47 +73,18 @@ public class ResourceDifferenceService {
     }
 
     private boolean areOwnersInProcessed(List<Resource> owners, ProjectState processed) {
-        for (Resource owner : owners) {
-            Resource processedByKind = processed.getResourcesByKey().get(owner.getResourceKey());
-            if(processedByKind == null)  {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private List<Resource> getOwners(JsonNode ownerReferencerces, ProjectState projectState) {
-        List<Resource> owners = new ArrayList<>();
-        if (ownerReferencerces == null) {
-            return owners;
-        }
-        for (JsonNode ownerReferencerce : ownerReferencerces) {
-            String kind = ownerReferencerce.get("kind").textValue();
-            String name = ownerReferencerce.get("name").textValue();
-            String apiVersion = ownerReferencerce.get("apiVersion").textValue();
-            ResourceKey ownerKey = new ResourceKey(name, kind, apiVersion);
-            Resource resource = projectState.getResourcesByKey().get(ownerKey);
-            if (resource == null) {
-                continue;
-            }
-            JsonNode ownerReference = resource.getJsonNode().get("metadata").get("ownerReferences");
-            if (ownerReference != null) {
-                return getOwners(ownerReference, projectState);
-            }
-            owners.add(resource);
-        }
-        return owners;
+        return owners.stream().map(owner -> processed.getResourcesByKey().get(owner.getResourceKey())).noneMatch(Objects::isNull);
     }
 
     private ResourceAction createActionForDiff(ResourceDifference resourceDifference) {
 
         Map<Operation, List<AttributeDifference>> differencesByOperation = resourceDifference.getAttributeDifferences().stream().filter(this::filterAttributeDifference).collect(Collectors.groupingBy(AttributeDifference::getOperation));
-        List<AttributeDifference> projectOnly = getOrReturnEmptyList(differencesByOperation.get(Operation.ADD));
-        List<AttributeDifference> processedOnly = getOrReturnEmptyList(differencesByOperation.get(Operation.REMOVE));
+        List<AttributeDifference> projectOnly = getOrReturnEmptyList(differencesByOperation.get(Operation.REMOVE));
+        List<AttributeDifference> processedOnly = getOrReturnEmptyList(differencesByOperation.get(Operation.ADD));
         List<AttributeDifference> updated = getOrReturnEmptyList(differencesByOperation.get(Operation.REPLACE));
         if (!updated.isEmpty() || !processedOnly.isEmpty()) {
             List<AttributeDifference> collect = Stream.concat(updated.stream(), processedOnly.stream()).collect(Collectors.toList());
-            return new ResourceAction(ActionType.APPLY, resourceDifference.getResource(), collect);
+            return new ResourceAction(ActionType.PATCH, resourceDifference.getCluster(), collect);
         } else if (!projectOnly.isEmpty()) {
             return new ResourceAction(ActionType.WARNING, resourceDifference.getCluster(), projectOnly);
         }
@@ -142,9 +112,9 @@ public class ResourceDifferenceService {
 
     private boolean filterIgnoredResources(ResourceDifference resourceDifference) {
         if (ResourcePresence.NAMESPACE_ONLY.equals(resourceDifference.getPresence())) {
-            String kind = resourceDifference.getResource().getKind();
-            String name = getResourceName(resourceDifference.getResource());
-            String type = getResourceType(resourceDifference.getResource());
+            String kind = resourceDifference.getCluster().getKind();
+            String name = resourceDifference.getCluster().getName();
+            String type = getResourceType(resourceDifference.getCluster());
             for (IgnoredResourceIdentifier ignoredResource : IGNORED_RESOURCES) {
                 String ignoredKind = ignoredResource.getKind();
                 String ignoredType = ignoredResource.getType();

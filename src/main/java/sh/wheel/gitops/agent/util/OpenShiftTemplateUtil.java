@@ -19,7 +19,6 @@ import java.util.stream.StreamSupport;
 
 public class OpenShiftTemplateUtil {
 
-
     private ObjectReader objectReader;
 
     public OpenShiftTemplateUtil(ObjectReader objectReader) {

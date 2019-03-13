@@ -41,7 +41,7 @@ class ConfigProcessingServiceTest {
     @BeforeEach
     void setUp() throws IOException {
         wheelRepository = new WheelRepositoryService().getRepositoryState(TESTREPO1_PATH);
-        OpenShiftService openShiftService = new OpenShiftService();
+        OpenShiftService openShiftService = null;
         configProcessingService = new ConfigProcessingService(openShiftService);
     }
 

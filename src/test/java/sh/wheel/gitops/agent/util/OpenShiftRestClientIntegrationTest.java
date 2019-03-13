@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class OpenShiftRestClientIntegrationTest {
 
@@ -46,14 +46,14 @@ class OpenShiftRestClientIntegrationTest {
 
     @Test
     void getFilteredApiResources() {
-        List<String> requiredOperations = Arrays.asList("create", "delete", "get", "list", "patch", "update", "watch");
+        List<String> requiredOperations = Arrays.asList("create", "delete", "get", "list", "apply", "update", "watch");
         List<ApiResource> allApiResources = openShiftRestClient.getFilteredApiResources(true, requiredOperations);
         assertNotNull(allApiResources);
     }
 
     @Test
     void getManageableResources() {
-        List<String> requiredVerbs = Arrays.asList("create", "delete", "get", "list", "patch", "update", "watch");
+        List<String> requiredVerbs = Arrays.asList("create", "delete", "get", "list", "apply", "update", "watch");
         long start = System.currentTimeMillis();
         List<ApiResource> apiResources = openShiftRestClient.getFilteredApiResources(true, requiredVerbs);
         List<ApiResource> manageableResources = openShiftRestClient.fetchManageableResources(openShiftRestClient.whoAmI(), "example-app-test", requiredVerbs, apiResources);
@@ -74,8 +74,7 @@ class OpenShiftRestClientIntegrationTest {
                 .name("deployments")
                 .kind("Deployment")
                 .groupName("extensions")
-                .groupVersion("extensions/v1beta1")
-                .apiVersion("v1beta1")
+                .apiVersion("extensions/v1beta1")
                 .coreApi(false)
                 .subresource(false)
                 .namespaced(true)
@@ -84,8 +83,7 @@ class OpenShiftRestClientIntegrationTest {
                 .name("deployments")
                 .kind("Deployment")
                 .groupName("apps")
-                .groupVersion("apps/v1beta2")
-                .apiVersion("v1beta2")
+                .apiVersion("apps/v1beta2")
                 .coreApi(false)
                 .subresource(false)
                 .namespaced(true)
@@ -94,8 +92,7 @@ class OpenShiftRestClientIntegrationTest {
                 .name("deployments")
                 .kind("Deployment")
                 .groupName("apps")
-                .groupVersion("apps/v1")
-                .apiVersion("v1")
+                .apiVersion("apps/v1")
                 .coreApi(false)
                 .subresource(false)
                 .namespaced(true)
@@ -110,7 +107,7 @@ class OpenShiftRestClientIntegrationTest {
 
     @Test
     void fetchAllManageableResourcesInNamespace() {
-        List<String> requiredVerbs = Arrays.asList("create", "delete", "get", "list", "patch", "update", "watch");
+        List<String> requiredVerbs = Arrays.asList("create", "delete", "get", "list", "apply", "update", "watch");
         long start = System.currentTimeMillis();
         List<ApiResource> apiResources = openShiftRestClient.getFilteredApiResources(true, requiredVerbs);
         List<ApiResource> manageableResources = openShiftRestClient.fetchManageableResources(openShiftRestClient.whoAmI(), "example-app-test", requiredVerbs, apiResources);
@@ -133,5 +130,16 @@ class OpenShiftRestClientIntegrationTest {
         JsonNode delete = openShiftRestClient.delete(new Resource(null, null, secretReference));
 
         assertNotNull(delete);
+    }
+
+    @Test
+    void createFetchDeleteProject() {
+        String projectName = "junit-test-project";
+        JsonNode newProject = openShiftRestClient.newProject(projectName);
+        Resource fetchProject = openShiftRestClient.fetchProject(projectName);
+        openShiftRestClient.delete(fetchProject);
+        Resource fetchProjectAfterDeletion = openShiftRestClient.fetchProject(projectName);
+        String phase = fetchProjectAfterDeletion.getJsonNode().get("status").get("phase").textValue();
+        assertEquals("Terminating", phase);
     }
 }

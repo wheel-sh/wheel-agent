@@ -1,22 +1,22 @@
 package sh.wheel.gitops.agent.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import sh.wheel.gitops.agent.OpenShiftRestClientFactory;
-import sh.wheel.gitops.agent.model.ApiResource;
-import sh.wheel.gitops.agent.model.ProjectState;
-import sh.wheel.gitops.agent.model.Resource;
-import sh.wheel.gitops.agent.model.ResourceKey;
-import sh.wheel.gitops.agent.util.OpenShiftCli;
+import sh.wheel.gitops.agent.model.*;
 import sh.wheel.gitops.agent.util.OpenShiftRestClient;
 import sh.wheel.gitops.agent.util.OpenShiftTemplateUtil;
 
 import javax.annotation.PostConstruct;
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,29 +27,19 @@ public class OpenShiftService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private OpenShiftCli oc;
     private OpenShiftTemplateUtil templateUtil;
     private OpenShiftRestClient openShiftRestClient;
     private List<String> requiredVerbs = Arrays.asList("create", "delete", "get", "list", "patch", "update", "watch");
     private List<ApiResource> availableApiResources;
     private String whoAmI;
 
-    public OpenShiftService() {
-        this.oc = new OpenShiftCli();
-        this.templateUtil = OpenShiftTemplateUtil.create();
-        this.openShiftRestClient = new OpenShiftRestClientFactory().createOpenShiftRestClient();
-
-    }
-
-    public OpenShiftService(OpenShiftCli openShiftCli, OpenShiftTemplateUtil templateUtil, OpenShiftRestClient openShiftRestClient) {
-        this.oc = openShiftCli;
+    public OpenShiftService(OpenShiftTemplateUtil templateUtil, OpenShiftRestClient openShiftRestClient) {
         this.templateUtil = templateUtil;
         this.openShiftRestClient = openShiftRestClient;
     }
 
     @PostConstruct
     public void init() {
-        // TODO: Analyze why events is in there twice?
         whoAmI = openShiftRestClient.whoAmI();
         availableApiResources = getManageableResources();
     }
@@ -61,18 +51,24 @@ public class OpenShiftService {
         String name = jsonNode.get("metadata").get("name").textValue();
         JsonNode uidNode = jsonNode.get("metadata").get("uid");
         String uid = null;
-        if(uidNode != null) {
+        if (uidNode != null) {
             uid = uidNode.textValue();
         }
         return new Resource(new ResourceKey(name, kind, apiVersion), uid, jsonNode);
     }
 
     public List<ProjectState> getProjectStatesFromCluster() {
-        return oc.getManageableProjects().parallelStream()
+        long start = System.currentTimeMillis();
+        List<CompletableFuture<ProjectState>> projectRequests = openShiftRestClient.getAllProjects()
+                .stream().filter(p -> p.get("metadata").get("annotations").get("openshift.io/requester").textValue().equals(whoAmI))
                 .map(mp -> mp.get("metadata").get("name").textValue())
-                .filter(Objects::nonNull)
-                .map(this::getProjectStateFromCluster)
+                .map(p -> CompletableFuture.supplyAsync(() -> getProjectStateFromCluster(p)))
                 .collect(Collectors.toList());
+        List<ProjectState> collect = projectRequests.stream()
+                .map(CompletableFuture::join)
+                .collect(Collectors.toList());
+        LOG.info("Time to fetch project states from cluster: " + (System.currentTimeMillis() - start) + "ms");
+        return collect;
     }
 
     public ProjectState getProjectStateFromCluster(String projectName) {
@@ -90,6 +86,7 @@ public class OpenShiftService {
         ResourceKey projectKey = ResourceKey.projectWithName(projectParams.get("PROJECT_NAME"));
         Map<ResourceKey, Resource> projectProcessed = process(projectTemplate, projectParams);
         Resource project = projectProcessed.get(projectKey);
+        projectProcessed.remove(projectKey);
         Map<ResourceKey, Resource> appProcessed = process(appTemplate, appParams);
         Map<ResourceKey, Resource> resources = Stream.concat(projectProcessed.entrySet().stream(), appProcessed.entrySet().stream()).collect(Collectors.toMap(
                 Map.Entry::getKey,
@@ -108,19 +105,38 @@ public class OpenShiftService {
     }
 
     public String getWhoAmI() {
-        return oc.getWhoAmI();
+        return whoAmI;
     }
 
-    public void apply(Resource resource, String projectName) {
+    public void patch(Resource resource, List<AttributeDifference> attributeDifferences, String projectName) {
+        ApiResource apiResource = resolveApiResource(resource);
+        String endpoint = apiResource.getApiEndpoint(projectName) + "/" + resource.getName();
+        ObjectMapper objectMapper = new ObjectMapper();
+        ArrayNode patchNodes = objectMapper.createArrayNode();
+        attributeDifferences.stream().map(AttributeDifference::getDiff).forEach(patchNodes::addPOJO);
+        JsonNode jsonNode = openShiftRestClient.patchResource(resource, patchNodes);
         LOG.info(String.format("Applied resource %s/%s in project %s", resource.getKind(), resource.getName(), projectName));
-        oc.apply(projectName, resource.getJsonNode());
     }
 
     public void newProject(String projectName) {
-        oc.newProject(projectName);
+        openShiftRestClient.newProject(projectName);
+    }
+
+    public JsonNode createNamespacedResource(Resource resource, String namespace) {
+        ApiResource apiResource = resolveApiResource(resource);
+        JsonNode namespacedResource = openShiftRestClient.createNamespacedResource(resource, apiResource, namespace);
+        LOG.info(String.format("Created resource %s/%s in namespace %s", apiResource.getName(), resource.getName(), namespace));
+        return namespacedResource;
+    }
+
+    private ApiResource resolveApiResource(Resource resource) {
+        return availableApiResources.stream().filter(ai -> ai.getKind().equals(resource.getKind()) &&
+                ai.getApiVersion().equals(resource.getApiVersion()) &&
+                ai.getKind().equals(resource.getKind())).findAny().orElseThrow(() -> new IllegalStateException("No api resource found for key :" + resource.getResourceKey()));
     }
 
     public void delete(Resource clusterResource) {
+        LOG.info(String.format("Deleting resource %s", clusterResource.getJsonNode().get("metadata").get("selfLink").textValue()));
         openShiftRestClient.delete(clusterResource);
     }
 }

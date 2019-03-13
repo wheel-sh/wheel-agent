@@ -36,14 +36,9 @@ public class WheelRestController {
 
     @RequestMapping("/sync")
     public String sync() {
+        this.callStateService();
         this.callAgentService();
         return "Synchronization started...";
-    }
-
-    @RequestMapping("/reload")
-    public String reload() {
-        this.callStateService();
-        return "Reload started...";
     }
 
     @RequestMapping("/refresh")
@@ -57,15 +52,14 @@ public class WheelRestController {
         agentService.synchronize();
     }
 
-    @Async
-    void    callStateService() {
+    void callStateService() {
         try {
             stateService.init();
         } catch (Exception e) {
             LOG.warn("Error occured while calling StateService", e);
         }
     }
-    @Async
+
     void callOpenShiftService() {
         try {
             openShiftService.init();

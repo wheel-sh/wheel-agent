@@ -41,8 +41,6 @@ public class StateService {
         WheelRepository wheelRepository = wheelRepositoryService.loadRepository(repositoryUrl, repositoryBranch);
         processedProjectStates = configProcessingService.processExpectedProjectStates(wheelRepository);
         clusterProjectStates = openShiftService.getProjectStatesFromCluster();
-
-
     }
 
     public List<ProjectState> getProcessedProjectStates() {

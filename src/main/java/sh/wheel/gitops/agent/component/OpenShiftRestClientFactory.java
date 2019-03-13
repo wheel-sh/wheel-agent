@@ -1,4 +1,4 @@
-package sh.wheel.gitops.agent;
+package sh.wheel.gitops.agent.component;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

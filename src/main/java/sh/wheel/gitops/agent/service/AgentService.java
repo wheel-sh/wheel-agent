@@ -55,8 +55,10 @@ public class AgentService {
             try {
                 switch (resourceAction.getType()) {
                     case CREATE:
-                    case APPLY:
-                        openShiftService.apply(resourceAction.getResource(), projectName);
+                        openShiftService.createNamespacedResource(resourceAction.getResource(), projectName);
+                        break;
+                    case PATCH:
+                        openShiftService.patch(resourceAction.getResource(), resourceAction.getAttributeDifferences(), projectName);
                         break;
                     case DELETE:
                         openShiftService.delete(resourceAction.getResource());
@@ -68,7 +70,7 @@ public class AgentService {
                         break;
                 }
             } catch (Exception e) {
-                LOG.warn("Error while executing resource action: "+resourceAction);
+                LOG.warn("Error while executing resource action: "+resourceAction, e);
             }
         }
     }
@@ -86,6 +88,6 @@ public class AgentService {
         resources.remove(ResourceKey.projectWithName(projectName));
         List<ResourceKey> roleBinding = resources.stream().filter(rk -> rk.getKind().equals("RoleBinding")).collect(Collectors.toList());
         resources.removeAll(roleBinding);
-        resources.forEach(r -> openShiftService.apply(resourcesByKey.get(r), projectName));
+        resources.forEach(r -> openShiftService.createNamespacedResource(resourcesByKey.get(r), projectName));
     }
 }

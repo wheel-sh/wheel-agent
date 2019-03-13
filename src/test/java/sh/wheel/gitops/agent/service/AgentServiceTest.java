@@ -41,7 +41,7 @@ class AgentServiceTest {
     void setUp() throws IOException, GitAPIException {
         WheelRepositoryService wheelRepositoryService = new WheelRepositoryService();
         wheelRepositoryService.repositoryBasePath = REPOSITORIES_BASE_PATH;
-        OpenShiftService openShiftService = new OpenShiftService();
+        OpenShiftService openShiftService = null;
         ConfigProcessingService configProcessingService = new ConfigProcessingService(openShiftService);
         ResourceDifferenceService resourceDifferenceService = new ResourceDifferenceService();
         ProjectDifferenceService projectDifferenceService = new ProjectDifferenceService();

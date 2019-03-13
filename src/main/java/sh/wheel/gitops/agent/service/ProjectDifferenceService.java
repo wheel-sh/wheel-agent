@@ -49,7 +49,7 @@ public class ProjectDifferenceService {
         Map<ResourceKey, Resource> filteredClusterOnly = filterResourcesInUids(uids, clusterOnly);
         Map<ResourceKey, Resource> leftAndRightProcessedResources = getLeftWhichIsinRightToo(processedResourcesByKind, clusterResourcesByKind);
         resourceDifferences.addAll(createResourceDifferences(ResourcePresence.PROCESSED_ONLY, processedOnly, null));
-        resourceDifferences.addAll(createResourceDifferences(ResourcePresence.NAMESPACE_ONLY, null, clusterOnly));
+        resourceDifferences.addAll(createResourceDifferences(ResourcePresence.NAMESPACE_ONLY, null, filteredClusterOnly));
         resourceDifferences.addAll(createResourceDifferences(ResourcePresence.BOTH, leftAndRightProcessedResources, leftAndRightClusterResources));
         return resourceDifferences;
     }
@@ -73,7 +73,7 @@ public class ProjectDifferenceService {
     }
 
     private Map<ResourceKey, Resource> filterResourcesInUids(Set<String> uids, Map<ResourceKey, Resource> clusterOnly) {
-        return clusterOnly.entrySet().stream().filter(es -> uids.contains(es.getValue().getUid())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return clusterOnly.entrySet().stream().filter(es -> !uids.contains(es.getValue().getUid())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     private Set<String> getUids(Map<ResourceKey, Resource> leftAndRightClusterResources) {
@@ -94,7 +94,7 @@ public class ProjectDifferenceService {
         if (processedJsonNode == null && clusterJsonNode == null) {
             throw new IllegalStateException("Cannot evaluate difference between two null resources");
         }
-        JsonNode diffs = JsonDiff.asJson(processedJsonNode, clusterJsonNode, DiffFlags.dontNormalizeOpIntoMoveAndCopy());
+        JsonNode diffs = JsonDiff.asJson(clusterJsonNode, processedJsonNode, DiffFlags.dontNormalizeOpIntoMoveAndCopy());
         List<AttributeDifference> attributeDifferences = new ArrayList<>();
         for (JsonNode diff : diffs) {
             String path = diff.get("path").textValue();
