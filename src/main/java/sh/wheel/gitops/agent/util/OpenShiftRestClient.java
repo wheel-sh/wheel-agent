@@ -2,6 +2,9 @@ package sh.wheel.gitops.agent.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
@@ -39,7 +42,13 @@ public class OpenShiftRestClient {
     public static OpenShiftRestClient create(String apiServerUrl, String accessToken) {
         final HttpHeaders headers = createHttpHeaders(accessToken);
         HttpEntity<String> httpEntity = new HttpEntity<>(headers);
-        RestTemplate restTemplate = new RestTemplate(new HttpComponentsClientHttpRequestFactory());
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+        // TODO: Load mounted ca.crt
+        CloseableHttpClient client = HttpClients.custom()
+                .setSSLHostnameVerifier(new NoopHostnameVerifier())
+                .build();
+        requestFactory.setHttpClient(client);
+        RestTemplate restTemplate = new RestTemplate(requestFactory);
         return new OpenShiftRestClient(apiServerUrl, accessToken, restTemplate, httpEntity);
     }
 

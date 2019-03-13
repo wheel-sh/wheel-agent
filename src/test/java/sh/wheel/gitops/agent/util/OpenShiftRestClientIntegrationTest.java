@@ -46,14 +46,14 @@ class OpenShiftRestClientIntegrationTest {
 
     @Test
     void getFilteredApiResources() {
-        List<String> requiredOperations = Arrays.asList("create", "delete", "get", "list", "apply", "update", "watch");
+        List<String> requiredOperations = Arrays.asList("create", "delete", "get", "list", "patch", "update", "watch");
         List<ApiResource> allApiResources = openShiftRestClient.getFilteredApiResources(true, requiredOperations);
         assertNotNull(allApiResources);
     }
 
     @Test
     void getManageableResources() {
-        List<String> requiredVerbs = Arrays.asList("create", "delete", "get", "list", "apply", "update", "watch");
+        List<String> requiredVerbs = Arrays.asList("create", "delete", "get", "list", "patch", "update", "watch");
         long start = System.currentTimeMillis();
         List<ApiResource> apiResources = openShiftRestClient.getFilteredApiResources(true, requiredVerbs);
         List<ApiResource> manageableResources = openShiftRestClient.fetchManageableResources(openShiftRestClient.whoAmI(), "example-app-test", requiredVerbs, apiResources);
@@ -107,7 +107,7 @@ class OpenShiftRestClientIntegrationTest {
 
     @Test
     void fetchAllManageableResourcesInNamespace() {
-        List<String> requiredVerbs = Arrays.asList("create", "delete", "get", "list", "apply", "update", "watch");
+        List<String> requiredVerbs = Arrays.asList("create", "delete", "get", "list", "patch", "update", "watch");
         long start = System.currentTimeMillis();
         List<ApiResource> apiResources = openShiftRestClient.getFilteredApiResources(true, requiredVerbs);
         List<ApiResource> manageableResources = openShiftRestClient.fetchManageableResources(openShiftRestClient.whoAmI(), "example-app-test", requiredVerbs, apiResources);
