@@ -1,4 +1,4 @@
-FROM registry.cloud.nikio.io/base/oc-java-8
+FROM fabric8/java-centos-openjdk8-jdk
 ADD entrypoint.sh entrypoint.sh
 ADD target/*.jar /opt/app.jar
 EXPOSE 8080

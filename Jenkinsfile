@@ -69,7 +69,7 @@ pipeline {
                             if(openshift.selector("bc", appName).exists()) {
                                 openshift.selector("bc", appName).delete()
                             }
-                            openshift.newBuild("--name=${appName}", "--strategy docker", "--binary=true", "--docker-image=docker-registry.default.svc:5000/base/oc-java-8:latest")
+                            openshift.newBuild("--name=${appName}", "--strategy docker", "--binary=true", "--docker-image=fabric8/java-centos-openjdk8-jdk")
                         }
                     }
                 }
