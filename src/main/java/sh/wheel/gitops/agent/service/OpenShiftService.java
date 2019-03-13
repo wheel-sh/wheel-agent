@@ -120,7 +120,7 @@ public class OpenShiftService {
         oc.newProject(projectName);
     }
 
-    public void delete(ResourceKey key, String namespace) {
-        openShiftRestClient.delete(key, namespace);
+    public void delete(Resource clusterResource) {
+        openShiftRestClient.delete(clusterResource);
     }
 }

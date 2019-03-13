@@ -50,11 +50,9 @@ public class OpenShiftRestClient {
         }
         String endpoint = apiServerUrl + baseUrl + apiResource.getName();
         ResponseEntity<ObjectNode> resourceList = restTemplate.exchange(endpoint, HttpMethod.GET, httpEntity, ObjectNode.class);
-        String listKind = resourceList.getBody().get("kind").textValue();
-        String kind = listKind.substring(0, listKind.lastIndexOf("List"));
         String apiVersion = resourceList.getBody().get("apiVersion").textValue();
         return StreamSupport.stream(resourceList.getBody().get("items").spliterator(), false)
-                .map(jsonNode -> mapToResource(jsonNode, apiVersion, kind))
+                .map(jsonNode -> mapToResource(jsonNode, apiVersion, apiResource.getKind()))
                 .collect(Collectors.toList());
     }
 
@@ -85,6 +83,11 @@ public class OpenShiftRestClient {
 
     private JsonNode get(String url) {
         ResponseEntity<ObjectNode> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, ObjectNode.class);
+        return response.getBody();
+    }
+
+    private JsonNode delete(String url) {
+        ResponseEntity<ObjectNode> response = restTemplate.exchange(url, HttpMethod.DELETE, httpEntity, ObjectNode.class);
         return response.getBody();
     }
 
@@ -240,6 +243,9 @@ public class OpenShiftRestClient {
         return mapToResource(projectNode, "project.openshift.io/v1", "Project");
     }
 
-    public void delete(ResourceKey resource, String namespace) {
+    public JsonNode delete(Resource resource) {
+        String resourceLink = resource.getJsonNode().get("metadata").get("selfLink").textValue();
+        String endpoint = apiServerUrl + resourceLink;
+        return delete(endpoint);
     }
 }

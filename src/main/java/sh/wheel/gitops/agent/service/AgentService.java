@@ -40,7 +40,7 @@ public class AgentService {
             if (clusterState == null) {
                 createProject(processedState);
             } else if (processedState == null) {
-                deleteProject(clusterState.getName());
+                deleteProject(clusterState.getProject());
             } else {
                 List<ResourceDifference> resourceDifferences = projectDifferenceService.evaluateDifference(processedState, clusterState);
                 List<ResourceAction> resourceActions = resourceDifferenceService.createResourceActions(resourceDifferences, processedState, clusterState);
@@ -59,7 +59,7 @@ public class AgentService {
                         openShiftService.apply(resourceAction.getResource(), projectName);
                         break;
                     case DELETE:
-                        openShiftService.delete(resourceAction.getResource().getResourceKey(), projectName);
+                        openShiftService.delete(resourceAction.getResource());
                         break;
                     case WARNING:
                         LOG.warn(String.format("Project %s has warning in diff %s", projectName, resourceAction));
@@ -73,8 +73,8 @@ public class AgentService {
         }
     }
 
-    private void deleteProject(String projectName) {
-        openShiftService.delete(ResourceKey.projectWithName(projectName), null);
+    private void deleteProject(Resource project) {
+        openShiftService.delete(project);
     }
 
     private void createProject(ProjectState repositoryState) {

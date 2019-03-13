@@ -1,13 +1,15 @@
 package sh.wheel.gitops.agent.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.model.ApiResource;
 import sh.wheel.gitops.agent.model.Resource;
-import sh.wheel.gitops.agent.model.ResourceKey;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,13 +54,11 @@ class OpenShiftRestClientIntegrationTest {
     @Test
     void getManageableResources() {
         List<String> requiredVerbs = Arrays.asList("create", "delete", "get", "list", "patch", "update", "watch");
-        for (int i = 0; i < 5; i++) {
-            long start = System.currentTimeMillis();
-            List<ApiResource> apiResources = openShiftRestClient.getFilteredApiResources(true, requiredVerbs);
-            List<ApiResource> manageableResources = openShiftRestClient.fetchManageableResources(openShiftRestClient.whoAmI(), "example-app-test", requiredVerbs, apiResources);
-            System.out.println("Millis: " + (System.currentTimeMillis() - start));
-            assertNotNull(manageableResources);
-        }
+        long start = System.currentTimeMillis();
+        List<ApiResource> apiResources = openShiftRestClient.getFilteredApiResources(true, requiredVerbs);
+        List<ApiResource> manageableResources = openShiftRestClient.fetchManageableResources(openShiftRestClient.whoAmI(), "example-app-test", requiredVerbs, apiResources);
+        System.out.println("Millis: " + (System.currentTimeMillis() - start));
+        assertNotNull(manageableResources);
     }
 
     @Test
@@ -68,6 +68,7 @@ class OpenShiftRestClientIntegrationTest {
     }
 
     @Test
+    @Disabled
     void fetchResources() {
         ApiResource dcv1beta1 = ApiResource.newBuilder()
                 .name("deployments")
@@ -124,5 +125,13 @@ class OpenShiftRestClientIntegrationTest {
         Resource r = openShiftRestClient.fetchProject(projectName);
 
         assertNotNull(r);
+    }
+
+    @Test
+    void delete() throws IOException {
+        JsonNode secretReference = new ObjectMapper().readTree("{ \"apiVersion\": \"v1\", \"kind\": \"Secret\", \"metadata\": { \"creationTimestamp\": \"2019-03-13T08:19:31Z\", \"name\": \"test-secret\", \"namespace\": \"example-app-test\", \"resourceVersion\": \"9861108\", \"selfLink\": \"/api/v1/namespaces/example-app-test/secrets/test-secret\", \"uid\": \"ba1ec5b4-4568-11e9-8ded-0200c0a87ac9\" }, \"type\": \"Opaque\"}");
+        JsonNode delete = openShiftRestClient.delete(new Resource(null, null, secretReference));
+
+        assertNotNull(delete);
     }
 }
