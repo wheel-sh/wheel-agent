@@ -2,9 +2,9 @@ package sh.wheel.gitops.agent.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.slf4j.Logger;
@@ -45,17 +45,11 @@ public class OpenShiftRestClient {
         try {
             final HttpHeaders headers = createHttpHeaders(accessToken);
             HttpEntity<String> httpEntity = new HttpEntity<>(headers);
-            HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-            // TODO: Load mounted ca.crt
-            SSLContextBuilder builder = new SSLContextBuilder();
-            builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
-            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(
-                    builder.build());
-            CloseableHttpClient client = HttpClients.custom()
-                    .setSSLSocketFactory(sslsf).build();
-            requestFactory.setHttpClient(client);
-            RestTemplate restTemplate = new RestTemplate(requestFactory);
-            return new OpenShiftRestClient(apiServerUrl, accessToken, restTemplate, httpEntity);
+            SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
+            HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory).build();
+            RestTemplate template = new RestTemplate();
+            ((HttpComponentsClientHttpRequestFactory) template.getRequestFactory()).setHttpClient(httpClient);
+            return new OpenShiftRestClient(apiServerUrl, accessToken, template, httpEntity);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -149,6 +143,7 @@ public class OpenShiftRestClient {
         HttpEntity<Object> entity = new HttpEntity<>(postRequest, headers);
         return restTemplate.exchange(endpoint, HttpMethod.POST, entity, ObjectNode.class).getBody();
     }
+
     private JsonNode patch(String endpoint, Object patchObject) {
         final HttpHeaders headers = createHttpHeaders(accessToken);
         headers.set(HttpHeaders.CONTENT_TYPE, "application/json-patch+json");
