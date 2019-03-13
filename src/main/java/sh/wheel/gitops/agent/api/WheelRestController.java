@@ -34,6 +34,13 @@ public class WheelRestController {
         return "Hello from Spring Boot";
     }
 
+    @RequestMapping("/git-hook")
+    public String gitHOok() {
+        callStateService();
+        this.callAgentService();
+        return "Sync successful";
+    }
+
     @RequestMapping("/sync")
     public String sync() {
         this.callStateService();

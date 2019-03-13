@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import sh.wheel.gitops.agent.model.ProjectState;
 import sh.wheel.gitops.agent.model.WheelRepository;
@@ -37,6 +38,7 @@ public class StateService {
     }
 
     @PostConstruct
+    @Scheduled(cron = "* * * * *")
     public void init() throws IOException, GitAPIException {
         WheelRepository wheelRepository = wheelRepositoryService.loadRepository(repositoryUrl, repositoryBranch);
         processedProjectStates = configProcessingService.processExpectedProjectStates(wheelRepository);
