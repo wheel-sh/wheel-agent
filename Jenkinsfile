@@ -32,26 +32,11 @@ pipeline {
                 }
             }
         }
-        stage('Run Tests') {
-            steps {
-                script {
-                    try {
-                        sh "mvn test"
-                    } catch (err) {
-                        throw err
-                    } finally {
-                        //     junit '**/buildTEST-*.xml'
-                    }
-                }
-            }
-        }
-
-        stage('Packaging') {
+        stage('Test/Packaging') {
             steps {
                 sh "mvn package"
             }
         }
-
         stage('Create Image Builder') {
             when {
                 expression {
