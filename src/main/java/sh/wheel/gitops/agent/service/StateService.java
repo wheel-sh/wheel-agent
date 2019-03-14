@@ -38,7 +38,7 @@ public class StateService {
     }
 
     @PostConstruct
-    @Scheduled(cron = "* * * * *")
+    @Scheduled(cron = "*/30 * * * * *")
     public void init() throws IOException, GitAPIException {
         WheelRepository wheelRepository = wheelRepositoryService.loadRepository(repositoryUrl, repositoryBranch);
         processedProjectStates = configProcessingService.processExpectedProjectStates(wheelRepository);
