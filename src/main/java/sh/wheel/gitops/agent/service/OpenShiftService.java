@@ -60,15 +60,26 @@ public class OpenShiftService {
     public List<ProjectState> getProjectStatesFromCluster() {
         long start = System.currentTimeMillis();
         List<CompletableFuture<ProjectState>> projectRequests = openShiftRestClient.getAllProjects()
-                .stream().filter(p -> p.get("metadata").get("annotations").get("openshift.io/requester").textValue().equals(whoAmI))
+                .stream().filter(p -> whoAmI.equals(getRequester(p)))
                 .map(mp -> mp.get("metadata").get("name").textValue())
                 .map(p -> CompletableFuture.supplyAsync(() -> getProjectStateFromCluster(p)))
                 .collect(Collectors.toList());
         List<ProjectState> collect = projectRequests.stream()
                 .map(CompletableFuture::join)
                 .collect(Collectors.toList());
-        LOG.info("Time to fetch project states ("+collect.size()+") from cluster: " + (System.currentTimeMillis() - start) + "ms");
+        LOG.info("Time to fetch project states (" + collect.size() + ") from cluster: " + (System.currentTimeMillis() - start) + "ms");
         return collect;
+    }
+
+    private String getRequester(JsonNode p) {
+        JsonNode jsonNode = p.get("metadata").get("annotations");
+        if (jsonNode != null) {
+            JsonNode requestorNode = jsonNode.get("openshift.io/requester");
+            if (requestorNode != null) {
+                return requestorNode.textValue();
+            }
+        }
+        return null;
     }
 
     public ProjectState getProjectStateFromCluster(String projectName) {

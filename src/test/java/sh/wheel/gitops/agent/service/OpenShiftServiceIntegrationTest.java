@@ -20,8 +20,8 @@ class OpenShiftServiceIntegrationTest {
     @BeforeEach
     void setUp() {
         OpenShiftTemplateUtil templateUtil = OpenShiftTemplateUtil.create();
-        OpenShiftRestClient openShiftRestClient = OpenShiftRestClient.create(System.getenv("OPENSHIFT_API_SERVER"), System.getenv("OPENSHIFT_API_TOKEN"));
-        openShiftService= new OpenShiftService(templateUtil, openShiftRestClient);
+        OpenShiftRestClient openShiftRestClient = OpenShiftRestClient.create();
+        openShiftService = new OpenShiftService(templateUtil, openShiftRestClient);
         openShiftService.init();
     }
 
@@ -35,6 +35,7 @@ class OpenShiftServiceIntegrationTest {
     void getProjectStatesFromCluster() {
         long start = System.currentTimeMillis();
         List<ProjectState> projectStatesFromCluster = openShiftService.getProjectStatesFromCluster();
+        System.out.println("Time: " + (System.currentTimeMillis() - start));
         assertEquals(1, projectStatesFromCluster.size());
     }
 }

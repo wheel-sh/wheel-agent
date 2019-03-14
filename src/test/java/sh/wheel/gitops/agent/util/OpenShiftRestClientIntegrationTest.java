@@ -2,6 +2,13 @@ package sh.wheel.gitops.agent.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.fabric8.kubernetes.client.Config;
+import io.fabric8.kubernetes.client.ConfigBuilder;
+import io.fabric8.kubernetes.client.utils.HttpClientUtils;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -13,7 +20,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class OpenShiftRestClientIntegrationTest {
 
@@ -29,7 +37,25 @@ class OpenShiftRestClientIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        openShiftRestClient = OpenShiftRestClient.create(apiServerUrl, token);
+//        openShiftRestClient = OpenShiftRestClient.create(apiServerUrl, token);
+    }
+
+    @Test
+    void getOkclient() throws IOException {
+        Config config = Config.autoConfigure(null);
+        Config sslConfig = new ConfigBuilder(config)
+                .withMasterUrl(config.getMasterUrl())
+                .withRequestTimeout(1000)
+                .withConnectionTimeout(1000)
+                .build();
+
+        OkHttpClient client = HttpClientUtils.createHttpClient(config);
+        Request request = new Request.Builder().get().url(sslConfig.getMasterUrl())
+                .build();
+        Response response = client.newCall(request).execute();
+        try (ResponseBody body = response.body()) {
+            System.out.println(response.isSuccessful());
+        }
     }
 
     @Test

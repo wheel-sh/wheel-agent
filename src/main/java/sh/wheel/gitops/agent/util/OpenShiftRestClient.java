@@ -2,6 +2,11 @@ package sh.wheel.gitops.agent.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.fabric8.kubernetes.client.Config;
+import io.fabric8.kubernetes.client.ConfigBuilder;
+import io.fabric8.kubernetes.client.utils.HttpClientUtils;
+import okhttp3.Headers;
+import okhttp3.OkHttpClient;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
@@ -9,8 +14,11 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import sh.wheel.gitops.agent.model.ApiResource;
 import sh.wheel.gitops.agent.model.ApiResourceRequest;
@@ -25,32 +33,36 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Configuration
 public class OpenShiftRestClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private String apiServerUrl;
-    private String accessToken;
     private RestTemplate restTemplate;
-    private HttpEntity<String> httpEntity;
 
-    public OpenShiftRestClient(String apiServerUrl, String accessToken, RestTemplate restTemplate, HttpEntity<String> defaultHttpEntity) {
-        this.apiServerUrl = apiServerUrl;
-        this.accessToken = accessToken;
-        this.restTemplate = restTemplate;
-        this.httpEntity = defaultHttpEntity;
+    private OpenShiftRestClient() {
     }
 
-    public static OpenShiftRestClient create(String apiServerUrl, String accessToken) {
+    public OpenShiftRestClient(String apiServerUrl, RestTemplate restTemplate) {
+        this.apiServerUrl = apiServerUrl;
+        this.restTemplate = restTemplate;
+    }
+
+    @Bean
+    public static OpenShiftRestClient create() {
         try {
-            final HttpHeaders headers = createHttpHeaders(accessToken);
-            HttpEntity<String> httpEntity = new HttpEntity<>(headers);
-            SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
-            HttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory).build();
-            HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-            requestFactory.setHttpClient(httpClient);
+            Config config = Config.autoConfigure(null);
+            Config sslConfig = new ConfigBuilder(config)
+                    .withMasterUrl(config.getMasterUrl())
+                    .withRequestTimeout(1000)
+                    .withConnectionTimeout(1000)
+                    .build();
+
+            OkHttpClient client = HttpClientUtils.createHttpClient(sslConfig);
+            OkHttp3ClientHttpRequestFactory requestFactory = new OkHttp3ClientHttpRequestFactory(client);
             RestTemplate template = new RestTemplate(requestFactory);
-            return new OpenShiftRestClient(apiServerUrl, accessToken, template, httpEntity);
+            return new OpenShiftRestClient(config.getMasterUrl(), template);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -85,19 +97,13 @@ public class OpenShiftRestClient {
         return StreamSupport.stream(items.spliterator(), false).collect(Collectors.toList());
     }
 
-    private static HttpHeaders createHttpHeaders(String accessToken) {
-        final HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + accessToken);
-        return headers;
-    }
-
-    private JsonNode get(String url) {
-        ResponseEntity<ObjectNode> response = restTemplate.exchange(url, HttpMethod.GET, httpEntity, ObjectNode.class);
+   private JsonNode get(String url) {
+        ResponseEntity<ObjectNode> response = restTemplate.exchange(url, HttpMethod.GET, null, ObjectNode.class);
         return response.getBody();
     }
 
     private JsonNode delete(String url) {
-        ResponseEntity<ObjectNode> response = restTemplate.exchange(url, HttpMethod.DELETE, httpEntity, ObjectNode.class);
+        ResponseEntity<ObjectNode> response = restTemplate.exchange(url, HttpMethod.DELETE, null, ObjectNode.class);
         return response.getBody();
     }
 
@@ -139,14 +145,14 @@ public class OpenShiftRestClient {
     }
 
     private JsonNode post(String endpoint, Object postRequest) {
-        final HttpHeaders headers = createHttpHeaders(accessToken);
+        final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Object> entity = new HttpEntity<>(postRequest, headers);
         return restTemplate.exchange(endpoint, HttpMethod.POST, entity, ObjectNode.class).getBody();
     }
 
     private JsonNode patch(String endpoint, Object patchObject) {
-        final HttpHeaders headers = createHttpHeaders(accessToken);
+        final HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.CONTENT_TYPE, "application/json-patch+json");
         HttpEntity<Object> entity = new HttpEntity<>(patchObject, headers);
         return restTemplate.exchange(endpoint, HttpMethod.PATCH, entity, ObjectNode.class).getBody();
