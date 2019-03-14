@@ -2,22 +2,13 @@ package sh.wheel.gitops.agent.config;
 
 import java.util.List;
 
-public class ProjectConfig {
+public class EnvConfig {
 
-    private String name;
     private String pool;
     private ResourceConfig requests;
     private ResourceConfig limits;
     private String templateFile;
     private List<ParameterConfig> parameters;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getPool() {
         return pool;

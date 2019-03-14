@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,7 +27,7 @@ public class WheelRepositoryService {
     public static final String APP_CONFIG = "config.yaml";
     public static final String GROUP_CONFIG = "config.yaml";
     public static final String BUILD_CONFIG_DIR = "build/";
-    public static final String PROJECT_CONFIG_DIR = "project/";
+    public static final String PROJECT_CONFIG_DIR = "env/";
     public static final String TEMPLATE_DIR = "template/";
     public static final String APPS_DIR = "apps";
     public static final String GROUPS_DIR = "groups";
@@ -99,7 +100,7 @@ public class WheelRepositoryService {
 
     List<App> readAllApps(Path appsDir) throws IOException {
         List<Path> appDirs = Files.list(appsDir).collect(Collectors.toList());
-        ArrayList<App> apps = new ArrayList<>();
+        List<App> apps = new ArrayList<>();
         for (Path appDir : appDirs) {
             try {
                 App app = readApp(appDir);
@@ -113,9 +114,9 @@ public class WheelRepositoryService {
 
     private App readApp(Path appDir) throws IOException {
         AppConfig appConfig = deserializer.deserialize(appDir.resolve(GROUP_CONFIG), AppConfig.class);
-        List<BuildConfig> buildConfigs = deserializer.readDirectory(appDir.resolve(BUILD_CONFIG_DIR), BuildConfig.class);
-        List<ProjectConfig> projectConfigs = deserializer.readDirectory(appDir.resolve(PROJECT_CONFIG_DIR), ProjectConfig.class);
-        return new App(appConfig, buildConfigs, projectConfigs, appDir);
+        List<BuildConfig> buildConfigs = new ArrayList<>(deserializer.readDirectory(appDir.resolve(BUILD_CONFIG_DIR), BuildConfig.class).values());
+        Map<String, EnvConfig> envConfigs = deserializer.readDirectory(appDir.resolve(PROJECT_CONFIG_DIR), EnvConfig.class);
+        return new App(appDir.getFileName().toString() ,appConfig, buildConfigs, envConfigs, appDir);
     }
 
 

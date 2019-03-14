@@ -7,12 +7,12 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.util.FileSystemUtils;
+import sh.wheel.gitops.agent.config.EnvConfig;
 import sh.wheel.gitops.agent.config.MemberConfig;
 import sh.wheel.gitops.agent.config.PoolConfig;
 import sh.wheel.gitops.agent.model.App;
 import sh.wheel.gitops.agent.model.Group;
 import sh.wheel.gitops.agent.model.WheelRepository;
-import sh.wheel.gitops.agent.testutil.FileUtils;
 import sh.wheel.gitops.agent.testutil.GitTestUtil;
 import sh.wheel.gitops.agent.testutil.Samples;
 
@@ -82,19 +82,19 @@ class WheelRepositoryServiceTest {
         List<App> apps = wheelRepositoryService.readAllApps(TESTREPO1_PATH.resolve("apps"));
         App app = apps.get(0);
 
-        assertEquals("example-app", app.getAppConfig().getName());
+        assertEquals("example-app", app.getName());
         assertEquals("example-group", app.getAppConfig().getGroup());
         assertEquals("example-info", app.getAppConfig().getMetadata().get("custom"));
         assertNotNull(app.getBuildConfigs().get(0).getEnv());
         assertNotNull(app.getBuildConfigs().get(0).getGitUrl());
         assertNotNull(app.getBuildConfigs().get(0).getJenkinsfilePath());
         assertNotNull(app.getBuildConfigs().get(0).getName());
-        assertNotNull(app.getProjectConfigs().get(0).getName());
-        assertNotNull(app.getProjectConfigs().get(0).getTemplateFile());
-        assertNotNull(app.getProjectConfigs().get(0).getRequests());
-        assertNotNull(app.getProjectConfigs().get(0).getLimits());
-        assertNotNull(app.getProjectConfigs().get(0).getParameters());
-        assertNotNull(app.getProjectConfigs().get(0).getPool());
+        EnvConfig test = app.getEnvConfigs().get("test");
+        assertNotNull(test);
+        assertNotNull(test.getRequests());
+        assertNotNull(test.getLimits());
+        assertNotNull(test.getParameters());
+        assertNotNull(test.getPool());
     }
 
     @Test

@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public enum Samples {
 
     TEMPLATE1("testrepo1/apps/example-app/template/app.v1.yaml"),
-    PROJECT1("testrepo1/apps/example-app/project/test.yaml"),
+    PROJECT1("testrepo1/apps/example-app/env/test.yaml"),
     BASE_PROJECT_TEMPLATE("testrepo1/base/template/project.yaml"),
     EXAMPLE_APP_PROCESSED_DIR("json/example-app-test/processed/"),
     EXAMPLE_APP_PROCESSED_FILE("json/example-app-test/processed/example-app-processed.json"),

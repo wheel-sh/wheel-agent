@@ -1,4 +1,3 @@
-name: example-app-test
 pool: other
 requests:
   cpu: 1

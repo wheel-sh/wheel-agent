@@ -58,8 +58,7 @@ class ConfigProcessingServiceTest {
     void processExpectedNamespaceStates_FaultApp() {
         Map<String, App> apps = new HashMap<>();
         AppConfig appConfig = new AppConfig();
-        appConfig.setName("app");
-        apps.put("app", new App(appConfig, new ArrayList<>(), new ArrayList<>(), null));
+        apps.put("app", new App("app", appConfig, new ArrayList<>(), new HashMap<>(), null));
         WheelRepository wheelRepository = new WheelRepository(apps, new HashMap<>(), new BaseConfig(Samples.BASE_PROJECT_TEMPLATE.toPath()));
 
         List<ProjectState> projectStates = configProcessingService.processExpectedProjectStates(wheelRepository);
