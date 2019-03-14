@@ -1,10 +1,13 @@
 package sh.wheel.gitops.agent.service;
 
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import sh.wheel.gitops.agent.model.*;
 
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +31,12 @@ public class AgentService {
         this.projectDifferenceService = projectDifferenceService;
         this.resourceDifferenceService = resourceDifferenceService;
         this.openShiftService = openShiftService;
+    }
+
+    @Scheduled(cron = "*/30 * * * * *")
+    public void periodicSync() throws IOException, GitAPIException {
+        stateService.init();
+        synchronize();
     }
 
     public void synchronize() {
