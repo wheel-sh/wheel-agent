@@ -5,19 +5,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.fabric8.kubernetes.client.Config;
 import io.fabric8.kubernetes.client.ConfigBuilder;
 import io.fabric8.kubernetes.client.utils.HttpClientUtils;
-import okhttp3.Headers;
 import okhttp3.OkHttpClient;
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import sh.wheel.gitops.agent.model.ApiResource;
@@ -33,7 +24,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-@Configuration
 public class OpenShiftRestClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -41,31 +31,22 @@ public class OpenShiftRestClient {
     private String apiServerUrl;
     private RestTemplate restTemplate;
 
-    private OpenShiftRestClient() {
-    }
-
     public OpenShiftRestClient(String apiServerUrl, RestTemplate restTemplate) {
         this.apiServerUrl = apiServerUrl;
         this.restTemplate = restTemplate;
     }
 
-    @Bean
     public static OpenShiftRestClient create() {
-        try {
-            Config config = Config.autoConfigure(null);
-            Config sslConfig = new ConfigBuilder(config)
-                    .withMasterUrl(config.getMasterUrl())
-                    .withRequestTimeout(1000)
-                    .withConnectionTimeout(1000)
-                    .build();
-
-            OkHttpClient client = HttpClientUtils.createHttpClient(sslConfig);
-            OkHttp3ClientHttpRequestFactory requestFactory = new OkHttp3ClientHttpRequestFactory(client);
-            RestTemplate template = new RestTemplate(requestFactory);
-            return new OpenShiftRestClient(config.getMasterUrl(), template);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Config config = Config.autoConfigure(null);
+        Config sslConfig = new ConfigBuilder(config)
+                .withMasterUrl(config.getMasterUrl())
+                .withRequestTimeout(1000)
+                .withConnectionTimeout(1000)
+                .build();
+        OkHttpClient client = HttpClientUtils.createHttpClient(sslConfig);
+        OkHttp3ClientHttpRequestFactory requestFactory = new OkHttp3ClientHttpRequestFactory(client);
+        RestTemplate template = new RestTemplate(requestFactory);
+        return new OpenShiftRestClient(config.getMasterUrl(), template);
     }
 
     public List<Resource> fetchNamespacedResourceList(ApiResource apiResource, String namespace) {
@@ -97,8 +78,8 @@ public class OpenShiftRestClient {
         return StreamSupport.stream(items.spliterator(), false).collect(Collectors.toList());
     }
 
-   private JsonNode get(String url) {
-        ResponseEntity<ObjectNode> response = restTemplate.exchange(url, HttpMethod.GET, null, ObjectNode.class);
+    private JsonNode get(String url) {
+        ResponseEntity<ObjectNode> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(new HttpHeaders()), ObjectNode.class);
         return response.getBody();
     }
 
