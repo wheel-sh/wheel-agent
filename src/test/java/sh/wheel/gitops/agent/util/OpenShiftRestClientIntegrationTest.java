@@ -45,8 +45,8 @@ class OpenShiftRestClientIntegrationTest {
         Config config = Config.autoConfigure(null);
         Config sslConfig = new ConfigBuilder(config)
                 .withMasterUrl(config.getMasterUrl())
-                .withRequestTimeout(1000)
-                .withConnectionTimeout(1000)
+                .withRequestTimeout(5000)
+                .withConnectionTimeout(5000)
                 .build();
 
         OkHttpClient client = HttpClientUtils.createHttpClient(config);

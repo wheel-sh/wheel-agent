@@ -40,8 +40,8 @@ public class OpenShiftRestClient {
         Config config = Config.autoConfigure(null);
         Config sslConfig = new ConfigBuilder(config)
                 .withMasterUrl(config.getMasterUrl())
-                .withRequestTimeout(1000)
-                .withConnectionTimeout(1000)
+                .withRequestTimeout(5000)
+                .withConnectionTimeout(5000)
                 .build();
         OkHttpClient client = HttpClientUtils.createHttpClient(sslConfig);
         OkHttp3ClientHttpRequestFactory requestFactory = new OkHttp3ClientHttpRequestFactory(client);
