@@ -3,6 +3,10 @@ kind: Template
 metadata:
   name: wheel-agent
 parameters:
+  - name: WHEEL_AGENT_NAMESPACE
+    displayName: Namespace where the Wheel Agent is running.
+    value: "wheel"
+    required: true
   - name: CONFIG_REPOSITORY_URL
     displayName: Wheel Config Repository URL
     value: "https://github.com/wheel-sh/demo-cluster-config.git"
@@ -92,4 +96,39 @@ objects:
     kind: ServiceAccount
     metadata:
       name: wheel-agent
-
+  - apiVersion: authorization.openshift.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: self-access-reviewer-${WHEEL_AGENT_NAMESPACE}
+    label:
+      app: wheel-agent
+    roleRef:
+      name: self-access-reviewer
+    subjects:
+      - kind: ServiceAccount
+        name: wheel-agent
+        namespace: ${WHEEL_AGENT_NAMESPACE}
+  - apiVersion: authorization.openshift.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: self-provisioner-${WHEEL_AGENT_NAMESPACE}
+    label:
+      app: wheel-agent
+    roleRef:
+      name: self-provisioner
+    subjects:
+      - kind: ServiceAccount
+        name: wheel-agent
+        namespace: ${WHEEL_AGENT_NAMESPACE}
+  - apiVersion: authorization.openshift.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: system:basic-user-${WHEEL_AGENT_NAMESPACE}
+    label:
+      app: wheel-agent
+    roleRef:
+      name: system:basic-user
+    subjects:
+      - kind: ServiceAccount
+        name: wheel-agent
+        namespace: ${WHEEL_AGENT_NAMESPACE}
