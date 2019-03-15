@@ -59,13 +59,10 @@ public class OpenShiftService {
 
     public List<ProjectState> getProjectStatesFromCluster() {
         long start = System.currentTimeMillis();
-        List<CompletableFuture<ProjectState>> projectRequests = openShiftRestClient.getAllProjects()
+        List<ProjectState> collect = openShiftRestClient.getAllProjects()
                 .stream().filter(p -> whoAmI.equals(getRequester(p)))
                 .map(mp -> mp.get("metadata").get("name").textValue())
-                .map(p -> CompletableFuture.supplyAsync(() -> getProjectStateFromCluster(p)))
-                .collect(Collectors.toList());
-        List<ProjectState> collect = projectRequests.stream()
-                .map(CompletableFuture::join)
+                .map(this::getProjectStateFromCluster)
                 .collect(Collectors.toList());
         LOG.info("Time to fetch project states (" + collect.size() + ") from cluster: " + (System.currentTimeMillis() - start) + "ms");
         return collect;
