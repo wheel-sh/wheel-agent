@@ -51,7 +51,7 @@ public class OpenShiftRestClient {
 
     public List<Resource> fetchNamespacedResourceList(ApiResource apiResource, String namespace) {
         String apiEndpoint = apiResource.getApiEndpoint(namespace);
-        String endpoint = apiServerUrl + "/" + apiEndpoint;
+        String endpoint = "/" + apiEndpoint;
         JsonNode resourceList = get(endpoint);
         String apiVersion = resourceList.get("apiVersion").textValue();
         return StreamSupport.stream(resourceList.get("items").spliterator(), false)
@@ -66,25 +66,25 @@ public class OpenShiftRestClient {
     }
 
     public String whoAmI() {
-        String endpoint = apiServerUrl + "/apis/user.openshift.io/v1/users/~";
+        String endpoint = "/apis/user.openshift.io/v1/users/~";
         JsonNode me = get(endpoint);
         return me.get("metadata").get("name").textValue();
     }
 
     public List<JsonNode> getAllProjects() {
-        String endpoint = apiServerUrl + "/apis/project.openshift.io/v1/projects";
+        String endpoint = "/apis/project.openshift.io/v1/projects";
         JsonNode projects = get(endpoint);
         JsonNode items = projects.get("items");
         return StreamSupport.stream(items.spliterator(), false).collect(Collectors.toList());
     }
 
     private JsonNode get(String url) {
-        ResponseEntity<ObjectNode> response = restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(new HttpHeaders()), ObjectNode.class);
+        ResponseEntity<ObjectNode> response = restTemplate.exchange(apiServerUrl + url, HttpMethod.GET, new HttpEntity<>(new HttpHeaders()), ObjectNode.class);
         return response.getBody();
     }
 
     private JsonNode delete(String url) {
-        ResponseEntity<ObjectNode> response = restTemplate.exchange(url, HttpMethod.DELETE, null, ObjectNode.class);
+        ResponseEntity<ObjectNode> response = restTemplate.exchange(apiServerUrl + url, HttpMethod.DELETE, null, ObjectNode.class);
         return response.getBody();
     }
 
@@ -117,7 +117,7 @@ public class OpenShiftRestClient {
     private List<JsonNode> fetchRules(String user, String namespace) {
         long start = System.currentTimeMillis();
         String postRequest = "{\"kind\":\"SubjectRulesReview\",\"apiVersion\":\"authorization.openshift.io/v1\",\"spec\":{\"user\":\"" + user + "\",\"groups\":null,\"scopes\":null},\"status\":{\"rules\":null}}";
-        String endpointUrl = apiServerUrl + "/apis/authorization.openshift.io/v1/namespaces/" + namespace + "/subjectrulesreviews";
+        String endpointUrl = "/apis/authorization.openshift.io/v1/namespaces/" + namespace + "/subjectrulesreviews";
         JsonNode apis = post(endpointUrl, postRequest);
         List<JsonNode> rules = StreamSupport.stream(apis.get("status").get("rules").spliterator(), false)
                 .collect(Collectors.toList());
@@ -125,18 +125,18 @@ public class OpenShiftRestClient {
         return rules;
     }
 
-    private JsonNode post(String endpoint, Object postRequest) {
+    JsonNode post(String endpoint, Object postRequest) {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Object> entity = new HttpEntity<>(postRequest, headers);
-        return restTemplate.exchange(endpoint, HttpMethod.POST, entity, ObjectNode.class).getBody();
+        return restTemplate.exchange(apiServerUrl + endpoint, HttpMethod.POST, entity, ObjectNode.class).getBody();
     }
 
     private JsonNode patch(String endpoint, Object patchObject) {
         final HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.CONTENT_TYPE, "application/json-patch+json");
         HttpEntity<Object> entity = new HttpEntity<>(patchObject, headers);
-        return restTemplate.exchange(endpoint, HttpMethod.PATCH, entity, ObjectNode.class).getBody();
+        return restTemplate.exchange(apiServerUrl + endpoint, HttpMethod.PATCH, entity, ObjectNode.class).getBody();
     }
 
     public List<ApiResource> getFilteredApiResources(boolean namespaced, List<String> requiredVerbs) {
@@ -185,12 +185,12 @@ public class OpenShiftRestClient {
     }
 
     private JsonNode fetchApis() {
-        String endpoint = apiServerUrl + "/apis?timeout=32s";
+        String endpoint = "/apis?timeout=32s";
         return get(endpoint);
     }
 
     private JsonNode fetchCoreApis() {
-        String endpoint = apiServerUrl + "/api?timeout=32s";
+        String endpoint = "/api?timeout=32s";
         return get(endpoint);
     }
 
@@ -198,7 +198,7 @@ public class OpenShiftRestClient {
         List<ApiResourceRequest> requests = new ArrayList<>();
         JsonNode coreVersions = coreApis.get("versions");
         for (JsonNode coreVersion : coreVersions) {
-            String coreApiEndpoint = apiServerUrl + "/api/" + coreVersion.textValue() + "?timeout=32s";
+            String coreApiEndpoint = "/api/" + coreVersion.textValue() + "?timeout=32s";
             requests.add(new ApiResourceRequest(coreApiEndpoint, ""));
         }
         JsonNode groups = apis.get("groups");
@@ -207,7 +207,7 @@ public class OpenShiftRestClient {
             String apiGroup = group.get("name").textValue();
             for (JsonNode version : versions) {
                 String groupVersion = version.get("groupVersion").textValue();
-                String customApiEndpoint = apiServerUrl + "/apis/" + groupVersion + "?timeout=32s";
+                String customApiEndpoint = "/apis/" + groupVersion + "?timeout=32s";
                 requests.add(new ApiResourceRequest(customApiEndpoint, apiGroup));
             }
         }
@@ -244,30 +244,29 @@ public class OpenShiftRestClient {
     }
 
     public Resource fetchProject(String projectName) {
-        String endpoint = apiServerUrl + "/apis/project.openshift.io/v1/projects/" + projectName;
+        String endpoint = "/apis/project.openshift.io/v1/projects/" + projectName;
         JsonNode projectNode = get(endpoint);
         return mapToResource(projectNode, "project.openshift.io/v1", "Project");
     }
 
     public JsonNode delete(Resource resource) {
         String resourceLink = resource.getJsonNode().get("metadata").get("selfLink").textValue();
-        String endpoint = apiServerUrl + resourceLink;
-        return delete(endpoint);
+        return delete(resourceLink);
     }
 
     public JsonNode newProject(String projectName) {
         String projectRequest = "{\"kind\":\"ProjectRequest\",\"apiVersion\":\"project.openshift.io/v1\",\"metadata\":{\"name\":\"" + projectName + "\",\"creationTimestamp\":null}}";
-        String endpoint = apiServerUrl + "/apis/project.openshift.io/v1/projectrequests";
+        String endpoint = "/apis/project.openshift.io/v1/projectrequests";
         return post(endpoint, projectRequest);
     }
 
     public JsonNode createNamespacedResource(Resource resource, ApiResource apiResource, String namespace) {
-        String endpoint = apiServerUrl + "/" + apiResource.getApiEndpoint(namespace);
+        String endpoint = "/" + apiResource.getApiEndpoint(namespace);
         return post(endpoint, resource.getJsonNode());
     }
 
     public JsonNode patchResource(Resource resource, JsonNode patch) {
-        String endpoint = apiServerUrl + resource.getJsonNode().get("metadata").get("selfLink").textValue();
+        String endpoint = resource.getJsonNode().get("metadata").get("selfLink").textValue();
         return patch(endpoint, patch);
 
     }

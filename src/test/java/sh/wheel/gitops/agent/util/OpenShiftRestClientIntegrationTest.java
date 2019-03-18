@@ -9,14 +9,23 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
+import org.springframework.lang.Nullable;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 import sh.wheel.gitops.agent.model.ApiResource;
 import sh.wheel.gitops.agent.model.Resource;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,19 +34,32 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class OpenShiftRestClientIntegrationTest {
 
-    private static String token;
-    private static String apiServerUrl;
-    private OpenShiftRestClient openShiftRestClient;
+    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    @BeforeAll
-    public static void beforeAll() {
-        apiServerUrl = System.getenv("OPENSHIFT_API_SERVER");
-        token = System.getenv("OPENSHIFT_API_TOKEN");
-    }
+    private OpenShiftRestClient openShiftRestClient;
 
     @BeforeEach
     void setUp() {
-//        openShiftRestClient = OpenShiftRestClient.create(apiServerUrl, token);
+        Config config = Config.autoConfigure(null);
+        Config sslConfig = new ConfigBuilder(config)
+                .withMasterUrl(config.getMasterUrl())
+                .withRequestTimeout(5000)
+                .withConnectionTimeout(5000)
+                .build();
+        OkHttpClient client = HttpClientUtils.createHttpClient(sslConfig);
+        OkHttp3ClientHttpRequestFactory requestFactory = new OkHttp3ClientHttpRequestFactory(client);
+        RestTemplate template = new RestTemplate(requestFactory) {
+            @Override
+            public <T> ResponseEntity<T> exchange(String url, HttpMethod method, @Nullable HttpEntity<?> requestEntity, Class<T> responseType, Object... uriVariables) throws RestClientException {
+                LOG.info("exchange request " + requestEntity);
+                ResponseEntity<T> exchange = super.exchange(url, method, requestEntity, responseType, uriVariables);
+                LOG.info("exchange response "+ exchange);
+                return exchange;
+            }
+
+        };
+
+        openShiftRestClient = new OpenShiftRestClient(config.getMasterUrl(), template);
     }
 
     @Test
@@ -151,8 +173,12 @@ class OpenShiftRestClientIntegrationTest {
     }
 
     @Test
-    void delete() throws IOException {
-        JsonNode secretReference = new ObjectMapper().readTree("{ \"apiVersion\": \"v1\", \"kind\": \"Secret\", \"metadata\": { \"creationTimestamp\": \"2019-03-13T08:19:31Z\", \"name\": \"test-secret\", \"namespace\": \"example-app-test\", \"resourceVersion\": \"9861108\", \"selfLink\": \"/api/v1/namespaces/example-app-test/secrets/test-secret\", \"uid\": \"ba1ec5b4-4568-11e9-8ded-0200c0a87ac9\" }, \"type\": \"Opaque\"}");
+    void createDelete() throws IOException {
+        ObjectMapper om = new ObjectMapper();
+        JsonNode secret = om.readTree("{ \"apiVersion\": \"v1\", \"kind\": \"Secret\", \"metadata\": { \"name\": \"test-secret\" }, \"type\": \"Opaque\" }\n");
+
+        openShiftRestClient.post("/api/v1/namespaces/example-app-test/secrets", secret);
+        JsonNode secretReference = om.readTree("{ \"apiVersion\": \"v1\", \"kind\": \"Secret\", \"metadata\": { \"creationTimestamp\": \"2019-03-13T08:19:31Z\", \"name\": \"test-secret\", \"namespace\": \"example-app-test\", \"resourceVersion\": \"9861108\", \"selfLink\": \"/api/v1/namespaces/example-app-test/secrets/test-secret\", \"uid\": \"ba1ec5b4-4568-11e9-8ded-0200c0a87ac9\" }, \"type\": \"Opaque\"}");
         JsonNode delete = openShiftRestClient.delete(new Resource(null, null, secretReference));
 
         assertNotNull(delete);
