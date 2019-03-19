@@ -1,0 +1,15 @@
+{
+  "endpoint" : "/apis/servicecatalog.k8s.io/v1beta1/namespaces/example-app-test/serviceinstances",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "ServiceInstanceList",
+    "apiVersion" : "servicecatalog.k8s.io/v1beta1",
+    "metadata" : {
+      "selfLink" : "/apis/servicecatalog.k8s.io/v1beta1/namespaces/example-app-test/serviceinstances",
+      "resourceVersion" : "11083604"
+    },
+    "items" : [ ]
+  }
+}

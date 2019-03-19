@@ -1,0 +1,30 @@
+{
+  "endpoint" : "/apis/automationbroker.io/v1alpha1?timeout=32s",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "APIResourceList",
+    "apiVersion" : "v1",
+    "groupVersion" : "automationbroker.io/v1alpha1",
+    "resources" : [ {
+      "name" : "bundleinstances",
+      "singularName" : "bundleinstance",
+      "namespaced" : true,
+      "kind" : "BundleInstance",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ]
+    }, {
+      "name" : "bundles",
+      "singularName" : "bundle",
+      "namespaced" : true,
+      "kind" : "Bundle",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ]
+    }, {
+      "name" : "bundlebindings",
+      "singularName" : "bundlebinding",
+      "namespaced" : true,
+      "kind" : "BundleBinding",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ]
+    } ]
+  }
+}

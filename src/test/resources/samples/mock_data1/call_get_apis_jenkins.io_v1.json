@@ -1,0 +1,130 @@
+{
+  "endpoint" : "/apis/jenkins.io/v1?timeout=32s",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "APIResourceList",
+    "apiVersion" : "v1",
+    "groupVersion" : "jenkins.io/v1",
+    "resources" : [ {
+      "name" : "buildpacks",
+      "singularName" : "buildpack",
+      "namespaced" : true,
+      "kind" : "BuildPack",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ],
+      "shortNames" : [ "bp" ],
+      "categories" : [ "all" ]
+    }, {
+      "name" : "environments",
+      "singularName" : "environment",
+      "namespaced" : true,
+      "kind" : "Environment",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ],
+      "shortNames" : [ "env" ]
+    }, {
+      "name" : "facts",
+      "singularName" : "fact",
+      "namespaced" : true,
+      "kind" : "Fact",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ],
+      "shortNames" : [ "fact" ],
+      "categories" : [ "all" ]
+    }, {
+      "name" : "gitservices",
+      "singularName" : "gitservice",
+      "namespaced" : true,
+      "kind" : "GitService",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ],
+      "shortNames" : [ "gits" ],
+      "categories" : [ "all" ]
+    }, {
+      "name" : "plugins",
+      "singularName" : "plugin",
+      "namespaced" : true,
+      "kind" : "Plugin",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ],
+      "categories" : [ "all" ]
+    }, {
+      "name" : "environmentrolebindings",
+      "singularName" : "environmentrolebinding",
+      "namespaced" : true,
+      "kind" : "EnvironmentRoleBinding",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ],
+      "shortNames" : [ "envrolebindings", "envrolebinding", "envrb" ],
+      "categories" : [ "all" ]
+    }, {
+      "name" : "sourcerepositories",
+      "singularName" : "sourcerepository",
+      "namespaced" : true,
+      "kind" : "SourceRepository",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ],
+      "shortNames" : [ "sourcerepo", "srcrepo", "sr" ],
+      "categories" : [ "all" ]
+    }, {
+      "name" : "teams",
+      "singularName" : "team",
+      "namespaced" : true,
+      "kind" : "Team",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ],
+      "shortNames" : [ "tm" ],
+      "categories" : [ "all" ]
+    }, {
+      "name" : "workflows",
+      "singularName" : "workflow",
+      "namespaced" : true,
+      "kind" : "Workflow",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ],
+      "shortNames" : [ "flow" ],
+      "categories" : [ "all" ]
+    }, {
+      "name" : "extensions",
+      "singularName" : "extensions",
+      "namespaced" : true,
+      "kind" : "Extension",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ],
+      "shortNames" : [ "extension", "ext" ],
+      "categories" : [ "all" ]
+    }, {
+      "name" : "releases",
+      "singularName" : "release",
+      "namespaced" : true,
+      "kind" : "Release",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ],
+      "shortNames" : [ "rel" ],
+      "categories" : [ "all" ]
+    }, {
+      "name" : "apps",
+      "singularName" : "app",
+      "namespaced" : true,
+      "kind" : "App",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ],
+      "shortNames" : [ "app" ],
+      "categories" : [ "all" ]
+    }, {
+      "name" : "users",
+      "singularName" : "user",
+      "namespaced" : true,
+      "kind" : "User",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ],
+      "shortNames" : [ "usr" ],
+      "categories" : [ "all" ]
+    }, {
+      "name" : "commitstatuses",
+      "singularName" : "commitstatus",
+      "namespaced" : true,
+      "kind" : "CommitStatus",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ],
+      "shortNames" : [ "commitstatus" ],
+      "categories" : [ "all" ]
+    }, {
+      "name" : "pipelineactivities",
+      "singularName" : "pipelineactivity",
+      "namespaced" : true,
+      "kind" : "PipelineActivity",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ],
+      "shortNames" : [ "activity", "act" ],
+      "categories" : [ "all" ]
+    } ]
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "endpoint" : "/apis/servicecatalog.k8s.io/v1beta1?timeout=32s",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "APIResourceList",
+    "apiVersion" : "v1",
+    "groupVersion" : "servicecatalog.k8s.io/v1beta1",
+    "resources" : [ {
+      "name" : "clusterservicebrokers",
+      "singularName" : "",
+      "namespaced" : false,
+      "kind" : "ClusterServiceBroker",
+      "verbs" : [ "create", "delete", "deletecollection", "get", "list", "patch", "update", "watch" ]
+    }, {
+      "name" : "clusterservicebrokers/status",
+      "singularName" : "",
+      "namespaced" : false,
+      "kind" : "ClusterServiceBroker",
+      "verbs" : [ "get", "patch", "update" ]
+    }, {
+      "name" : "clusterserviceclasses",
+      "singularName" : "",
+      "namespaced" : false,
+      "kind" : "ClusterServiceClass",
+      "verbs" : [ "create", "delete", "deletecollection", "get", "list", "patch", "update", "watch" ]
+    }, {
+      "name" : "clusterserviceclasses/status",
+      "singularName" : "",
+      "namespaced" : false,
+      "kind" : "ClusterServiceClass",
+      "verbs" : [ "get", "patch", "update" ]
+    }, {
+      "name" : "clusterserviceplans",
+      "singularName" : "",
+      "namespaced" : false,
+      "kind" : "ClusterServicePlan",
+      "verbs" : [ "create", "delete", "deletecollection", "get", "list", "patch", "update", "watch" ]
+    }, {
+      "name" : "clusterserviceplans/status",
+      "singularName" : "",
+      "namespaced" : false,
+      "kind" : "ClusterServicePlan",
+      "verbs" : [ "get", "patch", "update" ]
+    }, {
+      "name" : "servicebindings",
+      "singularName" : "",
+      "namespaced" : true,
+      "kind" : "ServiceBinding",
+      "verbs" : [ "create", "delete", "deletecollection", "get", "list", "patch", "update", "watch" ]
+    }, {
+      "name" : "servicebindings/status",
+      "singularName" : "",
+      "namespaced" : true,
+      "kind" : "ServiceBinding",
+      "verbs" : [ "get", "patch", "update" ]
+    }, {
+      "name" : "servicebrokers",
+      "singularName" : "",
+      "namespaced" : true,
+      "kind" : "ServiceBroker",
+      "verbs" : [ "create", "delete", "deletecollection", "get", "list", "patch", "update", "watch" ]
+    }, {
+      "name" : "servicebrokers/status",
+      "singularName" : "",
+      "namespaced" : true,
+      "kind" : "ServiceBroker",
+      "verbs" : [ "get", "patch", "update" ]
+    }, {
+      "name" : "serviceclasses",
+      "singularName" : "",
+      "namespaced" : true,
+      "kind" : "ServiceClass",
+      "verbs" : [ "create", "delete", "deletecollection", "get", "list", "patch", "update", "watch" ]
+    }, {
+      "name" : "serviceclasses/status",
+      "singularName" : "",
+      "namespaced" : true,
+      "kind" : "ServiceClass",
+      "verbs" : [ "get", "patch", "update" ]
+    }, {
+      "name" : "serviceinstances",
+      "singularName" : "",
+      "namespaced" : true,
+      "kind" : "ServiceInstance",
+      "verbs" : [ "create", "delete", "deletecollection", "get", "list", "patch", "update", "watch" ]
+    }, {
+      "name" : "serviceinstances/reference",
+      "singularName" : "",
+      "namespaced" : true,
+      "kind" : "ServiceInstance",
+      "verbs" : [ "get", "patch", "update" ]
+    }, {
+      "name" : "serviceinstances/status",
+      "singularName" : "",
+      "namespaced" : true,
+      "kind" : "ServiceInstance",
+      "verbs" : [ "get", "patch", "update" ]
+    }, {
+      "name" : "serviceplans",
+      "singularName" : "",
+      "namespaced" : true,
+      "kind" : "ServicePlan",
+      "verbs" : [ "create", "delete", "deletecollection", "get", "list", "patch", "update", "watch" ]
+    }, {
+      "name" : "serviceplans/status",
+      "singularName" : "",
+      "namespaced" : true,
+      "kind" : "ServicePlan",
+      "verbs" : [ "get", "patch", "update" ]
+    } ]
+  }
+}

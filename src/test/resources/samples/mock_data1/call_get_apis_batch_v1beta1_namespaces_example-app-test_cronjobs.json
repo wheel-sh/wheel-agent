@@ -1,0 +1,15 @@
+{
+  "endpoint" : "/apis/batch/v1beta1/namespaces/example-app-test/cronjobs",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "CronJobList",
+    "apiVersion" : "batch/v1beta1",
+    "metadata" : {
+      "selfLink" : "/apis/batch/v1beta1/namespaces/example-app-test/cronjobs",
+      "resourceVersion" : "11083599"
+    },
+    "items" : [ ]
+  }
+}

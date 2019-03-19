@@ -1,0 +1,15 @@
+{
+  "endpoint" : "/apis/autoscaling/v1/namespaces/example-app-test/horizontalpodautoscalers",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "HorizontalPodAutoscalerList",
+    "apiVersion" : "autoscaling/v1",
+    "metadata" : {
+      "selfLink" : "/apis/autoscaling/v1/namespaces/example-app-test/horizontalpodautoscalers",
+      "resourceVersion" : "11083597"
+    },
+    "items" : [ ]
+  }
+}

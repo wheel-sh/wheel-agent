@@ -14,18 +14,14 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
-import org.springframework.lang.Nullable;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 import sh.wheel.gitops.agent.model.ApiResource;
 import sh.wheel.gitops.agent.model.Resource;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,45 +35,9 @@ class OpenShiftRestClientIntegrationTest {
     private OpenShiftRestClient openShiftRestClient;
 
     @BeforeEach
-    void setUp() {
-        Config config = Config.autoConfigure(null);
-        Config sslConfig = new ConfigBuilder(config)
-                .withMasterUrl(config.getMasterUrl())
-                .withRequestTimeout(5000)
-                .withConnectionTimeout(5000)
-                .build();
-        OkHttpClient client = HttpClientUtils.createHttpClient(sslConfig);
-        OkHttp3ClientHttpRequestFactory requestFactory = new OkHttp3ClientHttpRequestFactory(client);
-        RestTemplate template = new RestTemplate(requestFactory) {
-            @Override
-            public <T> ResponseEntity<T> exchange(String url, HttpMethod method, @Nullable HttpEntity<?> requestEntity, Class<T> responseType, Object... uriVariables) throws RestClientException {
-                LOG.info("exchange request " + requestEntity);
-                ResponseEntity<T> exchange = super.exchange(url, method, requestEntity, responseType, uriVariables);
-                LOG.info("exchange response "+ exchange);
-                return exchange;
-            }
-
-        };
-
-        openShiftRestClient = new OpenShiftRestClient(config.getMasterUrl(), template);
-    }
-
-    @Test
-    void getOkclient() throws IOException {
-        Config config = Config.autoConfigure(null);
-        Config sslConfig = new ConfigBuilder(config)
-                .withMasterUrl(config.getMasterUrl())
-                .withRequestTimeout(5000)
-                .withConnectionTimeout(5000)
-                .build();
-
-        OkHttpClient client = HttpClientUtils.createHttpClient(config);
-        Request request = new Request.Builder().get().url(sslConfig.getMasterUrl())
-                .build();
-        Response response = client.newCall(request).execute();
-        try (ResponseBody body = response.body()) {
-            System.out.println(response.isSuccessful());
-        }
+    void setUp() throws URISyntaxException, IOException {
+        Path mockDataDir = Paths.get(this.getClass().getResource("/").toURI()).resolve("samples").resolve("mock_data2");
+        openShiftRestClient = MockOpenShiftRestClient.createMockClient(mockDataDir);
     }
 
     @Test

@@ -1,0 +1,18 @@
+{
+  "endpoint" : "/apis/bitnami.com/v1alpha1?timeout=32s",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "APIResourceList",
+    "apiVersion" : "v1",
+    "groupVersion" : "bitnami.com/v1alpha1",
+    "resources" : [ {
+      "name" : "sealedsecrets",
+      "singularName" : "sealedsecret",
+      "namespaced" : true,
+      "kind" : "SealedSecret",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ]
+    } ]
+  }
+}

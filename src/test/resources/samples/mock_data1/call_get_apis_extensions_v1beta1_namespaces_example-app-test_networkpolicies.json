@@ -1,0 +1,15 @@
+{
+  "endpoint" : "/apis/extensions/v1beta1/namespaces/example-app-test/networkpolicies",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "NetworkPolicyList",
+    "apiVersion" : "extensions/v1beta1",
+    "metadata" : {
+      "selfLink" : "/apis/extensions/v1beta1/namespaces/example-app-test/networkpolicies",
+      "resourceVersion" : "11083594"
+    },
+    "items" : [ ]
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "endpoint" : "/api/v1/namespaces/example-app-test/endpoints",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "EndpointsList",
+    "apiVersion" : "v1",
+    "metadata" : {
+      "selfLink" : "/api/v1/namespaces/example-app-test/endpoints",
+      "resourceVersion" : "11083587"
+    },
+    "items" : [ {
+      "metadata" : {
+        "name" : "example-app",
+        "namespace" : "example-app-test",
+        "selfLink" : "/api/v1/namespaces/example-app-test/endpoints/example-app",
+        "uid" : "d934c035-49c7-11e9-8ded-0200c0a87ac9",
+        "resourceVersion" : "11078339",
+        "creationTimestamp" : "2019-03-18T21:50:30Z",
+        "labels" : {
+          "app" : "example-app"
+        }
+      },
+      "subsets" : [ {
+        "addresses" : [ {
+          "ip" : "10.131.0.86",
+          "nodeName" : "okd01-node03.vm.nikio.io",
+          "targetRef" : {
+            "kind" : "Pod",
+            "namespace" : "example-app-test",
+            "name" : "example-app-1-mwv4l",
+            "uid" : "26ef68e3-49e2-11e9-8b4c-0200c0a87ac9",
+            "resourceVersion" : "11078338"
+          }
+        }, {
+          "ip" : "10.131.0.88",
+          "nodeName" : "okd01-node03.vm.nikio.io",
+          "targetRef" : {
+            "kind" : "Pod",
+            "namespace" : "example-app-test",
+            "name" : "example-app-1-cx8nc",
+            "uid" : "26fb5af8-49e2-11e9-8b4c-0200c0a87ac9",
+            "resourceVersion" : "11078319"
+          }
+        } ],
+        "ports" : [ {
+          "name" : "8080-tcp",
+          "port" : 8080,
+          "protocol" : "TCP"
+        } ]
+      } ]
+    } ]
+  }
+}

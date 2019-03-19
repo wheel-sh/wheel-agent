@@ -1,0 +1,31 @@
+{
+  "endpoint" : "/apis/quota.openshift.io/v1?timeout=32s",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "APIResourceList",
+    "apiVersion" : "v1",
+    "groupVersion" : "quota.openshift.io/v1",
+    "resources" : [ {
+      "name" : "appliedclusterresourcequotas",
+      "singularName" : "",
+      "namespaced" : true,
+      "kind" : "AppliedClusterResourceQuota",
+      "verbs" : [ "get", "list" ]
+    }, {
+      "name" : "clusterresourcequotas",
+      "singularName" : "",
+      "namespaced" : false,
+      "kind" : "ClusterResourceQuota",
+      "verbs" : [ "create", "delete", "deletecollection", "get", "list", "patch", "update", "watch" ],
+      "shortNames" : [ "clusterquota" ]
+    }, {
+      "name" : "clusterresourcequotas/status",
+      "singularName" : "",
+      "namespaced" : false,
+      "kind" : "ClusterResourceQuota",
+      "verbs" : [ "get", "patch", "update" ]
+    } ]
+  }
+}

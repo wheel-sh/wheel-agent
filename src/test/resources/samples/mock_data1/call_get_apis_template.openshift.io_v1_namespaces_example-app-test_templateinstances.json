@@ -1,0 +1,15 @@
+{
+  "endpoint" : "/apis/template.openshift.io/v1/namespaces/example-app-test/templateinstances",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "TemplateInstanceList",
+    "apiVersion" : "template.openshift.io/v1",
+    "metadata" : {
+      "selfLink" : "/apis/template.openshift.io/v1/namespaces/example-app-test/templateinstances",
+      "resourceVersion" : "11083602"
+    },
+    "items" : [ ]
+  }
+}

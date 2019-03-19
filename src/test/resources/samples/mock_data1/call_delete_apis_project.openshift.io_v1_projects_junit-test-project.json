@@ -1,0 +1,12 @@
+{
+  "endpoint" : "/apis/project.openshift.io/v1/projects/junit-test-project",
+  "type" : "delete",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "Status",
+    "apiVersion" : "v1",
+    "metadata" : { },
+    "status" : "Success"
+  }
+}

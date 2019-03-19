@@ -1,0 +1,15 @@
+{
+  "endpoint" : "/apis/apps/v1/namespaces/example-app-test/daemonsets",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "DaemonSetList",
+    "apiVersion" : "apps/v1",
+    "metadata" : {
+      "selfLink" : "/apis/apps/v1/namespaces/example-app-test/daemonsets",
+      "resourceVersion" : "11083596"
+    },
+    "items" : [ ]
+  }
+}

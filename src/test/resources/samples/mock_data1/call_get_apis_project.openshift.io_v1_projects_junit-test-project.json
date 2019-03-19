@@ -1,0 +1,32 @@
+{
+  "endpoint" : "/apis/project.openshift.io/v1/projects/junit-test-project",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "Project",
+    "apiVersion" : "project.openshift.io/v1",
+    "metadata" : {
+      "name" : "junit-test-project",
+      "selfLink" : "/apis/project.openshift.io/v1/projects/junit-test-project",
+      "uid" : "d6daa9a2-4a9e-11e9-922e-0200c0a87ac9",
+      "resourceVersion" : "11083570",
+      "creationTimestamp" : "2019-03-19T23:29:28Z",
+      "deletionTimestamp" : "2019-03-19T23:29:28Z",
+      "annotations" : {
+        "openshift.io/description" : "",
+        "openshift.io/display-name" : "",
+        "openshift.io/requester" : "demo@nikio.io",
+        "openshift.io/sa.scc.mcs" : "s0:c22,c9",
+        "openshift.io/sa.scc.supplemental-groups" : "1000480000/10000",
+        "openshift.io/sa.scc.uid-range" : "1000480000/10000"
+      }
+    },
+    "spec" : {
+      "finalizers" : [ "kubernetes" ]
+    },
+    "status" : {
+      "phase" : "Terminating"
+    }
+  }
+}

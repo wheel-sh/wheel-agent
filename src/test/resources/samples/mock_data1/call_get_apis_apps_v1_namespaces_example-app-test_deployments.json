@@ -1,0 +1,15 @@
+{
+  "endpoint" : "/apis/apps/v1/namespaces/example-app-test/deployments",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "DeploymentList",
+    "apiVersion" : "apps/v1",
+    "metadata" : {
+      "selfLink" : "/apis/apps/v1/namespaces/example-app-test/deployments",
+      "resourceVersion" : "11083596"
+    },
+    "items" : [ ]
+  }
+}

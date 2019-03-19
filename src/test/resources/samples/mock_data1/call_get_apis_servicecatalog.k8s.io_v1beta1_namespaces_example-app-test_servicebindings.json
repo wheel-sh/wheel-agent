@@ -1,0 +1,15 @@
+{
+  "endpoint" : "/apis/servicecatalog.k8s.io/v1beta1/namespaces/example-app-test/servicebindings",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "ServiceBindingList",
+    "apiVersion" : "servicecatalog.k8s.io/v1beta1",
+    "metadata" : {
+      "selfLink" : "/apis/servicecatalog.k8s.io/v1beta1/namespaces/example-app-test/servicebindings",
+      "resourceVersion" : "11083602"
+    },
+    "items" : [ ]
+  }
+}

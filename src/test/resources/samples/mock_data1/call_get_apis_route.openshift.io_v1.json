@@ -1,0 +1,25 @@
+{
+  "endpoint" : "/apis/route.openshift.io/v1?timeout=32s",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "APIResourceList",
+    "apiVersion" : "v1",
+    "groupVersion" : "route.openshift.io/v1",
+    "resources" : [ {
+      "name" : "routes",
+      "singularName" : "",
+      "namespaced" : true,
+      "kind" : "Route",
+      "verbs" : [ "create", "delete", "deletecollection", "get", "list", "patch", "update", "watch" ],
+      "categories" : [ "all" ]
+    }, {
+      "name" : "routes/status",
+      "singularName" : "",
+      "namespaced" : true,
+      "kind" : "Route",
+      "verbs" : [ "get", "patch", "update" ]
+    } ]
+  }
+}
