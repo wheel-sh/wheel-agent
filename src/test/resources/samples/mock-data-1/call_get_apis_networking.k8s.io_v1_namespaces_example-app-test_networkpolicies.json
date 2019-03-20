@@ -1,0 +1,15 @@
+{
+  "endpoint" : "/apis/networking.k8s.io/v1/namespaces/example-app-test/networkpolicies",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "NetworkPolicyList",
+    "apiVersion" : "networking.k8s.io/v1",
+    "metadata" : {
+      "selfLink" : "/apis/networking.k8s.io/v1/namespaces/example-app-test/networkpolicies",
+      "resourceVersion" : "11218452"
+    },
+    "items" : [ ]
+  }
+}

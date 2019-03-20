@@ -1,0 +1,19 @@
+{
+  "endpoint" : "/apis/stable.example.com/v1",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "APIResourceList",
+    "apiVersion" : "v1",
+    "groupVersion" : "stable.example.com/v1",
+    "resources" : [ {
+      "name" : "crontabs",
+      "singularName" : "crontab",
+      "namespaced" : true,
+      "kind" : "CronTab",
+      "verbs" : [ "delete", "deletecollection", "get", "list", "patch", "create", "update", "watch" ],
+      "shortNames" : [ "ct" ]
+    } ]
+  }
+}

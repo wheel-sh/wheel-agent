@@ -1,0 +1,44 @@
+{
+  "endpoint" : "/api/v1/namespaces/example-app-test/services",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "ServiceList",
+    "apiVersion" : "v1",
+    "metadata" : {
+      "selfLink" : "/api/v1/namespaces/example-app-test/services",
+      "resourceVersion" : "11218444"
+    },
+    "items" : [ {
+      "metadata" : {
+        "name" : "example-app",
+        "namespace" : "example-app-test",
+        "selfLink" : "/api/v1/namespaces/example-app-test/services/example-app",
+        "uid" : "6d204752-4b29-11e9-922e-0200c0a87ac9",
+        "resourceVersion" : "11217981",
+        "creationTimestamp" : "2019-03-20T16:01:30Z",
+        "labels" : {
+          "app" : "example-app"
+        }
+      },
+      "spec" : {
+        "ports" : [ {
+          "name" : "8080-tcp",
+          "protocol" : "TCP",
+          "port" : 8080,
+          "targetPort" : 8080
+        } ],
+        "selector" : {
+          "deploymentconfig" : "example-app"
+        },
+        "clusterIP" : "172.30.87.212",
+        "type" : "ClusterIP",
+        "sessionAffinity" : "None"
+      },
+      "status" : {
+        "loadBalancer" : { }
+      }
+    } ]
+  }
+}

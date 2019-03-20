@@ -1,0 +1,15 @@
+{
+  "endpoint" : "/apis/build.openshift.io/v1/namespaces/example-app-test/builds",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "BuildList",
+    "apiVersion" : "build.openshift.io/v1",
+    "metadata" : {
+      "selfLink" : "/apis/build.openshift.io/v1/namespaces/example-app-test/builds",
+      "resourceVersion" : "11218453"
+    },
+    "items" : [ ]
+  }
+}

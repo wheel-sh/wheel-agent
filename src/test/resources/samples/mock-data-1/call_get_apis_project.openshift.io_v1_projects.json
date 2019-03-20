@@ -1,0 +1,36 @@
+{
+  "endpoint" : "/apis/project.openshift.io/v1/projects",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "ProjectList",
+    "apiVersion" : "project.openshift.io/v1",
+    "metadata" : {
+      "selfLink" : "/apis/project.openshift.io/v1/projects"
+    },
+    "items" : [ {
+      "metadata" : {
+        "name" : "example-app-test",
+        "selfLink" : "/apis/project.openshift.io/v1/projects/example-app-test",
+        "uid" : "6cc9c62e-4b29-11e9-922e-0200c0a87ac9",
+        "resourceVersion" : "11217973",
+        "creationTimestamp" : "2019-03-20T16:01:30Z",
+        "annotations" : {
+          "openshift.io/description" : "",
+          "openshift.io/display-name" : "",
+          "openshift.io/requester" : "system:serviceaccount:wheel:wheel-agent-test",
+          "openshift.io/sa.scc.mcs" : "s0:c26,c0",
+          "openshift.io/sa.scc.supplemental-groups" : "1000650000/10000",
+          "openshift.io/sa.scc.uid-range" : "1000650000/10000"
+        }
+      },
+      "spec" : {
+        "finalizers" : [ "kubernetes" ]
+      },
+      "status" : {
+        "phase" : "Active"
+      }
+    } ]
+  }
+}

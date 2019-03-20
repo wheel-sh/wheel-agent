@@ -1,0 +1,15 @@
+{
+  "endpoint" : "/apis/batch/v1/namespaces/example-app-test/jobs",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "JobList",
+    "apiVersion" : "batch/v1",
+    "metadata" : {
+      "selfLink" : "/apis/batch/v1/namespaces/example-app-test/jobs",
+      "resourceVersion" : "11218450"
+    },
+    "items" : [ ]
+  }
+}

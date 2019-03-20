@@ -1,0 +1,15 @@
+{
+  "endpoint" : "/apis/image.openshift.io/v1/namespaces/example-app-test/imagestreams",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "ImageStreamList",
+    "apiVersion" : "image.openshift.io/v1",
+    "metadata" : {
+      "selfLink" : "/apis/image.openshift.io/v1/namespaces/example-app-test/imagestreams",
+      "resourceVersion" : "11218453"
+    },
+    "items" : [ ]
+  }
+}

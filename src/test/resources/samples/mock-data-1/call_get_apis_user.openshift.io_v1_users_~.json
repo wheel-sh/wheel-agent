@@ -1,0 +1,18 @@
+{
+  "endpoint" : "/apis/user.openshift.io/v1/users/~",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "User",
+    "apiVersion" : "user.openshift.io/v1",
+    "metadata" : {
+      "name" : "system:serviceaccount:wheel:wheel-agent-test",
+      "selfLink" : "/apis/user.openshift.io/v1/users/system%3Aserviceaccount%3Awheel%3Awheel-agent-test",
+      "uid" : "747c8e44-4b26-11e9-922e-0200c0a87ac9",
+      "creationTimestamp" : null
+    },
+    "identities" : null,
+    "groups" : [ "system:authenticated", "system:serviceaccounts", "system:serviceaccounts:wheel" ]
+  }
+}

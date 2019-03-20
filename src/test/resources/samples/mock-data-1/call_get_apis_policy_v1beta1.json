@@ -1,0 +1,32 @@
+{
+  "endpoint" : "/apis/policy/v1beta1",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "APIResourceList",
+    "apiVersion" : "v1",
+    "groupVersion" : "policy/v1beta1",
+    "resources" : [ {
+      "name" : "poddisruptionbudgets",
+      "singularName" : "",
+      "namespaced" : true,
+      "kind" : "PodDisruptionBudget",
+      "verbs" : [ "create", "delete", "deletecollection", "get", "list", "patch", "update", "watch" ],
+      "shortNames" : [ "pdb" ]
+    }, {
+      "name" : "poddisruptionbudgets/status",
+      "singularName" : "",
+      "namespaced" : true,
+      "kind" : "PodDisruptionBudget",
+      "verbs" : [ "get", "patch", "update" ]
+    }, {
+      "name" : "podsecuritypolicies",
+      "singularName" : "",
+      "namespaced" : false,
+      "kind" : "PodSecurityPolicy",
+      "verbs" : [ "create", "delete", "deletecollection", "get", "list", "patch", "update", "watch" ],
+      "shortNames" : [ "psp" ]
+    } ]
+  }
+}

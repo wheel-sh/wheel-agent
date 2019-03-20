@@ -2,15 +2,7 @@ package sh.wheel.gitops.agent.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.fabric8.kubernetes.client.Config;
-import io.fabric8.kubernetes.client.ConfigBuilder;
-import io.fabric8.kubernetes.client.utils.HttpClientUtils;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +20,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class OpenShiftRestClientIntegrationTest {
+class OpenShiftRestClientTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -36,81 +28,47 @@ class OpenShiftRestClientIntegrationTest {
 
     @BeforeEach
     void setUp() throws URISyntaxException, IOException {
-        Path mockDataDir = Paths.get(this.getClass().getResource("/").toURI()).resolve("samples").resolve("mock_data4");
-        openShiftRestClient = RecordingOpenShiftRestClient.createRecordingClient(mockDataDir);
+        Path mockDataDir = Paths.get(this.getClass().getResource("/").toURI()).resolve("samples").resolve("mock-data-1");
+        openShiftRestClient = MockOpenShiftRestClient.createMockClient(mockDataDir);
     }
 
     @Test
     void getAllProjects() {
         List<JsonNode> allProjects = openShiftRestClient.getAllProjects();
-        assertNotNull(allProjects);
+
+        assertEquals(1, allProjects.size());
+        JsonNode project = allProjects.get(0);
+        assertEquals("example-app-test", project.get("metadata").get("name").textValue());
     }
 
     @Test
     void getAllApiResources() {
         List<ApiResource> allApiResources = openShiftRestClient.getAllApiResources();
-        assertNotNull(allApiResources);
+        assertEquals(244, allApiResources.size());
     }
 
     @Test
     void getFilteredApiResources() {
         List<String> requiredOperations = Arrays.asList("create", "delete", "get", "list", "patch", "update", "watch");
         List<ApiResource> allApiResources = openShiftRestClient.getFilteredApiResources(true, requiredOperations);
-        assertNotNull(allApiResources);
+        assertEquals(86, allApiResources.size());
     }
 
     @Test
     void getManageableResources() {
         List<String> requiredVerbs = Arrays.asList("create", "delete", "get", "list", "patch", "update", "watch");
-        long start = System.currentTimeMillis();
         List<ApiResource> apiResources = openShiftRestClient.getFilteredApiResources(true, requiredVerbs);
+
         List<ApiResource> manageableResources = openShiftRestClient.fetchManageableResources(openShiftRestClient.whoAmI(), "example-app-test", requiredVerbs, apiResources);
-        System.out.println("Millis: " + (System.currentTimeMillis() - start));
-        assertNotNull(manageableResources);
+
+        assertEquals(86, apiResources.size());
+        assertEquals(45, manageableResources.size());
     }
 
     @Test
     void whoAmI() {
         String s = openShiftRestClient.whoAmI();
-        assertNotNull(s);
-    }
-
-    @Test
-    @Disabled
-    void fetchResources() {
-        ApiResource dcv1beta1 = ApiResource.newBuilder()
-                .name("deployments")
-                .kind("Deployment")
-                .groupName("extensions")
-                .apiVersion("extensions/v1beta1")
-                .coreApi(false)
-                .subresource(false)
-                .namespaced(true)
-                .build();
-        ApiResource dcv1beta2 = ApiResource.newBuilder()
-                .name("deployments")
-                .kind("Deployment")
-                .groupName("apps")
-                .apiVersion("apps/v1beta2")
-                .coreApi(false)
-                .subresource(false)
-                .namespaced(true)
-                .build();
-        ApiResource dcv1 = ApiResource.newBuilder()
-                .name("deployments")
-                .kind("Deployment")
-                .groupName("apps")
-                .apiVersion("apps/v1")
-                .coreApi(false)
-                .subresource(false)
-                .namespaced(true)
-                .build();
-
-        List<Resource> resourcesv1beta1 = openShiftRestClient.fetchNamespacedResourceList(dcv1beta1, "chartmuseum");
-        List<Resource> resourcesv1beta2 = openShiftRestClient.fetchNamespacedResourceList(dcv1beta2, "chartmuseum");
-        List<Resource> resourcesv1 = openShiftRestClient.fetchNamespacedResourceList(dcv1, "chartmuseum");
-
-        assertNotNull(resourcesv1beta1);
+        assertEquals("system:serviceaccount:wheel:wheel-agent-test", s);
     }
 
     @Test
@@ -121,33 +79,45 @@ class OpenShiftRestClientIntegrationTest {
         List<ApiResource> manageableResources = openShiftRestClient.fetchManageableResources(openShiftRestClient.whoAmI(), "example-app-test", requiredVerbs, apiResources);
         List<Resource> resources = openShiftRestClient.fetchResourcesFromNamespace(manageableResources, "example-app-test");
 
-        assertNotNull(resources);
+        assertEquals(86, apiResources.size());
+        assertEquals(45, manageableResources.size());
+        assertEquals(27, resources.size());
     }
 
     @Test
-    void fetchResource() {
+    void fetchProject() {
         String projectName = "example-app-test";
-        Resource r = openShiftRestClient.fetchProject(projectName);
+        Resource project = openShiftRestClient.fetchProject(projectName);
 
-        assertNotNull(r);
+        assertEquals("Project", project.getKind());
+        assertEquals(projectName, project.getName());
+        assertEquals("project.openshift.io/v1", project.getApiVersion());
     }
 
     @Test
     void createDelete() throws IOException {
         ObjectMapper om = new ObjectMapper();
-        JsonNode secret = om.readTree("{ \"apiVersion\": \"v1\", \"kind\": \"Secret\", \"metadata\": { \"name\": \"test-secret\" }, \"type\": \"Opaque\" }\n");
-
-        openShiftRestClient.post("/api/v1/namespaces/example-app-test/secrets", secret);
         JsonNode secretReference = om.readTree("{ \"apiVersion\": \"v1\", \"kind\": \"Secret\", \"metadata\": { \"creationTimestamp\": \"2019-03-13T08:19:31Z\", \"name\": \"test-secret\", \"namespace\": \"example-app-test\", \"resourceVersion\": \"9861108\", \"selfLink\": \"/api/v1/namespaces/example-app-test/secrets/test-secret\", \"uid\": \"ba1ec5b4-4568-11e9-8ded-0200c0a87ac9\" }, \"type\": \"Opaque\"}");
         JsonNode delete = openShiftRestClient.delete(new Resource(null, null, secretReference));
 
         assertNotNull(delete);
+        assertEquals("Status", delete.get("kind").textValue());
+        assertEquals("Success", delete.get("status").textValue());
+        assertEquals("test-secret", delete.get("details").get("name").textValue());
     }
 
     @Test
-    void createFetchDeleteProject() {
+    void newProject() {
         String projectName = "junit-test-project";
         JsonNode newProject = openShiftRestClient.newProject(projectName);
+
+        assertEquals("Project", newProject.get("kind").textValue());
+        assertEquals(projectName, newProject.get("metadata").get("name").textValue());
+    }
+
+    @Test
+    void deleteProject() {
+        String projectName = "junit-test-project";
         Resource fetchProject = openShiftRestClient.fetchProject(projectName);
         openShiftRestClient.delete(fetchProject);
         Resource fetchProjectAfterDeletion = openShiftRestClient.fetchProject(projectName);

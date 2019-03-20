@@ -1,0 +1,15 @@
+{
+  "endpoint" : "/apis/policy/v1beta1/namespaces/example-app-test/poddisruptionbudgets",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "PodDisruptionBudgetList",
+    "apiVersion" : "policy/v1beta1",
+    "metadata" : {
+      "selfLink" : "/apis/policy/v1beta1/namespaces/example-app-test/poddisruptionbudgets",
+      "resourceVersion" : "11218453"
+    },
+    "items" : [ ]
+  }
+}

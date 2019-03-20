@@ -1,0 +1,15 @@
+{
+  "endpoint" : "/apis/servicecatalog.k8s.io/v1beta1/namespaces/example-app-test/servicebrokers",
+  "type" : "get",
+  "requestObject" : null,
+  "responseStatus" : null,
+  "responseObject" : {
+    "kind" : "ServiceBrokerList",
+    "apiVersion" : "servicecatalog.k8s.io/v1beta1",
+    "metadata" : {
+      "selfLink" : "/apis/servicecatalog.k8s.io/v1beta1/namespaces/example-app-test/servicebrokers",
+      "resourceVersion" : "11218453"
+    },
+    "items" : [ ]
+  }
+}
