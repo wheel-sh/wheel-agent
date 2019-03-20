@@ -128,12 +128,12 @@ public class OpenShiftRestClient {
     }
 
     private JsonNode fetchApis() {
-        String endpoint = "/apis?timeout=32s";
+        String endpoint = "/apis";
         return get(endpoint);
     }
 
     private JsonNode fetchCoreApis() {
-        String endpoint = "/api?timeout=32s";
+        String endpoint = "/api";
         return get(endpoint);
     }
 
@@ -141,7 +141,7 @@ public class OpenShiftRestClient {
         List<ApiResourceRequest> requests = new ArrayList<>();
         JsonNode coreVersions = coreApis.get("versions");
         for (JsonNode coreVersion : coreVersions) {
-            String coreApiEndpoint = "/api/" + coreVersion.textValue() + "?timeout=32s";
+            String coreApiEndpoint = "/api/" + coreVersion.textValue();
             requests.add(new ApiResourceRequest(coreApiEndpoint, ""));
         }
         JsonNode groups = apis.get("groups");
@@ -150,7 +150,7 @@ public class OpenShiftRestClient {
             String apiGroup = group.get("name").textValue();
             for (JsonNode version : versions) {
                 String groupVersion = version.get("groupVersion").textValue();
-                String customApiEndpoint = "/apis/" + groupVersion + "?timeout=32s";
+                String customApiEndpoint = "/apis/" + groupVersion;
                 requests.add(new ApiResourceRequest(customApiEndpoint, apiGroup));
             }
         }
