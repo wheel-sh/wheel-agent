@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.model.*;
+import sh.wheel.gitops.agent.testutil.OpenShiftServiceTestUtil;
 import sh.wheel.gitops.agent.testutil.Samples;
 
 import java.util.HashMap;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Disabled
 class ProjectDifferenceServiceTest {
 
     private OpenShiftService openShiftService;
@@ -20,7 +20,7 @@ class ProjectDifferenceServiceTest {
 
     @BeforeEach
     void setUp() {
-        openShiftService = null;
+        openShiftService = OpenShiftServiceTestUtil.createWithMockData(Samples.MOCK_DATA1.toPath());
         projectDifferenceService = new ProjectDifferenceService();
     }
 
@@ -28,8 +28,8 @@ class ProjectDifferenceServiceTest {
     void compare() {
         ProjectState allNamespacedResourcesTestData = getAllNamespacedResourcesTestData();
         ProjectState processedState = processTestData();
-        Map<ResourceKey, Resource> processDeloymentConfig = processedState.getResourcesByKey().entrySet().stream().filter(e -> e.getKey().equals("DeploymentConfig")).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        Map<ResourceKey, Resource> projectDeloymentConfig = allNamespacedResourcesTestData.getResourcesByKey().entrySet().stream().filter(e -> e.getKey().equals("DeploymentConfig")).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<ResourceKey, Resource> processDeloymentConfig = processedState.getResourcesByKey().entrySet().stream().filter(e -> e.getKey().getKind().equals("DeploymentConfig")).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<ResourceKey, Resource> projectDeloymentConfig = allNamespacedResourcesTestData.getResourcesByKey().entrySet().stream().filter(e -> e.getKey().getKind().equals("DeploymentConfig")).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         ProjectState processedProjectState = new ProjectState(new Resource(ResourceKey.projectWithName("example-app-test"), null, null), processDeloymentConfig);
         ProjectState projectProjectState = new ProjectState(new Resource(ResourceKey.projectWithName("example-app-test"), null, null), projectDeloymentConfig);

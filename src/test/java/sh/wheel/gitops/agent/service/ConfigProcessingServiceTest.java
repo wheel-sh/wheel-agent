@@ -7,10 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.config.AppConfig;
-import sh.wheel.gitops.agent.model.App;
-import sh.wheel.gitops.agent.model.BaseConfig;
-import sh.wheel.gitops.agent.model.ProjectState;
-import sh.wheel.gitops.agent.model.WheelRepository;
+import sh.wheel.gitops.agent.model.*;
+import sh.wheel.gitops.agent.testutil.OpenShiftServiceTestUtil;
 import sh.wheel.gitops.agent.testutil.Samples;
 
 import java.io.IOException;
@@ -25,7 +23,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@Disabled
 class ConfigProcessingServiceTest {
 
     private static Path TESTREPO1_PATH;
@@ -33,14 +30,14 @@ class ConfigProcessingServiceTest {
     private WheelRepository wheelRepository;
 
     @BeforeAll
-    static void initRepo() throws GitAPIException, URISyntaxException, IOException {
+    static void initRepo() throws  URISyntaxException {
         TESTREPO1_PATH = Paths.get(WheelRepositoryServiceTest.class.getResource(Samples.TESTREPO1_PATH).toURI());
     }
 
     @BeforeEach
     void setUp() throws IOException {
         wheelRepository = new WheelRepositoryService().getRepositoryState(TESTREPO1_PATH);
-        OpenShiftService openShiftService = null;
+        OpenShiftService openShiftService = OpenShiftServiceTestUtil.createWithMockData(Samples.MOCK_DATA1.toPath());
         configProcessingService = new ConfigProcessingService(openShiftService);
     }
 
@@ -51,15 +48,19 @@ class ConfigProcessingServiceTest {
         assertNotNull(projectStates);
         assertEquals(1, projectStates.size());
         ProjectState projectState = projectStates.get(0);
-        assertEquals(5, projectState.getResourcesByKey().size());
+        assertEquals(7, projectState.getResourcesByKey().size());
     }
 
     @Test
     void processExpectedNamespaceStates_FaultApp() {
         Map<String, App> apps = new HashMap<>();
         AppConfig appConfig = new AppConfig();
+        appConfig.setGroup("group");
         apps.put("app", new App("app", appConfig, new ArrayList<>(), new HashMap<>(), null));
-        WheelRepository wheelRepository = new WheelRepository(apps, new HashMap<>(), new BaseConfig(Samples.BASE_PROJECT_TEMPLATE.toPath()));
+        HashMap<String, Group> groups = new HashMap<>();
+        Group group = new Group(null, null);
+        groups.put("group", group);
+        WheelRepository wheelRepository = new WheelRepository(apps, groups, new BaseConfig(Samples.BASE_PROJECT_TEMPLATE.toPath()));
 
         List<ProjectState> projectStates = configProcessingService.processExpectedProjectStates(wheelRepository);
 

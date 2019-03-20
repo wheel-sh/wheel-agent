@@ -6,22 +6,28 @@ import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.model.ProjectState;
 import sh.wheel.gitops.agent.model.Resource;
 import sh.wheel.gitops.agent.model.ResourceKey;
+import sh.wheel.gitops.agent.testutil.OpenShiftServiceTestUtil;
 import sh.wheel.gitops.agent.testutil.Samples;
+import sh.wheel.gitops.agent.util.MockOpenShiftRestClient;
+import sh.wheel.gitops.agent.util.OpenShiftRestClient;
+import sh.wheel.gitops.agent.util.OpenShiftTemplateUtil;
 
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@Disabled
 class OpenShiftServiceTest {
 
     private OpenShiftService openShiftService;
 
     @BeforeEach
-    void setUp() {
-        openShiftService = null;
+    void setUp()  {
+        openShiftService = OpenShiftServiceTestUtil.createWithMockData(Samples.MOCK_DATA1.toPath());
     }
 
     @Test

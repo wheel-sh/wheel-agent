@@ -21,7 +21,8 @@ public enum Samples {
     EXAMPLE_MANAGEABLE_PROJECTS("hack/manageable-projects.json"),
     EXAMPLE_API_RESOURCES_WIDE("hack/api-resources-wide.txt"),
     EXAMPLE_PROCESSED_ROUTE("hack/Route.json"),
-    TESTREPO1("testrepo1/");
+    TESTREPO1("testrepo1/"),
+    MOCK_DATA1("mock-data-1");
 
     private static final String SAMPLES_FOLDER = "/samples/";
     public static final String TESTREPO1_PATH = SAMPLES_FOLDER + "testrepo1/";
