@@ -42,19 +42,6 @@ public class OpenShiftService {
         availableApiResources = getManageableResources();
     }
 
-
-    Resource mapToResource(JsonNode jsonNode) {
-        String kind = jsonNode.get("kind").textValue();
-        String apiVersion = jsonNode.get("apiVersion").textValue();
-        String name = jsonNode.get("metadata").get("name").textValue();
-        JsonNode uidNode = jsonNode.get("metadata").get("uid");
-        String uid = null;
-        if (uidNode != null) {
-            uid = uidNode.textValue();
-        }
-        return new Resource(new ResourceKey(name, kind, apiVersion), uid, jsonNode);
-    }
-
     public List<ProjectState> getProjectStatesFromCluster() {
         long start = System.currentTimeMillis();
         List<ProjectState> collect = openShiftRestClient.getAllProjects()
