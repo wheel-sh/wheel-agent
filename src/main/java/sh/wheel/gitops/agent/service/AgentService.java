@@ -39,13 +39,12 @@ public class AgentService {
         long start = System.currentTimeMillis();
         stateService.init();
         synchronize();
-        LOG.debug("Synchronization finished (" + (System.currentTimeMillis() - start) + "ms)");
+        LOG.info("Synchronization finished (" + (System.currentTimeMillis() - start) + "ms)");
     }
 
     public void synchronize() {
         Map<String, ProjectState> clusterStateByProject = stateService.getClusterProjectStates().stream().collect(Collectors.toMap(ProjectState::getName, Function.identity()));
         Map<String, ProjectState> processedStateByProject = stateService.getProcessedProjectStates().stream().collect(Collectors.toMap(ProjectState::getName, Function.identity()));
-        LOG.info("Managed namespaces in cluster/repository: " + clusterStateByProject.size() + "/" + processedStateByProject.size());
         Set<String> projectNames = Stream.concat(clusterStateByProject.keySet().stream(), processedStateByProject.keySet().stream()).collect(Collectors.toSet());
         for (String projectName : projectNames) {
             ProjectState clusterState = clusterStateByProject.get(projectName);
