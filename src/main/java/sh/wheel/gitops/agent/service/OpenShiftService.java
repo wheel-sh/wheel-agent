@@ -49,7 +49,7 @@ public class OpenShiftService {
                 .map(mp -> mp.get("metadata").get("name").textValue())
                 .map(this::getProjectStateFromCluster)
                 .collect(Collectors.toList());
-        LOG.info("Time to fetch project states (" + collect.size() + ") from cluster: " + (System.currentTimeMillis() - start) + "ms");
+        LOG.debug("Time to fetch project states (" + collect.size() + ") from cluster: " + (System.currentTimeMillis() - start) + "ms");
         return collect;
     }
 

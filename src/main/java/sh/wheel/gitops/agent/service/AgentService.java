@@ -35,21 +35,27 @@ public class AgentService {
 
     @Scheduled(cron = "*/30 * * * * *")
     public void periodicSync() throws IOException, GitAPIException {
+        LOG.info("Start repository/cluster synchronization");
+        long start = System.currentTimeMillis();
         stateService.init();
         synchronize();
+        LOG.debug("Synchronization finished (" + (System.currentTimeMillis() - start) + "ms)");
     }
 
     public void synchronize() {
         Map<String, ProjectState> clusterStateByProject = stateService.getClusterProjectStates().stream().collect(Collectors.toMap(ProjectState::getName, Function.identity()));
         Map<String, ProjectState> processedStateByProject = stateService.getProcessedProjectStates().stream().collect(Collectors.toMap(ProjectState::getName, Function.identity()));
+        LOG.info("Managed namespaces in cluster/repository: " + clusterStateByProject.size() + "/" + processedStateByProject.size());
         Set<String> projectNames = Stream.concat(clusterStateByProject.keySet().stream(), processedStateByProject.keySet().stream()).collect(Collectors.toSet());
         for (String projectName : projectNames) {
             ProjectState clusterState = clusterStateByProject.get(projectName);
             ProjectState processedState = processedStateByProject.get(projectName);
             if (clusterState == null) {
                 createProject(processedState);
+                LOG.info("Created namespace " + projectName + " with its resources");
             } else if (processedState == null) {
                 deleteProject(clusterState.getProject());
+                LOG.info("Deleted namespace " + projectName + " with its resources");
             } else {
                 List<ResourceDifference> resourceDifferences = projectDifferenceService.evaluateDifference(processedState, clusterState);
                 List<ResourceAction> resourceActions = resourceActionService.createResourceActions(resourceDifferences, processedState, clusterState);

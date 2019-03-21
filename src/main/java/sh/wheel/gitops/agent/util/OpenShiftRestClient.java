@@ -66,7 +66,7 @@ public class OpenShiftRestClient {
         List<JsonNode> rules = fetchRules(user, namespace);
         long start = System.currentTimeMillis();
         List<ApiResource> manageableResources = relevantApiResources.stream().filter(r -> doRulesApply(r, rules, requiredVerbs)).collect(Collectors.toList());
-        LOG.info("Time to calculate manageable resources in namespace '" + namespace + "': " + (System.currentTimeMillis() - start) + "ms");
+        LOG.debug("Time to calculate manageable resources in namespace '" + namespace + "': " + (System.currentTimeMillis() - start) + "ms");
         return manageableResources;
     }
 
@@ -77,7 +77,7 @@ public class OpenShiftRestClient {
         JsonNode apis = post(endpointUrl, postRequest);
         List<JsonNode> rules = StreamSupport.stream(apis.get("status").get("rules").spliterator(), false)
                 .collect(Collectors.toList());
-        LOG.info("Time to gather rules for namespace '" + namespace + "': " + (System.currentTimeMillis() - start) + "ms");
+        LOG.debug("Time to gather rules for namespace '" + namespace + "': " + (System.currentTimeMillis() - start) + "ms");
         return rules;
     }
 
@@ -116,7 +116,7 @@ public class OpenShiftRestClient {
                 .filter(ar -> !ar.isSubresource())
                 .filter(r -> r.getVerbs().containsAll(requiredVerbs))
                 .collect(Collectors.toList());
-        LOG.info("Time to gather filtered api resources: " + (System.currentTimeMillis() - start) + "ms");
+        LOG.debug("Time to gather filtered api resources: " + (System.currentTimeMillis() - start) + "ms");
         return result;
     }
 
@@ -200,7 +200,7 @@ public class OpenShiftRestClient {
         long start = System.currentTimeMillis();
         List<CompletableFuture<List<Resource>>> requests = manageableResources.stream().map(ar -> CompletableFuture.supplyAsync(() -> fetchNamespacedResourceList(ar, namespace))).collect(Collectors.toList());
         List<Resource> result = requests.stream().map(CompletableFuture::join).flatMap(Collection::stream).collect(Collectors.toList());
-        LOG.info("Time to gather " + manageableResources.size() + " resources in namespace '" + namespace + "': " + (System.currentTimeMillis() - start) + "ms");
+        LOG.debug("Time to gather " + manageableResources.size() + " resources in namespace '" + namespace + "': " + (System.currentTimeMillis() - start) + "ms");
         return result;
     }
 
@@ -249,27 +249,41 @@ public class OpenShiftRestClient {
     }
 
     JsonNode patch(String endpoint, Object patchObject) {
+        LOG.trace("PATCH " + apiServerUrl + endpoint);
+        LOG.trace("Request body: " + patchObject);
         final HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.CONTENT_TYPE, "application/json-patch+json");
         HttpEntity<Object> entity = new HttpEntity<>(patchObject, headers);
-        return restTemplate.exchange(apiServerUrl + endpoint, HttpMethod.PATCH, entity, ObjectNode.class).getBody();
+        ObjectNode body = restTemplate.exchange(apiServerUrl + endpoint, HttpMethod.PATCH, entity, ObjectNode.class).getBody();
+        LOG.trace("Response body: " + body);
+        return body;
     }
 
     JsonNode delete(String url) {
+        LOG.trace("DELETE " + apiServerUrl + url);
         ResponseEntity<ObjectNode> response = restTemplate.exchange(apiServerUrl + url, HttpMethod.DELETE, null, ObjectNode.class);
-        return response.getBody();
+        ObjectNode body = response.getBody();
+        LOG.trace("Response body: " + body);
+        return body;
     }
 
     JsonNode post(String endpoint, Object postRequest) {
+        LOG.trace("POST " + apiServerUrl + endpoint);
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Object> entity = new HttpEntity<>(postRequest, headers);
-        return restTemplate.exchange(apiServerUrl + endpoint, HttpMethod.POST, entity, ObjectNode.class).getBody();
+        LOG.trace("Request body: " + postRequest);
+        ObjectNode body = restTemplate.exchange(apiServerUrl + endpoint, HttpMethod.POST, entity, ObjectNode.class).getBody();
+        LOG.trace("Response body: " + body);
+        return body;
     }
 
     JsonNode get(String url) {
+        LOG.trace("GET " + apiServerUrl + url);
         ResponseEntity<ObjectNode> response = restTemplate.exchange(apiServerUrl + url, HttpMethod.GET, new HttpEntity<>(new HttpHeaders()), ObjectNode.class);
-        return response.getBody();
+        ObjectNode body = response.getBody();
+        LOG.trace("Response Body: " + body);
+        return body;
     }
 
 }
