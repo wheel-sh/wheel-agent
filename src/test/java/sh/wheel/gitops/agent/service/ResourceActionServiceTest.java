@@ -1,7 +1,6 @@
 package sh.wheel.gitops.agent.service;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.model.ActionType;
 import sh.wheel.gitops.agent.model.ProjectState;
@@ -17,7 +16,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ResourceDifferenceServiceTest {
+class ResourceActionServiceTest {
     private List<ResourceDifference> resourceDifferences;
     private ProjectState processedProjectState;
     private ProjectState clusterProjectState;
@@ -44,7 +43,7 @@ class ResourceDifferenceServiceTest {
 
     @Test
     void createResourceActions() {
-        List<ResourceAction> resourceActions = new ResourceDifferenceService().createResourceActions(resourceDifferences, processedProjectState, clusterProjectState);
+        List<ResourceAction> resourceActions = new ResourceActionService().createResourceActions(resourceDifferences, processedProjectState, clusterProjectState);
 
         Map<ActionType, List<ResourceAction>> byType = resourceActions.stream().collect(Collectors.groupingBy(ResourceAction::getType));
         assertEquals(10, resourceActions.size());

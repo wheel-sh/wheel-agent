@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
-public class ResourceDifferenceService {
+public class ResourceActionService {
 
 
     private static final List<IgnoredResourceIdentifier> IGNORED_RESOURCES = new ArrayList<>();

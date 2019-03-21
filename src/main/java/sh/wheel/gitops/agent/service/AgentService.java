@@ -23,13 +23,13 @@ public class AgentService {
 
     private final StateService stateService;
     private final ProjectDifferenceService projectDifferenceService;
-    private final ResourceDifferenceService resourceDifferenceService;
+    private final ResourceActionService resourceActionService;
     private final OpenShiftService openShiftService;
 
-    public AgentService(StateService stateService, ProjectDifferenceService projectDifferenceService, ResourceDifferenceService resourceDifferenceService, OpenShiftService openShiftService) {
+    public AgentService(StateService stateService, ProjectDifferenceService projectDifferenceService, ResourceActionService resourceActionService, OpenShiftService openShiftService) {
         this.stateService = stateService;
         this.projectDifferenceService = projectDifferenceService;
-        this.resourceDifferenceService = resourceDifferenceService;
+        this.resourceActionService = resourceActionService;
         this.openShiftService = openShiftService;
     }
 
@@ -52,7 +52,7 @@ public class AgentService {
                 deleteProject(clusterState.getProject());
             } else {
                 List<ResourceDifference> resourceDifferences = projectDifferenceService.evaluateDifference(processedState, clusterState);
-                List<ResourceAction> resourceActions = resourceDifferenceService.createResourceActions(resourceDifferences, processedState, clusterState);
+                List<ResourceAction> resourceActions = resourceActionService.createResourceActions(resourceDifferences, processedState, clusterState);
                 execute(projectName, resourceActions);
             }
         }

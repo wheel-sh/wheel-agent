@@ -5,8 +5,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 import sh.wheel.gitops.agent.testutil.GitTestUtil;
 import sh.wheel.gitops.agent.testutil.Samples;
 
@@ -40,13 +38,13 @@ class AgentServiceTest {
         wheelRepositoryService.repositoryBasePath = REPOSITORIES_BASE_PATH;
         OpenShiftService openShiftService = null;
         ConfigProcessingService configProcessingService = new ConfigProcessingService(openShiftService);
-        ResourceDifferenceService resourceDifferenceService = new ResourceDifferenceService();
+        ResourceActionService resourceActionService = new ResourceActionService();
         ProjectDifferenceService projectDifferenceService = new ProjectDifferenceService();
         StateService stateService = new StateService(wheelRepositoryService, configProcessingService, openShiftService);
         stateService.repositoryUrl = TESTREPO1_PATH.toAbsolutePath().toString();
         stateService.repositoryBranch = "master";
         stateService.init();
-        agentService = new AgentService(stateService, projectDifferenceService, resourceDifferenceService, openShiftService);
+        agentService = new AgentService(stateService, projectDifferenceService, resourceActionService, openShiftService);
     }
 
     @Test

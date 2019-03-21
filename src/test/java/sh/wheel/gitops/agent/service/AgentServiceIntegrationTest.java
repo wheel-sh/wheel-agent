@@ -39,13 +39,13 @@ class AgentServiceIntegrationTest {
         OpenShiftService openShiftService = null;
         openShiftService.init();
         ConfigProcessingService configProcessingService = new ConfigProcessingService(openShiftService);
-        ResourceDifferenceService resourceDifferenceService = new ResourceDifferenceService();
+        ResourceActionService resourceActionService = new ResourceActionService();
         ProjectDifferenceService projectDifferenceService = new ProjectDifferenceService();
         StateService stateService = new StateService(wheelRepositoryService, configProcessingService, openShiftService);
         stateService.repositoryUrl = TESTREPO1_PATH.toAbsolutePath().toString();
         stateService.repositoryBranch = "master";
         stateService.init();
-        agentService = new AgentService(stateService, projectDifferenceService, resourceDifferenceService, openShiftService);
+        agentService = new AgentService(stateService, projectDifferenceService, resourceActionService, openShiftService);
 
     }
 
