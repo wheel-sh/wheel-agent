@@ -35,7 +35,7 @@ public class AgentService {
 
     @Scheduled(cron = "*/30 * * * * *")
     public void periodicSync() throws IOException, GitAPIException {
-        LOG.info("Start repository/cluster synchronization");
+        LOG.debug("Start repository/cluster synchronization");
         long start = System.currentTimeMillis();
         stateService.init();
         synchronize();
