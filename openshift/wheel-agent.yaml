@@ -84,6 +84,13 @@ objects:
                 periodSeconds: 10
                 successThreshold: 1
                 timeoutSeconds: 1
+              resources:
+                limits:
+                  cpu: '1'
+                  memory: 512Mi
+                requests:
+                  cpu: 500m
+                  memory: 256Mi
           volumes:
             - name: kubeconfig
               emptyDir: {}
