@@ -39,7 +39,7 @@ public class WheelRepositoryService {
 
     private final GenericYamlDeserializer deserializer = new GenericYamlDeserializer();
 
-    @Value("${sh.wheel.repository.base.path:/tmp/wheel-repos}")
+    @Value("${CHECKOUT_BASE_PATH:/tmp/wheel-repos}")
     public Path repositoryBasePath;
 
 

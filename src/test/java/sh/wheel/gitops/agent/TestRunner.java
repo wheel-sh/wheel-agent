@@ -23,7 +23,7 @@ public class TestRunner {
 
         System.setProperty("CONFIG_REPOSITORY_URL", Samples.TESTREPO1.toPath().toAbsolutePath().toString());
         System.setProperty("CONFIG_REPOSITORY_BRANCH", "master");
-        System.setProperty("sh.wheel.repository.base.path", REPOSITORIES_BASE_PATH.toAbsolutePath().toString());
+        System.setProperty("CHECKOUT_BASE_PATH", REPOSITORIES_BASE_PATH.toAbsolutePath().toString());
 
         SpringApplication.run(TestRunner.class, args);
     }
