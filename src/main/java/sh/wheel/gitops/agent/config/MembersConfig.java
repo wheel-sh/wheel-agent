@@ -1,16 +1,14 @@
 package sh.wheel.gitops.agent.config;
 
+import lombok.*;
+
 import java.util.List;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
+@EqualsAndHashCode
 public class MembersConfig {
-
     List<MemberConfig> members;
-
-    public List<MemberConfig> getMembers() {
-        return members;
-    }
-
-    public void setMembers(List<MemberConfig> members) {
-        this.members = members;
-    }
 }
