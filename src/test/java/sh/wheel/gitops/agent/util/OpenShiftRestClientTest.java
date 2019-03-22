@@ -4,13 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import sh.wheel.gitops.agent.model.ApiResource;
 import sh.wheel.gitops.agent.model.Resource;
 
 import java.io.IOException;
-import java.lang.invoke.MethodHandles;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,12 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class OpenShiftRestClientTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
     private OpenShiftRestClient openShiftRestClient;
 
     @BeforeEach
-    void setUp() throws URISyntaxException, IOException {
+    void setUp() throws URISyntaxException {
         Path mockDataDir = Paths.get(this.getClass().getResource("/").toURI()).resolve("samples").resolve("mock-data-1");
         openShiftRestClient = MockOpenShiftRestClient.createMockClient(mockDataDir);
     }
@@ -74,7 +69,6 @@ class OpenShiftRestClientTest {
     @Test
     void fetchAllManageableResourcesInNamespace() {
         List<String> requiredVerbs = Arrays.asList("create", "delete", "get", "list", "patch", "update", "watch");
-        long start = System.currentTimeMillis();
         List<ApiResource> apiResources = openShiftRestClient.getFilteredApiResources(true, requiredVerbs);
         List<ApiResource> manageableResources = openShiftRestClient.fetchManageableResources(openShiftRestClient.whoAmI(), "example-app-test", requiredVerbs, apiResources);
         List<Resource> resources = openShiftRestClient.fetchResourcesFromNamespace(manageableResources, "example-app-test");

@@ -11,10 +11,10 @@ public enum Operation {
     COPY("copy"),
     TEST("test");
 
-    private String name;
+    private final String name;
 
 
-    private Operation(String name) {
+    Operation(String name) {
         this.name = name;
     }
 
@@ -22,7 +22,7 @@ public enum Operation {
         return Arrays.stream(values()).filter(v -> v.getName().toLowerCase().equals(name.toLowerCase())).findFirst().orElse(null);
     }
 
-    public String getName() {
+    private String getName() {
         return this.name;
     }
 }

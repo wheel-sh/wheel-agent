@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 public class GenericYamlDeserializer {
 
+    @SuppressWarnings("unchecked")
     public <T> T deserialize(Path yamlFile, Class<T> type) throws IOException {
         Yaml yaml = new Yaml(new Constructor(type));
         InputStream io = Files.newInputStream(yamlFile);

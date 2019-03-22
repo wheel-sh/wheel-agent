@@ -1,7 +1,6 @@
 package sh.wheel.gitops.agent.service;
 
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,18 +23,16 @@ import java.util.stream.Collectors;
 @Service
 public class WheelRepositoryService {
 
-    public static final String APP_CONFIG = "config.yaml";
-    public static final String GROUP_CONFIG = "config.yaml";
-    public static final String BUILD_CONFIG_DIR = "build/";
-    public static final String PROJECT_CONFIG_DIR = "env/";
-    public static final String TEMPLATE_DIR = "template/";
-    public static final String APPS_DIR = "apps";
-    public static final String GROUPS_DIR = "groups";
-    public static final String BASE_DIR = "base";
-    public static final String BASE_TEMPLATE_DIR = "template";
-    public static final String BASE_PROJECT_TEMPLATE = "project.yaml";
+    private static final String GROUP_CONFIG = "config.yaml";
+    private static final String BUILD_CONFIG_DIR = "build/";
+    private static final String PROJECT_CONFIG_DIR = "env/";
+    private static final String APPS_DIR = "apps";
+    private static final String GROUPS_DIR = "groups";
+    private static final String BASE_DIR = "base";
+    private static final String BASE_TEMPLATE_DIR = "template";
+    private static final String BASE_PROJECT_TEMPLATE = "project.yaml";
 
-    public static final String GROUP_MEMBERS_CONFIG = "members.yaml";
+    private static final String GROUP_MEMBERS_CONFIG = "members.yaml";
 
     private final GenericYamlDeserializer deserializer = new GenericYamlDeserializer();
 
@@ -43,7 +40,7 @@ public class WheelRepositoryService {
     public Path repositoryBasePath;
 
 
-    public WheelRepository loadRepository(String gitURI, String branch) throws IOException, GitAPIException {
+    WheelRepository loadRepository(String gitURI, String branch) throws IOException, GitAPIException {
         Path localClone = cloneOrPullRepository(gitURI, branch);
         return getRepositoryState(localClone);
     }
@@ -68,7 +65,7 @@ public class WheelRepositoryService {
         int slashIndex = gitURI.lastIndexOf("/");
         int backslahIndex = gitURI.lastIndexOf("\\");
         if (slashIndex > 0) {
-            return path.substring(slashIndex+ 1);
+            return path.substring(slashIndex + 1);
         } else if (backslahIndex > 0) {
             return path.substring(backslahIndex + 1);
         } else {
@@ -88,8 +85,7 @@ public class WheelRepositoryService {
 
     private void pullRepository(String branch, Path localRepositoryPath) throws IOException, GitAPIException {
         Git git = Git.open(localRepositoryPath.toFile());
-        PullResult pull = git
-                .pull()
+        git.pull()
                 .setRemote("origin")
                 .setRemoteBranchName(branch)
                 .setRebase(true)
@@ -116,7 +112,7 @@ public class WheelRepositoryService {
         AppConfig appConfig = deserializer.deserialize(appDir.resolve(GROUP_CONFIG), AppConfig.class);
         List<BuildConfig> buildConfigs = new ArrayList<>(deserializer.readDirectory(appDir.resolve(BUILD_CONFIG_DIR), BuildConfig.class).values());
         Map<String, EnvConfig> envConfigs = deserializer.readDirectory(appDir.resolve(PROJECT_CONFIG_DIR), EnvConfig.class);
-        return new App(appDir.getFileName().toString() ,appConfig, buildConfigs, envConfigs, appDir);
+        return new App(appDir.getFileName().toString(), appConfig, buildConfigs, envConfigs, appDir);
     }
 
 

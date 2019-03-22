@@ -57,7 +57,7 @@ public class AgentService {
                 LOG.info("Deleted namespace " + projectName + " with its resources");
             } else {
                 List<ResourceDifference> resourceDifferences = projectDifferenceService.evaluateDifference(processedState, clusterState);
-                List<ResourceAction> resourceActions = resourceActionService.createResourceActions(resourceDifferences, processedState, clusterState);
+                List<ResourceAction> resourceActions = resourceActionService.createResourceActions(resourceDifferences);
                 execute(projectName, resourceActions);
             }
         }

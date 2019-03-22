@@ -15,7 +15,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class RecordingOpenShiftRestClient extends OpenShiftRestClient {
+class RecordingOpenShiftRestClient extends OpenShiftRestClient {
 
     private final Path targetDir;
     private final static ObjectMapper OM;
@@ -25,12 +25,12 @@ public class RecordingOpenShiftRestClient extends OpenShiftRestClient {
         OM.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
-    public RecordingOpenShiftRestClient(Path targetDir, String apiServerUrl, RestTemplate restTemplate) {
+    private RecordingOpenShiftRestClient(Path targetDir, String apiServerUrl, RestTemplate restTemplate) {
         super(apiServerUrl, restTemplate);
         this.targetDir = targetDir;
     }
 
-    public static RecordingOpenShiftRestClient createRecordingClient(Path recordTargetDir)  {
+    static RecordingOpenShiftRestClient createRecordingClient(Path recordTargetDir) {
         try {
             Config config = Config.autoConfigure(null);
             Config sslConfig = new ConfigBuilder(config)

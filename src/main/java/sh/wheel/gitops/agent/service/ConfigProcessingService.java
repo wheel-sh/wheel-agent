@@ -4,18 +4,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sh.wheel.gitops.agent.config.AppConfig;
 import sh.wheel.gitops.agent.config.EnvConfig;
 import sh.wheel.gitops.agent.config.ParameterConfig;
 import sh.wheel.gitops.agent.model.App;
-import sh.wheel.gitops.agent.model.Group;
 import sh.wheel.gitops.agent.model.ProjectState;
 import sh.wheel.gitops.agent.model.WheelRepository;
 
 import java.lang.invoke.MethodHandles;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -24,21 +25,20 @@ public class ConfigProcessingService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private OpenShiftService openShiftService;
+    private final OpenShiftService openShiftService;
 
     @Autowired
     public ConfigProcessingService(OpenShiftService openShiftService) {
         this.openShiftService = openShiftService;
     }
 
-    public List<ProjectState> processExpectedProjectStates(WheelRepository repository) {
+    List<ProjectState> processExpectedProjectStates(WheelRepository repository) {
         List<ProjectState> projectStates = new ArrayList<>();
         Path projectTemplate = repository.getBaseConfig().getProjectTemplate();
         String whoAmI = openShiftService.getWhoAmI();
         for (Map.Entry<String, App> appEntrySet : repository.getApps().entrySet()) {
             String appName = appEntrySet.getKey();
             App app = appEntrySet.getValue();
-            Group group = lookupGroup(app, repository.getGroups());
             for (Map.Entry<String, EnvConfig> envEntrySet : app.getEnvConfigs().entrySet()) {
                 String envName = envEntrySet.getKey();
                 EnvConfig envConfig = envEntrySet.getValue();
@@ -61,7 +61,7 @@ public class ConfigProcessingService {
         return projectStates;
     }
 
-    private Group lookupGroup(App appConfig, Map<String, Group> groups) {
+/*    private Group lookupGroup(App appConfig, Map<String, Group> groups) {
         Objects.requireNonNull(appConfig);
         Objects.requireNonNull(groups);
         Group group = groups.get(appConfig.getAppConfig().getGroup());
@@ -69,7 +69,7 @@ public class ConfigProcessingService {
             throw new IllegalStateException("Group '" + appConfig.getAppConfig().getGroup() + "' configured in '" + appConfig.getName() + "' not found");
         }
         return group;
-    }
+    }*/
 
     private Map<String, String> getProjectParams(String projectName, String whoAmI) {
         Map<String, String> params = new HashMap<>();

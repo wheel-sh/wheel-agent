@@ -1,10 +1,8 @@
 package sh.wheel.gitops.agent.service;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.config.AppConfig;
 import sh.wheel.gitops.agent.model.*;
@@ -42,7 +40,7 @@ class ConfigProcessingServiceTest {
     }
 
     @Test
-    void processExpectedProjectStates() throws IOException, GitAPIException {
+    void processExpectedProjectStates() {
         List<ProjectState> projectStates = configProcessingService.processExpectedProjectStates(wheelRepository);
 
         assertNotNull(projectStates);

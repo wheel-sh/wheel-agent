@@ -2,25 +2,22 @@ package sh.wheel.gitops.agent.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class MockOpenShiftRestClient extends OpenShiftRestClient {
 
 
-    public static final ObjectMapper OM = new ObjectMapper();
+    private static final ObjectMapper OM = new ObjectMapper();
     private final List<RecordedRequestResponse> mockData;
 
-    public MockOpenShiftRestClient(List<RecordedRequestResponse> mockData, String apiServerUrl, RestTemplate restTemplate) {
-        super(apiServerUrl, restTemplate);
+    private MockOpenShiftRestClient(List<RecordedRequestResponse> mockData) {
+        super(null, null);
         this.mockData = mockData;
     }
 
@@ -34,13 +31,13 @@ public class MockOpenShiftRestClient extends OpenShiftRestClient {
                             throw new UncheckedIOException(e);
                         }
                     }).collect(Collectors.toList());
-            return new MockOpenShiftRestClient(mockData, null, null);
+            return new MockOpenShiftRestClient(mockData);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    public JsonNode play(String type, String endpoint, Object requestObject) {
+    private JsonNode play(String type, String endpoint, Object requestObject) {
         try {
             JsonNode request = requestObject != null ? OM.readTree(requestObject.toString()) : null;
             return mockData.stream().filter(r -> r.matchesRequest(endpoint, type, request)).findFirst()

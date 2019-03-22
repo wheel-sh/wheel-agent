@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import sh.wheel.gitops.agent.testutil.GitTestUtil;
 import sh.wheel.gitops.agent.testutil.Samples;
+import sh.wheel.gitops.agent.util.MockOpenShiftRestClient;
+import sh.wheel.gitops.agent.util.OpenShiftTemplateUtil;
 
 import java.io.IOException;
 import java.net.URI;
@@ -36,7 +38,8 @@ class AgentServiceTest {
     void setUp() throws IOException, GitAPIException {
         WheelRepositoryService wheelRepositoryService = new WheelRepositoryService();
         wheelRepositoryService.repositoryBasePath = REPOSITORIES_BASE_PATH;
-        OpenShiftService openShiftService = null;
+        MockOpenShiftRestClient mockClient = MockOpenShiftRestClient.createMockClient(Samples.MOCK_DATA1.toPath());
+        OpenShiftService openShiftService = new OpenShiftService(OpenShiftTemplateUtil.create(), mockClient);
         ConfigProcessingService configProcessingService = new ConfigProcessingService(openShiftService);
         ResourceActionService resourceActionService = new ResourceActionService();
         ProjectDifferenceService projectDifferenceService = new ProjectDifferenceService();
@@ -48,7 +51,7 @@ class AgentServiceTest {
     }
 
     @Test
-    void synchronize() {
-        //agentService.synchronize();
+    void sync() {
+        agentService.synchronize();
     }
 }

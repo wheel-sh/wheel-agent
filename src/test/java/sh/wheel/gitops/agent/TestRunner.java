@@ -1,6 +1,5 @@
 package sh.wheel.gitops.agent;
 
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import sh.wheel.gitops.agent.testutil.GitTestUtil;

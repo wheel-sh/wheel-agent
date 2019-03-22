@@ -28,8 +28,8 @@ public class OpenShiftRestClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private String apiServerUrl;
-    private RestTemplate restTemplate;
+    private final String apiServerUrl;
+    private final RestTemplate restTemplate;
 
     public OpenShiftRestClient(String apiServerUrl, RestTemplate restTemplate) {
         this.apiServerUrl = apiServerUrl;
@@ -83,8 +83,6 @@ public class OpenShiftRestClient {
 
     private boolean doRulesApply(ApiResource r, List<JsonNode> rules, List<String> requiredVerbs) {
         for (JsonNode rule : rules) {
-            String resource = rule.get("resources").get(0).textValue();
-            String apiGroup = rule.get("apiGroups").get(0).textValue();
             if (doesRuleMatchApiResource(rule, r, requiredVerbs)) {
                 return true;
             }
@@ -101,9 +99,7 @@ public class OpenShiftRestClient {
             if (apiResource.getGroupName().isEmpty() && apiGroup.isEmpty()
                     || (!apiGroup.isEmpty() && apiResource.getGroupName().startsWith(apiGroup))
                     || apiGroup.equals("*")) {
-                if (verbs.contains("*") || verbs.containsAll(requiredVerbs)) {
-                    return true;
-                }
+                return verbs.contains("*") || verbs.containsAll(requiredVerbs);
             }
         }
         return false;
@@ -120,7 +116,7 @@ public class OpenShiftRestClient {
         return result;
     }
 
-    public List<ApiResource> getAllApiResources() {
+    List<ApiResource> getAllApiResources() {
         JsonNode apis = fetchApis();
         JsonNode coreApis = fetchCoreApis();
         List<ApiResourceRequest> requests = generateApiRequests(coreApis, apis);
@@ -204,7 +200,7 @@ public class OpenShiftRestClient {
         return result;
     }
 
-    public List<Resource> fetchNamespacedResourceList(ApiResource apiResource, String namespace) {
+    List<Resource> fetchNamespacedResourceList(ApiResource apiResource, String namespace) {
         String apiEndpoint = apiResource.getApiEndpoint(namespace);
         JsonNode resourceList = get(apiEndpoint);
         String apiVersion = resourceList.get("apiVersion").textValue();
@@ -237,14 +233,14 @@ public class OpenShiftRestClient {
         return post(endpoint, projectRequest);
     }
 
-    public JsonNode createNamespacedResource(Resource resource, ApiResource apiResource, String namespace) {
+    public void createNamespacedResource(Resource resource, ApiResource apiResource, String namespace) {
         String endpoint = "/" + apiResource.getApiEndpoint(namespace);
-        return post(endpoint, resource.getJsonNode());
+        post(endpoint, resource.getJsonNode());
     }
 
-    public JsonNode patchResource(Resource resource, JsonNode patch) {
+    public void patchResource(Resource resource, JsonNode patch) {
         String endpoint = resource.getJsonNode().get("metadata").get("selfLink").textValue();
-        return patch(endpoint, patch);
+        patch(endpoint, patch);
 
     }
 

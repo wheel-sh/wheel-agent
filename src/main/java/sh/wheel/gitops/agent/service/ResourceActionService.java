@@ -42,20 +42,20 @@ public class ResourceActionService {
         IGNORED_ATTRIBUTES.add(new IgnoredAttributeIdentifier("/roleRef/apiGroup", "rbac.authorization.k8s.io"));
     }
 
-    public List<ResourceAction> createResourceActions(List<ResourceDifference> resourceDifferences, ProjectState processed, ProjectState project) {
+    List<ResourceAction> createResourceActions(List<ResourceDifference> resourceDifferences) {
         return resourceDifferences.stream()
                 .filter(this::filterIgnoredResources)
-                .map(resourceDifference -> createAction(resourceDifference, processed, project))
+                .map(this::createAction)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
-    private ResourceAction createAction(ResourceDifference resourceDifference, ProjectState processed, ProjectState project) {
+    private ResourceAction createAction(ResourceDifference resourceDifference) {
         switch (resourceDifference.getPresence()) {
             case PROCESSED_ONLY:
                 return new ResourceAction(ActionType.CREATE, resourceDifference.getProcessed(), resourceDifference.getAttributeDifferences());
             case NAMESPACE_ONLY:
-                return createActionForProjectOnly(resourceDifference, processed, project);
+                return createActionForProjectOnly(resourceDifference);
             case BOTH:
                 return createActionForDiff(resourceDifference);
             default:
@@ -63,17 +63,13 @@ public class ResourceActionService {
         }
     }
 
-    private ResourceAction createActionForProjectOnly(ResourceDifference resourceDifference, ProjectState processed, ProjectState project) {
+    private ResourceAction createActionForProjectOnly(ResourceDifference resourceDifference) {
         JsonNode ownerReference = resourceDifference.getCluster().getJsonNode().get("metadata").get("ownerReferences");
         if (ownerReference != null) { // don't touch owned resources
             return new ResourceAction(ActionType.IGNORE_OWNED_RESOURCE, resourceDifference.getCluster(), resourceDifference.getAttributeDifferences());
         } else {
             return new ResourceAction(ActionType.DELETE, resourceDifference.getCluster(), resourceDifference.getAttributeDifferences());
         }
-    }
-
-    private boolean areOwnersInProcessed(List<Resource> owners, ProjectState processed) {
-        return owners.stream().map(owner -> processed.getResourcesByKey().get(owner.getResourceKey())).noneMatch(Objects::isNull);
     }
 
     private ResourceAction createActionForDiff(ResourceDifference resourceDifference) {
@@ -127,10 +123,6 @@ public class ResourceActionService {
             }
         }
         return true;
-    }
-
-    private String getResourceName(Resource resource) {
-        return resource.getJsonNode().get("metadata").get("name").textValue();
     }
 
     private String getResourceType(Resource resource) {

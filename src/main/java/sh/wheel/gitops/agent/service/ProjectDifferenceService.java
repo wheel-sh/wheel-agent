@@ -1,15 +1,11 @@
 package sh.wheel.gitops.agent.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.flipkart.zjsonpatch.DiffFlags;
 import com.flipkart.zjsonpatch.JsonDiff;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import sh.wheel.gitops.agent.model.*;
 
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,26 +15,7 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectDifferenceService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
-    private static JsonNode merge(JsonNode mainNode, JsonNode updateNode) {
-        updateNode.fieldNames().forEachRemaining(fieldName -> {
-            JsonNode jsonNode = mainNode.get(fieldName);
-            // if field exists and is an embedded object
-            if (jsonNode != null && jsonNode.isObject()) {
-                merge(jsonNode, updateNode.get(fieldName));
-            } else {
-                if (mainNode instanceof ObjectNode) {
-                    // Overwrite field
-                    JsonNode value = updateNode.get(fieldName);
-                    ((ObjectNode) mainNode).replace(fieldName, value);
-                }
-            }
-        });
-        return mainNode;
-    }
-
-    public List<ResourceDifference> evaluateDifference(ProjectState processed, ProjectState cluster) {
+    List<ResourceDifference> evaluateDifference(ProjectState processed, ProjectState cluster) {
         List<ResourceDifference> resourceDifferences = new ArrayList<>();
         Map<ResourceKey, Resource> processedResourcesByKind = processed.getResourcesByKey();
         Map<ResourceKey, Resource> clusterResourcesByKind = cluster.getResourcesByKey();
@@ -104,15 +81,6 @@ public class ProjectDifferenceService {
             attributeDifferences.add(new AttributeDifference(proccessed.getName(), proccessed.getKind(), path, value, op, diff));
         }
         return attributeDifferences;
-    }
-
-    private boolean isAddedByDefault(JsonNode diff) {
-        return "add".equals(diff.get("op").textValue());
-    }
-
-    private boolean isRemoveEmptyNode(JsonNode diff) {
-        JsonNode value = diff.get("value");
-        return "remove".equals(diff.get("op").textValue()) && value.isObject() && value.size() == 0;
     }
 
 }

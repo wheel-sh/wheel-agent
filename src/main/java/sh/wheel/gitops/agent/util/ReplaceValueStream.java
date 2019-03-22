@@ -13,21 +13,21 @@ import java.util.Map;
  * Replaces template parameter values in the stream to avoid
  * parsing issues of templates with numeric expressions
  */
-public class ReplaceValueStream {
+class ReplaceValueStream {
     private final Map<String, String> valuesMap;
 
-    public ReplaceValueStream(Map<String, String> valuesMap) {
+    private ReplaceValueStream(Map<String, String> valuesMap) {
         this.valuesMap = valuesMap;
     }
 
     /**
      * Returns a stream with the template parameter expressions replaced
      */
-    public static InputStream replaceValues(InputStream is, Map<String, String> valuesMap) {
+    static InputStream replaceValues(InputStream is, Map<String, String> valuesMap) {
         return new ReplaceValueStream(valuesMap).createInputStream(is);
     }
 
-    public InputStream createInputStream(InputStream is) {
+    private InputStream createInputStream(InputStream is) {
         try {
             String json = IOHelpers.readFully(is);
             String replaced = replaceValues(json);

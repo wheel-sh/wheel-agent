@@ -1,7 +1,6 @@
 package sh.wheel.gitops.agent.util;
 
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import java.io.IOException;
@@ -18,8 +17,7 @@ public class GitUtil {
                     .setDirectory(target.toFile())
                     .call();
         } else {
-            Git git = Git.open(target.toFile());
-            PullResult pull = git
+            Git.open(target.toFile())
                     .pull()
                     .setRemoteBranchName(branch)
                     .setRebase(true)

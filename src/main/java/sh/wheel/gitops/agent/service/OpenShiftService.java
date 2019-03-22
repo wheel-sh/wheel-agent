@@ -24,10 +24,11 @@ import java.util.stream.Stream;
 public class OpenShiftService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final ObjectMapper OM = new ObjectMapper();
 
-    private OpenShiftTemplateUtil templateUtil;
-    private OpenShiftRestClient openShiftRestClient;
-    private List<String> requiredVerbs = Arrays.asList("create", "delete", "get", "list", "patch", "update", "watch");
+    private final OpenShiftTemplateUtil templateUtil;
+    private final OpenShiftRestClient openShiftRestClient;
+    private final List<String> requiredVerbs = Arrays.asList("create", "delete", "get", "list", "patch", "update", "watch");
     private List<ApiResource> availableApiResources;
     private String whoAmI;
 
@@ -42,7 +43,7 @@ public class OpenShiftService {
         availableApiResources = getManageableResources();
     }
 
-    public List<ProjectState> getProjectStatesFromCluster() {
+    List<ProjectState> getProjectStatesFromCluster() {
         long start = System.currentTimeMillis();
         List<ProjectState> collect = openShiftRestClient.getAllProjects()
                 .stream().filter(p -> whoAmI.equals(getRequester(p)))
@@ -64,7 +65,7 @@ public class OpenShiftService {
         return null;
     }
 
-    public ProjectState getProjectStateFromCluster(String projectName) {
+    ProjectState getProjectStateFromCluster(String projectName) {
         List<ApiResource> apiResources = openShiftRestClient.fetchManageableResources(whoAmI, projectName, requiredVerbs, availableApiResources);
         Map<ResourceKey, Resource> resourceByKey = openShiftRestClient.fetchResourcesFromNamespace(apiResources, projectName).stream().collect(Collectors.toMap(Resource::getResourceKey, Function.identity()));
         Resource project = openShiftRestClient.fetchProject(projectName);
@@ -75,7 +76,7 @@ public class OpenShiftService {
         return openShiftRestClient.getFilteredApiResources(true, requiredVerbs);
     }
 
-    public ProjectState getProjectStateFromTemplate(Path projectTemplate, Map<String, String> projectParams, Path appTemplate, Map<String, String> appParams) {
+    ProjectState getProjectStateFromTemplate(Path projectTemplate, Map<String, String> projectParams, Path appTemplate, Map<String, String> appParams) {
         ResourceKey projectKey = ResourceKey.projectWithName(projectParams.get("PROJECT_NAME"));
         Map<ResourceKey, Resource> projectProcessed = process(projectTemplate, projectParams);
         Resource project = projectProcessed.get(projectKey);
@@ -88,7 +89,7 @@ public class OpenShiftService {
     }
 
 
-    public Map<ResourceKey, Resource> process(Path templatePath, Map<String, String> params) {
+    Map<ResourceKey, Resource> process(Path templatePath, Map<String, String> params) {
         List<Resource> process = templateUtil.process(templatePath, params);
         return process.stream().collect(Collectors.toMap(this::createResourceKey, Function.identity()));
     }
@@ -97,29 +98,25 @@ public class OpenShiftService {
         return new ResourceKey(resource.getName(), resource.getKind(), resource.getApiVersion());
     }
 
-    public String getWhoAmI() {
+    String getWhoAmI() {
         return whoAmI;
     }
 
     public void patch(Resource resource, List<AttributeDifference> attributeDifferences, String projectName) {
-        ApiResource apiResource = resolveApiResource(resource);
-        String endpoint = apiResource.getApiEndpoint(projectName) + "/" + resource.getName();
-        ObjectMapper objectMapper = new ObjectMapper();
-        ArrayNode patchNodes = objectMapper.createArrayNode();
+        ArrayNode patchNodes = OM.createArrayNode();
         attributeDifferences.stream().map(AttributeDifference::getDiff).forEach(patchNodes::addPOJO);
-        JsonNode jsonNode = openShiftRestClient.patchResource(resource, patchNodes);
+        openShiftRestClient.patchResource(resource, patchNodes);
         LOG.info(String.format("Applied resource %s/%s in namespace %s", resource.getKind(), resource.getName(), projectName));
     }
 
-    public void newProject(String projectName) {
+    void newProject(String projectName) {
         openShiftRestClient.newProject(projectName);
     }
 
-    public JsonNode createNamespacedResource(Resource resource, String namespace) {
+    void createNamespacedResource(Resource resource, String namespace) {
         ApiResource apiResource = resolveApiResource(resource);
-        JsonNode namespacedResource = openShiftRestClient.createNamespacedResource(resource, apiResource, namespace);
+        openShiftRestClient.createNamespacedResource(resource, apiResource, namespace);
         LOG.info(String.format("Created resource %s/%s in namespace %s", apiResource.getName(), resource.getName(), namespace));
-        return namespacedResource;
     }
 
     private ApiResource resolveApiResource(Resource resource) {

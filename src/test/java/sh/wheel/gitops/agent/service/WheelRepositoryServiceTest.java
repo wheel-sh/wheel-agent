@@ -2,7 +2,6 @@ package sh.wheel.gitops.agent.service;
 
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Assert;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,11 +42,6 @@ class WheelRepositoryServiceTest {
         Files.createDirectories(REPOSITORIES_BASE_PATH);
     }
 
-    @AfterAll
-    static void cleanUp() throws IOException {
-    }
-
-
     @BeforeEach
     void setUp() {
         wheelRepositoryService = new WheelRepositoryService();
@@ -78,7 +72,7 @@ class WheelRepositoryServiceTest {
 
 
     @Test
-    void readAllApps() throws IOException, URISyntaxException {
+    void readAllApps() throws IOException {
         List<App> apps = wheelRepositoryService.readAllApps(TESTREPO1_PATH.resolve("apps"));
         App app = apps.get(0);
 

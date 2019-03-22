@@ -1,6 +1,5 @@
 def version = "latest"
 def appName = env.APP_NAME
-def dockerRegistry = env.DOCKER_REGISTRY
 def currentProject
 
 pipeline {

@@ -11,7 +11,7 @@ public class OpenShiftServiceTestUtil {
 
     public static OpenShiftService createWithMockData(Path mockData) {
         OpenShiftTemplateUtil templateUtil = OpenShiftTemplateUtil.create();
-        OpenShiftRestClient openShiftRestClient = MockOpenShiftRestClient.createMockClient(Samples.MOCK_DATA1.toPath());
+        OpenShiftRestClient openShiftRestClient = MockOpenShiftRestClient.createMockClient(mockData);
         OpenShiftService openShiftService = new OpenShiftService(templateUtil, openShiftRestClient);
         openShiftService.init();
         return openShiftService;

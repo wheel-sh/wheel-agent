@@ -18,14 +18,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ResourceActionServiceTest {
     private List<ResourceDifference> resourceDifferences;
-    private ProjectState processedProjectState;
-    private ProjectState clusterProjectState;
 
     @BeforeEach
     void setUp() {
         OpenShiftService openShiftService = OpenShiftServiceTestUtil.createWithMockData(Samples.MOCK_DATA1.toPath());
         ProjectDifferenceService projectDifferenceService = new ProjectDifferenceService();
-        clusterProjectState = openShiftService.getProjectStateFromCluster("example-app-test");
+        ProjectState clusterProjectState = openShiftService.getProjectStateFromCluster("example-app-test");
 
         Map<String, String> appParams = new HashMap<>();
         appParams.put("REPLICA_COUNT", "2");
@@ -36,14 +34,14 @@ class ResourceActionServiceTest {
         projectParams.put("PROJECT_NAME", "example-app-test");
         projectParams.put("PROJECT_REQUESTING_USER", "admin@nikio.io");
         projectParams.put("PROJECT_ADMIN_USER", "admin@nikio.io");
-        processedProjectState = openShiftService.getProjectStateFromTemplate(Samples.BASE_PROJECT_TEMPLATE.toPath(), projectParams, Samples.TEMPLATE1.toPath(), appParams);
+        ProjectState processedProjectState = openShiftService.getProjectStateFromTemplate(Samples.BASE_PROJECT_TEMPLATE.toPath(), projectParams, Samples.TEMPLATE1.toPath(), appParams);
 
         resourceDifferences = projectDifferenceService.evaluateDifference(processedProjectState, clusterProjectState);
     }
 
     @Test
     void createResourceActions() {
-        List<ResourceAction> resourceActions = new ResourceActionService().createResourceActions(resourceDifferences, processedProjectState, clusterProjectState);
+        List<ResourceAction> resourceActions = new ResourceActionService().createResourceActions(resourceDifferences);
 
         Map<ActionType, List<ResourceAction>> byType = resourceActions.stream().collect(Collectors.groupingBy(ResourceAction::getType));
         assertEquals(10, resourceActions.size());
