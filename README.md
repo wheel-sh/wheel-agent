@@ -20,14 +20,14 @@ These instructions will get you the Wheel GitOps Agent up and running on your Op
 
 You need a running OpenShift cluster where you have cluster-admin rights. 
 
-If you do not have a cluster, you can test and develop the following options:
+If you don't have a cluster, you can use the following options for development or testing:
 * Minishift (provides an OpenShift Cluster locally) https://docs.okd.io/latest/minishift/getting-started/installing.html
 * All-in-one cluster (How to get a 'real' cluster on one server running) https://blog.openshift.com/openshift-all-in-one-aio-for-labs-and-fun/
 
 
 ### Installing
 
-First the necessary Git config repository must be created. Here is an example repository that can be used as a basis for now:
+First the necessary Git config repository must be created. Here is an example repository that can be used to start for now:
 
 https://github.com/wheel-sh/demo-cluster-config
 
@@ -68,7 +68,7 @@ You can then set up a push hook for this URL in the configuration repository. Th
 
 ### Build
 
-To build the Wheel Agent yourself a JDK8, Maven and Docker is needed. To build the Wheel Agent image simply clone this repository and simply run:
+To build the Wheel Agent yourself a JDK8, Maven and Docker is needed. To build the Wheel Agent image simply clone this repository and run:
 
 ```
 mvn package
