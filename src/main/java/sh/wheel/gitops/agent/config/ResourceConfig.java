@@ -1,12 +1,8 @@
 package sh.wheel.gitops.agent.config;
 
-import lombok.*;
+import lombok.Data;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@ToString
-@EqualsAndHashCode
+@Data
 public class ResourceConfig {
     private String cpu;
     private String memory;

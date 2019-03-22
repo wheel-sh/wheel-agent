@@ -2,13 +2,6 @@ package sh.wheel.gitops.agent.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.fabric8.kubernetes.client.Config;
-import io.fabric8.kubernetes.client.ConfigBuilder;
-import io.fabric8.kubernetes.client.utils.HttpClientUtils;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -78,7 +71,7 @@ class OpenShiftRestClientIntegrationTest {
     @Test
     @Disabled
     void fetchResources() {
-        ApiResource dcv1beta1 = ApiResource.newBuilder()
+        ApiResource dcv1beta1 = ApiResource.builder()
                 .name("deployments")
                 .kind("Deployment")
                 .groupName("extensions")
@@ -87,7 +80,7 @@ class OpenShiftRestClientIntegrationTest {
                 .subresource(false)
                 .namespaced(true)
                 .build();
-        ApiResource dcv1beta2 = ApiResource.newBuilder()
+        ApiResource dcv1beta2 = ApiResource.builder()
                 .name("deployments")
                 .kind("Deployment")
                 .groupName("apps")
@@ -96,7 +89,7 @@ class OpenShiftRestClientIntegrationTest {
                 .subresource(false)
                 .namespaced(true)
                 .build();
-        ApiResource dcv1 = ApiResource.newBuilder()
+        ApiResource dcv1 = ApiResource.builder()
                 .name("deployments")
                 .kind("Deployment")
                 .groupName("apps")

@@ -1,14 +1,9 @@
 package sh.wheel.gitops.agent.config;
 
-import lombok.*;
+import lombok.Data;
 
 
-@Getter
-@Setter
-@NoArgsConstructor
-@ToString
-@EqualsAndHashCode
-@AllArgsConstructor
+@Data
 public class ParameterConfig {
     private String name;
     private String value;

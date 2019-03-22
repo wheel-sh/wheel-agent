@@ -1,14 +1,10 @@
 package sh.wheel.gitops.agent.config;
 
-import lombok.*;
+import lombok.Data;
 
 import java.util.Map;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@ToString
-@EqualsAndHashCode
+@Data
 public class AppConfig {
     private String group;
     private Map metadata;

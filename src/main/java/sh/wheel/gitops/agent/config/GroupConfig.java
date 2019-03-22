@@ -1,14 +1,10 @@
 package sh.wheel.gitops.agent.config;
 
-import lombok.*;
+import lombok.Data;
 
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@ToString
-@EqualsAndHashCode
+@Data
 public class GroupConfig {
     private String name;
     private List<PoolConfig> pools;

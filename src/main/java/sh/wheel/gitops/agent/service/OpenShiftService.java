@@ -125,7 +125,7 @@ public class OpenShiftService {
     private ApiResource resolveApiResource(Resource resource) {
         return availableApiResources.stream().filter(ai -> ai.getKind().equals(resource.getKind()) &&
                 ai.getApiVersion().equals(resource.getApiVersion()) &&
-                ai.getKind().equals(resource.getKind())).findAny().orElseThrow(() -> new IllegalStateException("No api resource found for key :" + resource.getResourceKey()));
+                ai.getKind().equals(resource.getResourceKey().getKind())).findAny().orElseThrow(() -> new IllegalStateException("No api resource found for key :" + resource.getResourceKey()));
     }
 
     public void delete(Resource clusterResource) {

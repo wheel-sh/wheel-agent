@@ -184,7 +184,7 @@ public class OpenShiftRestClient {
         String kind = r.get("kind").textValue();
         boolean namespaced = r.get("namespaced").booleanValue();
         List<String> verbs = StreamSupport.stream(r.get("verbs").spliterator(), false).map(JsonNode::textValue).collect(Collectors.toList());
-        return ApiResource.newBuilder()
+        return ApiResource.builder()
                 .name(name)
                 .kind(kind)
                 .groupName(groupName)
