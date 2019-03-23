@@ -5,7 +5,7 @@
 
 ---
 
-The Wheel GitOps Agent enables the administration of Kubernetes Resources like Namespaces and its content through a Git repository. The main idea is to combine resource templates (be it an OpenShift template or a helmet chart) with its parameters to describe the desired state of a namespace in Git. Wheel establishes a clear structure for organizing the configurations of the desired cluster state.  The agent reacts to changes in the cluster or in the Git repository. This provides a simple and traceable way to manage a cluster.
+The Wheel GitOps Agent enables the administration of Kubernetes Resources like namespaces and its content through a Git repository. The main idea is to combine resource templates (currently OpenShift templates, Helm Charts will be supported later) with its parameters to describe the desired state of a namespace in Git. Wheel establishes a clear structure for organizing the configurations of the desired cluster state. The agent reacts to changes in the cluster or in the Git repository. This provides a simple and traceable way to manage a cluster.
 
 The current Kubernetes target distribution is OpenShift/OKD, but it will also be possible later to run the agent on a standard Kubernetes cluster.
 
@@ -16,20 +16,20 @@ The project is under strong development, whose maturity is pre-alpha.
 
 ## Getting Started
 
-These instructions will get you the Wheel GitOps Agent up and running on your OpenShift Cluster for development and testing purposes. 
+These instructions will get you the Wheel GitOps Agent up and running on your OpenShift cluster for development and testing purposes. 
 
 ### Prerequisites
 
-You need a running OpenShift cluster where you have cluster-admin rights. 
+You need a running OpenShift cluster where you have cluster-admin permissions. 
 
-If you don't have a cluster, you can use the following options for development or testing:
+If you don't have a cluster, you can use the following options to set up a working one:
 * Minishift (provides an OpenShift Cluster locally) https://docs.okd.io/latest/minishift/getting-started/installing.html
 * All-in-one cluster (How to get a 'real' cluster on one server running) https://blog.openshift.com/openshift-all-in-one-aio-for-labs-and-fun/
 
 
 ### Installing
 
-First the necessary Git config repository must be created. Here is an example repository that can be used to start for now:
+First the necessary Git config repository should be created. Here is an example repository that can be used to start for now:
 
 https://github.com/wheel-sh/demo-cluster-config
 
@@ -44,7 +44,7 @@ oc new-project wheel
 To deploy the agent, the provided OpenShift template can be used. This creates the following resources:
 
 * DeploymentConfig for the Agent
-* Service to get the REST API from the agent to respond to Git Hooks
+* Service to enable traffic to the agents REST API to react to Git hooks
 * Route to expose the service
 * ServiceAccount under which the agent runs
 * ClusterRoleBinding to the roles self-access-reviewer, self-provisioner, system:basic-user. For this purpose, an own, precisely tailored ClusterRole will be developed later.
@@ -58,9 +58,9 @@ oc process -f https://raw.githubusercontent.com/wheel-sh/wheel-agent/master/open
 | oc apply -f -
 ```
 
-In this example, the parameters must be adjusted accordingly if necessary. The referenced container image is currently in a private registry, but can also be pulled anonymously. Later, the image will also be made available on Docker Hub. However, it is also possible to build the image yourself.
+In this example, the parameters must be adjusted accordingly if necessary. The referenced container image is currently in a private registry, but can also be pulled anonymously. Later, the image will also be made available on Docker Hub. However, it is easily possible to build the image yourself.
 
-After the Wheel Agent has been deployed, a Git Hook should be set up for Push Events. To get to the hook URL of the Wheel Agent, execute the following command in the namespace of the agent:
+After the Wheel Agent has been deployed, a Git Hook should be set up for push events. To optain the required hook URL of the agent, execute the following command in the agents namespace:
 
 ```
 echo "https://$(oc get route wheel-agent --no-headers -o custom-columns=HOST:.spec.host)/git-hook"
@@ -70,7 +70,7 @@ You can then set up a push hook for this URL in the configuration repository. Th
 
 ### Build
 
-To build the Wheel Agent yourself a JDK8, Maven and Docker is needed. To build the Wheel Agent image simply clone this repository and run:
+To build the Wheel Agent a JDK8, Maven and Docker is needed. To build the container image simply clone this repository and run:
 
 ```
 mvn package
@@ -81,17 +81,17 @@ docker build -t wheel-agent .
 
 * [Maven](https://maven.apache.org/) - Dependency Management
 * [Spring Boot](https://spring.io/projects/spring-boot)
-* [JGit](https://www.eclipse.org/jgit/) - As Git api
+* [JGit](https://www.eclipse.org/jgit/) - As Git API
 * [Fabric8 Kubernetes Client](https://github.com/fabric8io/kubernetes-client) - For cluster authentication. 
 * [Lombok](https://projectlombok.org/) - To reduce boilerplate code
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on the code of conduct, and the process for submitting pull requests.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. 
+[SemVer](http://semver.org/) is used for versioning. 
 
 ## Authors
 
