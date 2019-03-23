@@ -5,9 +5,11 @@
 
 ---
 
-The Wheel GitOps Agent enables the synchronization of structured configurations of app environments in Git to an OpenShift cluster. The basic idea is to combine a resource template (be it an OpenShift template or a helmet chart) with its parameters to describe the desired state of a namespace. Wheel provides a clear structure of how this configuration is stored in the Git. The  Agent reacts to changes in the Git repository or cluster.
+The Wheel GitOps Agent enables the administration of Kubernetes Resources like Namespaces and its content through a Git repository. The main idea is to combine resource templates (be it an OpenShift template or a helmet chart) with its parameters to describe the desired state of a namespace in Git. Wheel establishes a clear structure for organizing the configurations of the desired cluster state.  The agent reacts to changes in the cluster or in the Git repository. This provides a simple and traceable way to manage a cluster.
 
 The current Kubernetes target distribution is OpenShift/OKD, but it will also be possible later to run the agent on a standard Kubernetes cluster.
+
+The project is under strong development, whose maturity is pre-alpha.
 
 ---
 
@@ -31,7 +33,7 @@ First the necessary Git config repository must be created. Here is an example re
 
 https://github.com/wheel-sh/demo-cluster-config
 
-Just make a fork/copy of this repository
+Just make a fork/copy of this repository.
 
 If possible, the agent should be deployed in its own namespace.
 
@@ -77,9 +79,11 @@ docker build -t wheel-agent .
 
 ## Built With
 
-* [Spring Boot](https://spring.io/projects/spring-boot)
 * [Maven](https://maven.apache.org/) - Dependency Management
-* [Fabric8 Kubernetes Client](https://github.com/fabric8io/kubernetes-client) - Used take care about authentication. 
+* [Spring Boot](https://spring.io/projects/spring-boot)
+* [JGit](https://www.eclipse.org/jgit/) - As Git api
+* [Fabric8 Kubernetes Client](https://github.com/fabric8io/kubernetes-client) - For cluster authentication. 
+* [Lombok](https://projectlombok.org/) - To reduce boilerplate code
 
 ## Contributing
 
