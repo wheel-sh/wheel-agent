@@ -1,3 +1,5 @@
+This project will not be developed any more, because the overlap of the basic ideas with the much further developed [Argo CD](https://github.com/argoproj/argo-cd) is too high. Please check out Argo CD - it's really neat.
+
 # Wheel GitOps Agent
 [![Build Status](https://travis-ci.com/wheel-sh/wheel-agent.svg?branch=master)](https://travis-ci.com/wheel-sh/wheel-agent)
 
@@ -5,11 +7,11 @@
 
 ---
 
-The Wheel GitOps Agent enables the administration of Kubernetes Resources like namespaces and its content through a Git repository. The main idea is to combine resource templates (currently OpenShift templates, Helm Charts will be supported later) with its parameters to describe the desired state of a namespace in Git. Wheel establishes a clear structure for organizing the configurations of the desired cluster state. The agent reacts to changes in the cluster or in the Git repository. This provides a simple and traceable way to manage a cluster.
+The Wheel GitOps Agent enables the administration of Kubernetes Resources like namespaces and its content through a Git repository. The main idea is to combine resource templates (currently OpenShift templates) with its parameters to describe the desired state of a namespace in Git. Wheel establishes a clear structure for organizing the configurations of the desired cluster state. The agent reacts to changes in the cluster or in the Git repository. This provides a simple and traceable way to manage a cluster.
 
-The current Kubernetes target distribution is OpenShift/OKD, but it will also be possible later to run the agent on a standard Kubernetes cluster.
+The current Kubernetes target distribution is OpenShift/OKD.
 
-The project is under strong development, whose maturity is pre-alpha.
+The project maturity is pre-alpha.
 
 ---
 
@@ -47,7 +49,7 @@ To deploy the agent, the provided OpenShift template can be used. This creates t
 * Service to enable traffic to the agents REST API to react to Git hooks
 * Route to expose the service
 * ServiceAccount under which the agent runs
-* ClusterRoleBinding to the roles self-access-reviewer, self-provisioner, system:basic-user. For this purpose, an own, precisely tailored ClusterRole will be developed later.
+* ClusterRoleBinding to the roles self-access-reviewer, self-provisioner, system:basic-user.
  
 ```
 oc process -f https://raw.githubusercontent.com/wheel-sh/wheel-agent/master/openshift/wheel-agent.yaml \
